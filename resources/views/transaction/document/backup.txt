@@ -1,0 +1,39 @@
+@foreach($documents as $docs)
+                        <a href="{{ url('/transaction/document/detail') }}/{{ $docs->id }}">
+                            <div class="col-lg-3 col-md-6 col-sm-12 m-t-20" style="cursor:pointer;">
+                                <div class="doc-box box box-widget widget-user-2">
+                                    <div class="widget-user-header bg-gray bg-folder-shaper no-padding">
+                                        <div class="folder-shape-top bg-gray">
+                                        </div>
+                                        <div class="box-header">
+                                            <span style="margin-left: 10px; color:white;" data-toggle="tooltip" title="{{ $docs->doctype }}">
+                                                {{ $docs->doctype }}
+                                            </span>
+                                        </div>
+                                        <a href="{{ url('/transaction/document/detail') }}/{{ $docs->id }}" style="color: black;">
+                                            <h4 style="color: white; font-weight:bold;" class="widget-user-username" title="{{ $docs->document_title }}" data-toggle="tooltip">
+                                                {{ $docs->document_title }}
+                                            </h4>
+                                            <h5 class="widget-user-desc" style="font-size: 12px">
+                                                <span class="time" data-toggle="tooltip" title="{{ $docs->dcn_number }}">
+                                                {{ $docs->dcn_number }}
+                                                </span>
+                                                <span class="pull-right" style="margin-right: 15px;">
+                                                    <i class="fa fa-folder text-yellow" style="font-size:20px;"></i>
+                                                </span>
+                                            </h5>
+                                            <hr style="background-color:white;">
+                                            <h5 class="widget-user-desc" style="font-size: 12px">
+                                                <span class="time" data-toggle="tooltip" title="{{ $docs->createdby }}">
+                                                    {{ $docs->createdby }}
+                                                </span>
+                                                <span class="pull-right" style="margin-right: 15px;" data-toggle="tooltip" title="{{ $docs->created_at }}">
+                                                    <i class="fa fa-clock"></i> {{\Carbon\Carbon::parse($docs->created_at)->diffForHumans()}}
+                                                </span>
+                                            </h5>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        @endforeach
