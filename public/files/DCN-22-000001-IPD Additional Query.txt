@@ -1,0 +1,55 @@
+CREATE VIEW v_smt_process as
+SELECT a.assy_code, a.kepi_lot, a.smt_line, a.smt_shift, b.barcode_serial, b.part_lot, b.ageing_process, b.ft_process FROM t_smt_line_process as a INNER JOIN t_smt_line_process_items as b on a.kepi_lot = b.kepi_lot and a.assy_code = b.assy_code
+
+CREATE VIEW v_smt_handwork_data as
+SELECT a.assy_code, b.matdesc as 'model', a.kepi_lot, a.barcode_serial, a.part_lot FROM v_smt_process as a INNER JOIN t_material as b on a.assy_code = b.material
+UNION DISTINCT
+SELECT  a.assy_code, b.matdesc as 'model', a.kepi_lot, a.barcode_serial, a.part_lot FROM v_handwork_process as a INNER JOIN t_material as b on a.assy_code = b.material
+
+SELECT DISTINCT a.assy_code, a.kepi_lot, a.smt_line, a.smt_shift, b.hw_line, b.hw_shift FROM t_smt_line_process as a LEFT JOIN t_handwork_process as b on a.assy_code = b.assy_code and a.kepi_lot = b.kepi_lot
+UNION DISTINCT
+SELECT DISTINCT b.assy_code, b.kepi_lot, a.smt_line, a.smt_shift, b.hw_line, b.hw_shift FROM t_smt_line_process as a RIGHT JOIN t_handwork_process as b on a.assy_code = b.assy_code and a.kepi_lot = b.kepi_lot
+
+
+CREATE VIEW v_header_ageing as
+SELECT DISTINCT a.kepi_lot, a.assy_code, a.quantity, a.ageing_time, a.ageing_result, a.failure_remark, a.defect_quantity FROM t_ageing as a
+
+CREATE VIEW v_header_ft as
+SELECT DISTINCT a.kepi_lot, a.assy_code, a.ft_quantity, a.ft_result, a.failure_remark, a.defect_qty FROM t_ft_process as a
+
+
+CREATE VIEW v_critical_parts as
+SELECT DISTINCT t1.smt_date, t1.assy_code, t2.matdesc as 'model', t1.kepi_lot, t1.smt_line, t1.smt_shift, t1.hw_line, t1.hw_shift, t3.quantity, t3.ageing_time, t3.ageing_result, t3.failure_remark, t3.defect_quantity, t4.ft_result FROM (
+SELECT DISTINCT date(a.createdon) as smt_date, a.assy_code, a.kepi_lot, a.smt_line, a.smt_shift, b.hw_line, b.hw_shift FROM t_smt_line_process as a LEFT JOIN t_handwork_process as b on a.assy_code = b.assy_code and a.kepi_lot = b.kepi_lot
+UNION DISTINCT
+SELECT DISTINCT CASE WHEN a.createdon is null THEN date(b.createdon) ELSE date(a.createdon) END as smt_date, b.assy_code, b.kepi_lot, a.smt_line, a.smt_shift, b.hw_line, b.hw_shift FROM t_smt_line_process as a RIGHT JOIN t_handwork_process as b on a.assy_code = b.assy_code and a.kepi_lot = b.kepi_lot) as t1 INNER JOIN t_material as t2 on t1.assy_code = t2.material LEFT JOIN v_header_ageing as t3 ON t1.assy_code = t3.assy_code and t1.kepi_lot = t3.kepi_lot LEFT JOIN v_header_ft as t4 on t1.assy_code = t4.assy_code and t1.kepi_lot = t4.kepi_lot
+
+CREATE VIEW v_ageing_ft_data as
+SELECT a.kepi_lot, a.assy_code, a.barcode_serial, a.part_lot, fGetPartLocation(a.barcode_serial) as 'location', a.part_lot_result as 'part_lot_ageing_result', b.part_lot_result as 'part_lot_ft_result' FROM t_ageing as a
+LEFT JOIN t_ft_process as b on a.kepi_lot = b.kepi_lot and a.barcode_serial = b.barcode_serial
+UNION DISTINCT
+SELECT b.kepi_lot, b.assy_code, b.barcode_serial, b.part_lot, fGetPartLocation(b.barcode_serial) as 'location', a.part_lot_result as 'part_lot_ageing_result', b.part_lot_result as 'part_lot_ft_result' FROM t_ageing as a
+RIGHT JOIN t_ft_process as b on a.kepi_lot = b.kepi_lot and a.barcode_serial = b.barcode_serial
+ORDER by kepi_lot
+
+CREATE VIEW v_part_DB1 as
+select distinct a.kepi_lot, a.part_lot as 'DB1', a.part_lot_ageing_result, a.part_lot_ft_result from v_ageing_ft_data as a
+WHERE a.location = 'DB1'
+
+CREATE VIEW v_critical_parts_report as
+SELECT mt.*, 
+db1.DB1, db1.part_lot_ageing_result as 'db1ag', db1.part_lot_ft_result as 'db1ft',
+ic1.IC1, ic1.part_lot_ageing_result as 'ic1ag', ic1.part_lot_ft_result as 'ic1ft',
+pc1.PC1, pc1.part_lot_ageing_result as 'pc1ag', pc1.part_lot_ft_result as 'pc1ft',
+d1.D1, d1.part_lot_ageing_result as 'd1ag', d1.part_lot_ft_result as 'd1ft',
+d2.D2, d2.part_lot_ageing_result as 'd2ag', d2.part_lot_ft_result as 'd2ft',
+t1.T1, t1.part_lot_ageing_result as 't1ag', t1.part_lot_ft_result as 't1ft',
+qf1.QF1, qf1.part_lot_ageing_result as 'qf1ag', qf1.part_lot_ft_result as 'qf1ft'
+FROM v_critical_parts as mt 
+LEFT JOIN v_part_db1 as db1 on mt.kepi_lot = db1.kepi_lot
+LEFT JOIN v_part_ic1 as ic1 on mt.kepi_lot = ic1.kepi_lot
+LEFT JOIN v_part_pc1 as pc1 on mt.kepi_lot = pc1.kepi_lot
+LEFT JOIN v_part_d1 as d1 on mt.kepi_lot = d1.kepi_lot
+LEFT JOIN v_part_d2 as d2 on mt.kepi_lot = d2.kepi_lot
+LEFT JOIN v_part_t1 as t1 on mt.kepi_lot = t1.kepi_lot
+LEFT JOIN v_part_qf1 as qf1 on mt.kepi_lot = qf1.kepi_lot
