@@ -52,6 +52,7 @@
                                     <th>Document Title</th>
                                     <th>Document Type</th>
                                     <th>Created Date</th>
+                                    <th>Last Change Date</th>
                                     <th>Created By</th>
                                     <th></th>
                                 </thead>
@@ -64,6 +65,11 @@
                                         <td>{{ $row->doctype }}</td>
                                         <td>
                                             <i class="fa fa-clock"></i> {{\Carbon\Carbon::parse($row->created_at)->diffForHumans()}} ({{ formatDateTime($row->created_at) }})
+                                        </td>
+                                        <td>
+                                            @if($row->updated_at != null)
+                                            <i class="fa fa-clock"></i> {{\Carbon\Carbon::parse($row->updated_at)->diffForHumans()}} ({{ formatDateTime($row->updated_at) }})
+                                            @endif
                                         </td>
                                         <td>{{ $row->createdby }}</td>
                                         <td style="text-align:center;">

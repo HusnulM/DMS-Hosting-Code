@@ -4,6 +4,7 @@
 
 @section('additional-css')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ ('/assets/css/customstyle.css') }}">
     <style type="text/css">
         .select2-container {
             display: block
@@ -18,14 +19,58 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Document Version</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-12" style="overflow-y: auto; height:560px;">
+                            @foreach($docversions as $key => $row)
+                            <div class="col-lg-12 col-md-12 col-sm-12 m-t-10" style="cursor:pointer;">
+                                <div class="doc-box box box-widget widget-user-2">
+                                    <div class="widget-user-header bg-gray bg-folder-shaper no-padding" style="border-top-left-radius: 20px !important;">
+                                        
+                                        <div class="box-header">
+                                            <span style="margin-left: 10px; color:white;" data-toggle="tooltip" title="{{ $row->doc_version }}">
+                                                Version : {{ $row->doc_version }}
+                                            </span>
+                                        </div>
+                                        <h4 style="color: white; font-weight:bold;" class="widget-user-username" title="{{ $documents->document_title }}" data-toggle="tooltip">
+                                            {{ $documents->document_title }}
+                                        </h4>
+                                        <h5 class="widget-user-desc" style="font-size: 12px">
+                                            <span class="time" data-toggle="tooltip" title="{{ $row->dcn_number }}">
+                                            {{ $row->dcn_number }}
+                                            </span>
+                                            <span class="pull-right" style="margin-right: 15px;">
+                                                <i class="fa fa-folder text-yellow" style="font-size:20px;"></i>
+                                            </span>
+                                        </h5>
+                                        <hr style="background-color:white;">
+                                        <h5 class="widget-user-desc" style="font-size: 12px">
+                                            <span class="time" data-toggle="tooltip" title="{{ $row->createdby }}">
+                                                {{ $row->createdby }}
+                                            </span>
+                                            <span class="pull-right" style="margin-right: 15px;" data-toggle="tooltip" title="{{ $row->createdon }}">
+                                                <i class="fa fa-clock"></i> {{\Carbon\Carbon::parse($row->createdon)->diffForHumans()}}
+                                            </span>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Document Detail</h3>
                     <div class="card-tools">
-                        <!-- <button type="submit" class="btn btn-primary btn-sm">
-                            <i class="fas fa-save"></i> SAVE
-                        </button> -->
                         <a href="{{ url('/transaction/doclist') }}" class="btn btn-default">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>

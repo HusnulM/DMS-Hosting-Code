@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Transaction;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendEmailJob;
 use Illuminate\Http\Request;
 use DataTables, Auth, DB;
 use Validator,Redirect,Response;
@@ -24,6 +25,7 @@ class DocumentController extends Controller
         $documents  = DB::table('v_documents')
                       ->where('id', $id)
                       ->first();
+        $docversions = DB::table('document_versions')->where('dcn_number', $documents->dcn_number)->orderBy('doc_version', 'DESC')->get();
 
         $cdoctype  = DB::table('doctypes')->where('id', $documents->document_type)->first();
         $cdoclevel = DB::table('doclevels')->where('id', $documents->document_level)->first();
@@ -38,8 +40,9 @@ class DocumentController extends Controller
                 ->orderBy('created_date', 'asc')
                 ->where('dcn_number', $documents->dcn_number)->get();
 
-        return view('transaction.document.detail', [
+        return view('transaction.document.documentdetail', [
             'documents'     => $documents,
+            'docversions'   => $docversions,
             'doctypes'      => $doctypes, 
             'doclevels'     => $doclevels, 
             'docareas'      => $docareas, 
@@ -73,11 +76,11 @@ class DocumentController extends Controller
                 $query->where('crtdate', $req->dateto);
             }
     
-            $documents  = $query->where('createdby', Auth::user()->email)
+            $documents  = $query->where('createdby', Auth::user()->username)
                           ->orderBy('created_at', 'DESC')
                           ->get();
         }else{
-            $documents  = $query->where('createdby', Auth::user()->email)
+            $documents  = $query->where('createdby', Auth::user()->username)
                           ->limit(10)
                           ->orderBy('created_at', 'DESC')
                           ->get();
@@ -106,7 +109,7 @@ class DocumentController extends Controller
             $docHistory = array();
             $insertFiles = array();
 
-            DB::table('documents')->insert([
+            $docID = DB::table('documents')->insertGetId([
                 'dcn_number'      => $dcnNumber,
                 'document_type'   => $req['doctype'],
                 'document_level'  => $req['doclevel'],
@@ -116,15 +119,24 @@ class DocumentController extends Controller
                 'workflow_group'  => $wfgroup,
                 'effectivity_date'=> $req['effectivedate'],
                 'created_at'      => getLocalDatabaseDateTime(),
-                'createdby'       => Auth::user()->email ?? Auth::user()->username
+                'createdby'       => Auth::user()->username ?? Auth::user()->email
             ]);
 
+            DB::table('document_versions')->insert([
+                'dcn_number'  => $dcnNumber,
+                'doc_version' => 1,
+                'remark'      => 'Test Remark',
+                'effectivity_date' => $req['effectivedate'],
+                'createdon'   => getLocalDatabaseDateTime(),
+                'createdby'       => Auth::user()->username ?? Auth::user()->email
+            ]);
             // document_historys
             
             $insertHistory = array(
                 'dcn_number'        => $dcnNumber,
+                'doc_version'       => 1,
                 'activity'          => 'Document Created : ' . $req['doctitle'],
-                'createdby'         => Auth::user()->email ?? Auth::user()->username,
+                'createdby'         => Auth::user()->username ?? Auth::user()->email,
                 'createdon'         => getLocalDatabaseDateTime(),
                 'updatedon'         => getLocalDatabaseDateTime()
             );
@@ -137,7 +149,7 @@ class DocumentController extends Controller
                     'doc_version'=> 1,
                     'efile'      => $filename,
                     'created_at' => getLocalDatabaseDateTime(),
-                    'createdby'  => Auth::user()->email ?? Auth::user()->username
+                    'createdby'  => Auth::user()->username ?? Auth::user()->email
                 );
                 array_push($insertFiles, $upfiles);
 
@@ -145,8 +157,9 @@ class DocumentController extends Controller
 
                 $insertHistory = array(
                     'dcn_number'        => $dcnNumber,
+                    'doc_version'       => 1,
                     'activity'          => 'Document Attachment Created : ' . $filename,
-                    'createdby'         => Auth::user()->email ?? Auth::user()->username,
+                    'createdby'         => Auth::user()->username ?? Auth::user()->email,
                     'createdon'         => getLocalDatabaseDateTime(),
                     'updatedon'         => getLocalDatabaseDateTime()
                 );
@@ -160,8 +173,9 @@ class DocumentController extends Controller
                 $areas = array(
                     'dcn_number'        => $dcnNumber,
                     'docarea'           => $docareas[$i],
+                    'doc_version'       => 1,
                     'createdon'         => getLocalDatabaseDateTime(),
-                    'createdby'         => Auth::user()->email ?? Auth::user()->username
+                    'createdby'         => Auth::user()->username ?? Auth::user()->email
                 );
                 array_push($insertAreas, $areas);
             }
@@ -189,7 +203,7 @@ class DocumentController extends Controller
                     'approver_id'       => $row->approverid,
                     'is_active'         => $is_active,
                     'createdon'         => getLocalDatabaseDateTime(),
-                    // 'createdby'         => Auth::user()->email ?? Auth::user()->username
+                    // 'createdby'         => Auth::user()->username ?? Auth::user()->email
                 );
                 array_push($insertApproval, $approvals);
             }
@@ -202,6 +216,19 @@ class DocumentController extends Controller
             
 
             DB::commit();
+
+            $mailData = [
+                'email'    => 'husnulmub@gmail.com',
+                'docID'    => $docID,
+                'dcnNumb'  => $dcnNumber,
+                'docTitle' => $req['doctitle'],
+                'docCrdt'  => date('d-m-Y'),
+                'docCrby'  => Auth::user()->name,
+                'body'     => 'This is for testing email using smtp'
+            ];
+            
+            dispatch(new SendEmailJob($mailData));
+
             return Redirect::to("/transaction/document")->withSuccess('New Document Created With Number '. $dcnNumber);
         } catch(\Exception $e){
             DB::rollBack();
@@ -224,7 +251,7 @@ class DocumentController extends Controller
                 // 'workflow_group'  => $wfgroup,
                 'effectivity_date'=> $req['effectivedate'],
                 'updated_at'      => getLocalDatabaseDateTime(),
-                'updatedby'       => Auth::user()->email ?? Auth::user()->username
+                'updatedby'       => Auth::user()->username ?? Auth::user()->email
             ]);
             DB::commit();
             return Redirect::to("/transaction/doclist")->withSuccess('Document '. $dcnNumber .' Updated ');
@@ -247,7 +274,7 @@ class DocumentController extends Controller
                     'dcn_number'        => $dcnNumber,
                     'docarea'           => $docareas[$i],
                     'createdon'         => getLocalDatabaseDateTime(),
-                    'createdby'         => Auth::user()->email ?? Auth::user()->username
+                    'createdby'         => Auth::user()->username ?? Auth::user()->email
                 );
                 array_push($insertAreas, $areas);
             }
@@ -259,7 +286,7 @@ class DocumentController extends Controller
             $insertHistory = array(
                 'dcn_number'        => $dcnNumber,
                 'activity'          => 'Affected Document Area Updated',
-                'createdby'         => Auth::user()->email ?? Auth::user()->username,
+                'createdby'         => Auth::user()->username ?? Auth::user()->email,
                 'createdon'         => getLocalDatabaseDateTime(),
                 'updatedon'         => getLocalDatabaseDateTime()
             );
@@ -295,7 +322,7 @@ class DocumentController extends Controller
                     'doc_version'=> 2,
                     'efile'      => $filename,
                     'created_at' => getLocalDatabaseDateTime(),
-                    'createdby'  => Auth::user()->email ?? Auth::user()->username
+                    'createdby'  => Auth::user()->username ?? Auth::user()->email
                 );
                 array_push($insertFiles, $upfiles);
 
@@ -304,7 +331,7 @@ class DocumentController extends Controller
                 $insertHistory = array(
                     'dcn_number'        => $dcnNumber,
                     'activity'          => 'Document Attachment Created : ' . $filename,
-                    'createdby'         => Auth::user()->email ?? Auth::user()->username,
+                    'createdby'         => Auth::user()->username ?? Auth::user()->email,
                     'createdon'         => getLocalDatabaseDateTime(),
                     'updatedon'         => getLocalDatabaseDateTime()
                 );

@@ -208,24 +208,26 @@
                                             </table>                                                    
                                         </div>
                                     </div>
-                                    @if($isApprovedbyUser->approval_status <> "A")
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <form action="">
-                                                <div class="form-group">
-                                                    <textarea name="approver_note" id="approver_note" class="form-control" cols="30" rows="3" placeholder="Approver Note"></textarea>
-                                                </div>
-                                                <div class="form-group">
-                                                    <button type="button" class="btn btn-success pull-right ml-1" id="btn-approve">
-                                                        <i class="fa fa-check"></i> APPROVE
-                                                    </button>
-                                                    <button type="button" class="btn btn-danger pull-right" id="btn-reject">
-                                                        <i class="fa fa-xmark"></i> REJECT
-                                                    </button>
-                                                </div>
-                                            </form>
+                                    @if($isApprovedbyUser)
+                                        @if($isApprovedbyUser->approval_status <> "A")
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <form action="">
+                                                    <div class="form-group">
+                                                        <textarea name="approver_note" id="approver_note" class="form-control" cols="30" rows="3" placeholder="Approver Note"></textarea>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <button type="button" class="btn btn-success pull-right ml-1" id="btn-approve">
+                                                            <i class="fa fa-check"></i> APPROVE
+                                                        </button>
+                                                        <button type="button" class="btn btn-danger pull-right" id="btn-reject">
+                                                            <i class="fa fa-xmark"></i> REJECT
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
                                         </div>
-                                    </div>
+                                        @endif
                                     @endif
                                 </div>
 
@@ -310,7 +312,11 @@
                 success:function(response){
                     console.log(response);
                     if(response){
-                        toastr.success('Document Approved')
+                        if(_action === "A"){
+                            toastr.success('Document Approved')
+                        }else if(_action === "R"){
+                            toastr.success('Document Rejected')
+                        }                        
 
                         setTimeout(function(){ 
                             location.reload();

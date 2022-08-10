@@ -17,6 +17,36 @@ Route::get('/tes', function () {
     return "tes";
 });
 
+Route::get('email-test', function(){
+
+    // $data['email'] = 'husnulmub@gmail.com';
+    $details = [
+        'email'    => 'husnulmub@gmail.com',
+        'docID'    => '7',
+        'dcnNumb'  => 'DCN-22-000007',
+        'docTitle' => 'Invoicing Procedures',
+        'docCrdt'  => '20-08-2022',
+        'docCrby'  => 'Administrator',
+        'body'     => 'This is for testing email using smtp'
+    ];
+    
+    dispatch(new App\Jobs\SendEmailJob($details));
+    
+    dd('done');
+});
+
+Route::get('send-mail', function () {
+   
+    $details = [
+        'dcnNumb' => 'DCN-22-000002',
+        'body' => 'This is for testing email using smtp'
+    ];
+   
+    \Mail::to('husnulmub@gmail.com')->send(new \App\Mail\MailNotif($details));
+   
+    dd("Email is Sent.");
+});
+
 Route::group(['middleware' => 'guest'], function(){
     Route::group(['middleware' => 'revalidate'], function () {
         Route::get('/',              'HomeController@index')->name('login');
@@ -37,6 +67,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updateinfo/{p1}',         'Transaction\DocumentController@updatedocinfo')->middleware('checkAuth:transaction/document');
         Route::post('/updatearea/{p1}',         'Transaction\DocumentController@updatearea')->middleware('checkAuth:transaction/document');
         Route::post('/updatefiles/{p1}',        'Transaction\DocumentController@updatefiles')->middleware('checkAuth:transaction/document');
+    });
+
+    Route::group(['prefix' => '/transaction/docrevision'], function () {
+        Route::get('/',                     'Transaction\DocumentController@index')->middleware('checkAuth:transaction/document');
+        Route::post('/save',                'Transaction\DocumentController@save')->middleware('checkAuth:transaction/document');
+        Route::post('/updateinfo/{p1}',     'Transaction\DocumentController@updatedocinfo')->middleware('checkAuth:transaction/document');
+        Route::post('/updatearea/{p1}',     'Transaction\DocumentController@updatearea')->middleware('checkAuth:transaction/document');
+        Route::post('/updatefiles/{p1}',    'Transaction\DocumentController@updatefiles')->middleware('checkAuth:transaction/document');
     });
 
     Route::group(['prefix' => '/transaction/doclist'], function () {
