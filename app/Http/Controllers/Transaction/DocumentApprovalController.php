@@ -139,6 +139,7 @@ class DocumentApprovalController extends Controller
             $insertHistory = array(
                 'dcn_number'        => $req['dcnNumber'],
                 'activity'          => $docStat,
+                'doc_version'       => 1,
                 'createdby'         => Auth::user()->email ?? Auth::user()->username,
                 'createdon'         => getLocalDatabaseDateTime(),
                 'updatedon'         => getLocalDatabaseDateTime()

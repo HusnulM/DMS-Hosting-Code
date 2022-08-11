@@ -26,30 +26,21 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-12" style="overflow-y: auto; height:560px;">
+                        <div class="col-lg-12" style="overflow-y: auto; height:550px;">
                             @foreach($docversions as $key => $row)
-                            <div class="col-lg-12 col-md-12 col-sm-12 m-t-10" style="cursor:pointer;">
+                            <div class="col-lg-12 col-md-12 col-sm-12 m-t-10 docVersion" style="cursor:pointer;" data-docid="{{ $documents->id }}" data-docversion="{{ $row->doc_version }}">
                                 <div class="doc-box box box-widget widget-user-2">
-                                    <div class="widget-user-header bg-gray bg-folder-shaper no-padding" style="border-top-left-radius: 20px !important;">
-                                        
+                                    <div class="widget-user-header bg-gray bg-folder-shaper no-padding" style="border-top-left-radius: 20px !important; background-color:#265a91 !important;">
+                                    <!-- #265a91 #0fa522-->
                                         <div class="box-header">
-                                            <span style="margin-left: 10px; color:white;" data-toggle="tooltip" title="{{ $row->doc_version }}">
-                                                Version : {{ $row->doc_version }}
+                                            <span style="margin-left: 0px; color:white;" data-toggle="tooltip" title="{{ $row->doc_version }}">
+                                                Version : {{ $row->doc_version }} <br>
+                                                {{ $documents->document_title }} <br>
+                                                {{ $row->dcn_number }}
                                             </span>
                                         </div>
-                                        <h4 style="color: white; font-weight:bold;" class="widget-user-username" title="{{ $documents->document_title }}" data-toggle="tooltip">
-                                            {{ $documents->document_title }}
-                                        </h4>
-                                        <h5 class="widget-user-desc" style="font-size: 12px">
-                                            <span class="time" data-toggle="tooltip" title="{{ $row->dcn_number }}">
-                                            {{ $row->dcn_number }}
-                                            </span>
-                                            <span class="pull-right" style="margin-right: 15px;">
-                                                <i class="fa fa-folder text-yellow" style="font-size:20px;"></i>
-                                            </span>
-                                        </h5>
-                                        <hr style="background-color:white;">
-                                        <h5 class="widget-user-desc" style="font-size: 12px">
+                                        <hr style="background-color:white; margin-top: 0px; margin-bottom: 2px;">
+                                        <h5 class="widget-user-desc" style="font-size: 12px; margin-left: 10px; margin-top: 0px; margin-bottom: 0px;">
                                             <span class="time" data-toggle="tooltip" title="{{ $row->createdby }}">
                                                 {{ $row->createdby }}
                                             </span>
@@ -79,6 +70,48 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-6 col-sm-12 form-group">
+                                    <label for="doctitle">Document Title</label>
+                                    <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" value="{{ $documents->document_title }}" required>
+                                </div>   
+                                <div class="col-lg-6 col-sm-12 form-group">
+                                    <label for="doctype">Document Type</label>
+                                    <select name="doctype" id="doctype" class="form-control">
+                                        <option value="{{ $cdoctype->id }}"> {{ $cdoctype->doctype }} </option>
+                                        <!-- @foreach($doctypes as $key => $row)
+                                            <option value="{{ $row->id }}">{{ $row->doctype }}</option>
+                                        @endforeach -->
+                                    </select>
+                                </div>    
+                                <div class="col-lg-6 col-sm-12 form-group">
+                                    <label for="doclevel">Document Level</label>
+                                    <select name="doclevel" id="doclevel" class="form-control">
+                                        <option value="{{ $cdoclevel->id }}"> {{ $cdoclevel->doclevel }} </option>
+                                        @foreach($doclevels as $key => $row)
+                                            <option value="{{ $row->id }}">{{ $row->doclevel }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-lg-6 col-sm-12 form-group">
+                                    <label for="effectivedate">Effectivity Date</label>
+                                    <input type="date" name="effectivedate" class="form-control" value="{{ $documents->effectivity_date }}" required>
+                                </div>
+                                <div class="col-lg-6 col-sm-12 form-group">
+                                    <label for="docnumber">Document Number</label>
+                                    <input type="text" name="docnumber" class="form-control" value="{{ $documents->document_number }}">
+                                </div>
+                                <div class="col-lg-6 col-sm-12 form-group">
+                                    <label for="">-</label>
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fa fa-edit"></i> Update Document Info
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
                             <ul class="nav nav-tabs" id="custom-content-above-tab" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" id="custom-content-above-home-tab" data-toggle="pill" href="#custom-content-above-home" role="tab" aria-controls="custom-content-above-home" aria-selected="true">Document Info</a>
@@ -100,55 +133,14 @@
                                 <div class="tab-pane fade show active" id="custom-content-above-home" role="tabpanel" aria-labelledby="custom-content-above-home-tab">
                                     <form action="{{ url('transaction/document/updateinfo') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
                                         @csrf
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="row">
-                                                    <div class="col-lg-12 col-sm-12 form-group">
-                                                        <label for="doctitle">Document Title</label>
-                                                        <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" value="{{ $documents->document_title }}" required>
-                                                    </div>   
-                                                    <div class="col-lg-6 col-sm-12 form-group">
-                                                        <label for="doctype">Document Type</label>
-                                                        <select name="doctype" id="doctype" class="form-control">
-                                                            <option value="{{ $cdoctype->id }}"> {{ $cdoctype->doctype }} </option>
-                                                            <!-- @foreach($doctypes as $key => $row)
-                                                                <option value="{{ $row->id }}">{{ $row->doctype }}</option>
-                                                            @endforeach -->
-                                                        </select>
-                                                    </div>    
-                                                    <div class="col-lg-6 col-sm-12 form-group">
-                                                        <label for="doclevel">Document Level</label>
-                                                        <select name="doclevel" id="doclevel" class="form-control">
-                                                            <option value="{{ $cdoclevel->id }}"> {{ $cdoclevel->doclevel }} </option>
-                                                            @foreach($doclevels as $key => $row)
-                                                                <option value="{{ $row->id }}">{{ $row->doclevel }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-lg-6 col-sm-12 form-group">
-                                                        <label for="effectivedate">Effectivity Date</label>
-                                                        <input type="date" name="effectivedate" class="form-control" value="{{ $documents->effectivity_date }}" required>
-                                                    </div>
-                                                    <div class="col-lg-6 col-sm-12 form-group">
-                                                        <label for="docnumber">Document Number</label>
-                                                        <input type="text" name="docnumber" class="form-control" value="{{ $documents->document_number }}">
-                                                    </div>
-                                                </div>
-                                            </div>      
-                                            <div class="col-lg-6">
+                                        <div class="row"> 
+                                            <div class="col-lg-12">
                                                 <div class="form-group">
                                                     <label for="docremark">Document Remark</label>
                                                     <textarea class="docremark form-control" name="docremark">
                                                         {!! $documents->description !!}
                                                     </textarea>
                                                 </div>   
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    <button class="btn btn-primary btn-sm">
-                                                        <i class="fa fa-edit"></i> Update Document Info
-                                                    </button>
-                                                </div>
                                             </div>
                                         </div>
                                     </form>
@@ -324,10 +316,14 @@
 
         });
 
-
         $('.btnRemoveArea').on('click', function(e){
             e.preventDefault();
             $(this).closest("tr").remove();
+        });
+
+        $('.docVersion').on('click', function(e){
+            var selData = $(this).data();
+            console.log(selData);
         });
 
         $('.docremark').ckeditor();
