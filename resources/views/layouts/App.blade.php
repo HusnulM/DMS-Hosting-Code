@@ -174,6 +174,7 @@
 <!-- AdminLTE App -->
 <script src="{{ ('/assets/dist/js/adminlte.js') }}"></script>
 
+<script src="{{ ('/assets/js/pdfobject.min.js') }}"></script>
 
 
 <!-- <script src="//cdn.ckeditor.com/4.14.1/standard/ckeditor.js"></script> -->

@@ -17,6 +17,10 @@ Route::get('/tes', function () {
     return "tes";
 });
 
+Route::get('/tesviewer', function () {
+    return view('testviewer');
+});
+
 Route::get('email-test', function(){
 
     // $data['email'] = 'husnulmub@gmail.com';

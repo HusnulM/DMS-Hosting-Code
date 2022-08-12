@@ -13,6 +13,8 @@
         .select2-container .select2-selection--single {
             height: 36px;
         }
+
+        
     </style>
 @endsection
 
@@ -93,16 +95,15 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-lg-6 col-sm-12 form-group">
+                                <div class="col-lg-3 col-sm-12 form-group">
                                     <label for="effectivedate">Effectivity Date</label>
                                     <input type="date" name="effectivedate" class="form-control" value="{{ $documents->effectivity_date }}" required>
                                 </div>
-                                <div class="col-lg-6 col-sm-12 form-group">
+                                <div class="col-lg-3 col-sm-12 form-group">
                                     <label for="docnumber">Document Number</label>
                                     <input type="text" name="docnumber" class="form-control" value="{{ $documents->document_number }}">
                                 </div>
                                 <div class="col-lg-6 col-sm-12 form-group">
-                                    <label for="">-</label>
                                     <button class="btn btn-primary btn-sm">
                                         <i class="fa fa-edit"></i> Update Document Info
                                     </button>
@@ -213,7 +214,7 @@
                                                             ({!! formatDateTime($file->created_at) !!})
                                                         </td>
                                                         <td>
-                                                            
+                                                            <button type="button" onclick="previewFile('/files/{{$file->efile}}#toolbar=0')">Preview</button>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -281,11 +282,71 @@
 </div>
 @endsection
 
+@section('additional-modal')
+<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalPreviewFile">
+    <div class="modal-dialog modal-xl">
+        <form class="form-horizontal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPreviewFileTitle">Preview Document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="position-relative row form-group">
+                    <div class="col-lg-12" id="fileViewer">
+                        <!-- <div id="example1"></div> -->
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal"> Close</button>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>    
+@endsection
+
 @section('additional-js')
 <script src="{{ ('/assets/ckeditor/ckeditor.js') }}"></script>
 <script src="{{ ('/assets/ckeditor/adapters/jquery.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script type="text/javascript">
+
+    function previewFile(files){         
+        if(files !== ""){
+            $('#fileViewer').html('');
+            $('#fileViewer').append(`
+                <embed src="`+ files +`" frameborder="0" width="100%" height="500px">
+            
+            `);
+            // var options = {
+            //     height: "500px",
+            //     pdfOpenParams: {view: 'FitV'},
+            //     fallbackLink: 'Your browser does not support pdf'
+            // }
+            // PDFObject.embed(files, "#example1", options);
+            // $('#print').hide();
+            // $('#viewBookmark').hide();
+            // $('#openFile').hide();
+            // $('#exd-logo').hide();
+            $('#modalPreviewFile').modal('show');
+        } else{
+            swal("File Not Found", "", "warning");
+        }
+    }
+
+    // $(function () {
+    //     document.addEventListener("pagerendered", function (e) {
+    //         $('#print').hide();
+    //         $('#viewBookmark').hide();
+    //         $('#openFile').hide();
+    //     });
+    // });
+
     $(document).ready(function () {        
         var count = 0;
         $('.btn-select-docarea').on('click', function(){

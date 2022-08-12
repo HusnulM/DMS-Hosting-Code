@@ -319,7 +319,7 @@ class DocumentController extends Controller
                 $filename = $dcnNumber.'-'.$efile->getClientOriginalName();
                 $upfiles = array(
                     'dcn_number' => $dcnNumber,
-                    'doc_version'=> 2,
+                    'doc_version'=> 1,
                     'efile'      => $filename,
                     'created_at' => getLocalDatabaseDateTime(),
                     'createdby'  => Auth::user()->username ?? Auth::user()->email
@@ -331,6 +331,7 @@ class DocumentController extends Controller
                 $insertHistory = array(
                     'dcn_number'        => $dcnNumber,
                     'activity'          => 'Document Attachment Created : ' . $filename,
+                    'doc_version'       => 1,
                     'createdby'         => Auth::user()->username ?? Auth::user()->email,
                     'createdon'         => getLocalDatabaseDateTime(),
                     'updatedon'         => getLocalDatabaseDateTime()
