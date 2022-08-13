@@ -27,18 +27,30 @@ class DocumentController extends Controller
                       ->first();
         $docversions = DB::table('document_versions')->where('dcn_number', $documents->dcn_number)->orderBy('doc_version', 'DESC')->get();
 
+        $latestVersion = $docversions[0]->doc_version;
+
         $cdoctype  = DB::table('doctypes')->where('id', $documents->document_type)->first();
         $cdoclevel = DB::table('doclevels')->where('id', $documents->document_level)->first();
 
-        $attachments = DB::table('document_attachments')->where('dcn_number', $documents->dcn_number)->get();
-        $docareasAffected = DB::table('v_docarea_affected')->where('dcn_number', $documents->dcn_number)->get();
+        $attachments = DB::table('document_attachments')
+                        ->where('dcn_number', $documents->dcn_number)
+                        ->where('doc_version', $latestVersion)
+                        ->get();
 
-        $docHistory = DB::table('v_document_historys')->where('dcn_number', $documents->dcn_number)->get();
+        $docareasAffected = DB::table('v_docarea_affected')
+                        ->where('dcn_number', $documents->dcn_number)
+                        ->where('doc_version', $latestVersion)
+                        ->get();
+
+        $docHistory = DB::table('v_document_historys')
+                        ->where('dcn_number', $documents->dcn_number)->get();
 
         $docHistorydateGroup = DB::table('v_document_historys')
-                ->select('dcn_number', 'created_date')->distinct()    
-                ->orderBy('created_date', 'asc')
+                ->select('dcn_number', 'created_date','doc_version')->distinct()    
+                ->orderBy('created_date', 'desc')
                 ->where('dcn_number', $documents->dcn_number)->get();
+
+                // return $docHistorydateGroup;
 
         return view('transaction.document.documentdetail', [
             'documents'     => $documents,
@@ -51,8 +63,97 @@ class DocumentController extends Controller
             'dochistory'     => $docHistory,
             'dochistorydate' => $docHistorydateGroup,
             'cdoctype'       => $cdoctype,
-            'cdoclevel'      => $cdoclevel
+            'cdoclevel'      => $cdoclevel,
+            'latestVersion'  => $latestVersion
         ]);
+    }
+
+    public function documentDetailVersion($version, $docid){
+
+        $document  = DB::table('v_documents')
+                      ->where('id', $docid)
+                      ->first();
+
+        $data['docversions'] = DB::table('document_versions')
+                                ->where('dcn_number', $document->dcn_number)
+                                ->where('doc_version', $version)
+                                ->first();
+        
+        $data['affected_area'] = DB::table('v_docarea_affected')
+                                ->where('dcn_number', $document->dcn_number)
+                                ->where('doc_version', $version)
+                                ->get();
+
+        $data['attachments']   = DB::table('document_attachments')
+                                ->where('dcn_number', $document->dcn_number)
+                                ->where('doc_version', $version)
+                                ->get();
+
+        $data['docHistory'] = DB::table('v_document_historys')
+                                ->where('dcn_number', $document->dcn_number)
+                                ->where('doc_version', $version)
+                                ->get();
+        
+        $data['docHistorydateGroup'] = DB::table('v_document_historys')
+                        ->select('dcn_number', 'created_date')->distinct()    
+                        ->orderBy('created_date', 'desc')
+                        ->where('dcn_number', $document->dcn_number)
+                        ->where('doc_version', $version)
+                        ->get();
+
+        $htmlAttachment = '';
+        foreach($data['attachments'] as $key => $file){
+            $counter = $key+1;
+            $htmlAttachment .= "
+                <tr>
+                    <td>". $counter . "</td>
+                    <td>
+                        $file->efile
+                    </td>
+                    <td>
+                        <i class='fa fa-clock'></i> ".\Carbon\Carbon::parse($file->created_at)->diffForHumans()." - 
+                        (".formatDateTime($file->created_at).")
+                    </td>
+                    <td>
+                        <button type='button' class='btn-preview' data-filepath='/files/$file->efile#toolbar=0'>Preview</button>
+                    </td>
+                </tr>";
+        }
+
+        // return $htmlAttachment;
+        $data['htmlAttachment'] = $htmlAttachment;
+
+        $html = '';
+        foreach($data['docHistorydateGroup'] as $hdr => $vlhdr){
+            $html .= "<div class='time-label'>
+                        <span class='bg-red'>".formatDate($vlhdr->created_date)."</span>
+                    </div>";
+            foreach($data['docHistory'] as $dtl => $vldtl){
+                if($vlhdr->created_date == $vldtl->created_date){
+                    $html .="
+                    <div>
+                        <i class='fas fa-user bg-green' title='$vldtl->createdby'></i>
+                        <div class='timeline-item'>
+                            <span class='time'>
+                                <i class='fas fa-clock'></i>
+                                ".\Carbon\Carbon::parse(".$vldtl->createdon.")->diffForHumans()." <br>
+                                ($vldtl->createdon)
+                            </span>
+                            <h3 class='timeline-header no-border'>
+                                <b>".$vldtl->createdby."</b> <br>
+                                $vldtl->activity
+                            </h3>
+                        </div>
+                    </div>";
+                }
+            }
+        }
+
+        $data['timeline'] = $html;
+        // return $html;
+
+        return $data;
+
     }
 
     public function documentlist(Request $req){
@@ -233,6 +334,149 @@ class DocumentController extends Controller
         } catch(\Exception $e){
             DB::rollBack();
             return Redirect::to("/transaction/document")->withError($e->getMessage());
+        }
+    }
+
+    public function saveNewDocVersion($id, Request $req){
+        // return generateDcnNumber();
+        // return public_path();
+
+        DB::beginTransaction();
+        try{
+            $this->validate($req, [
+                'docfiles'   => 'required',
+                // 'filename.*' => 'mimes:doc,pdf,docx,zip'
+            ]);
+
+            $files = $req['docfiles'];
+
+            $document = DB::table('documents')->where('id', $id)->first();
+            $docVersi = DB::table('document_versions')->where('dcn_number', $document->dcn_number)->orderBy('doc_version', 'DESC')->first();
+            $dcnNumber = $document->dcn_number;
+            $docVersion = $docVersi->doc_version + 1;
+
+            // return $docVersion;
+
+            $docHistory = array();
+            $insertFiles = array();
+
+            DB::table('documents')->where('id', $req['id'])->update([
+                'revision_number' => $document->revision_number + 1,
+                'updated_at'      => getLocalDatabaseDateTime(),
+                'updatedby'       => Auth::user()->username ?? Auth::user()->email
+            ]);
+
+            DB::table('document_versions')->insert([
+                'dcn_number'  => $dcnNumber,
+                'doc_version' => $docVersion,
+                'remark'      => $req['docremark'],
+                'effectivity_date' => $req['efectivitydate'],
+                'createdon'   => getLocalDatabaseDateTime(),
+                'createdby'       => Auth::user()->username ?? Auth::user()->email
+            ]);
+            // document_historys
+            
+            $insertHistory = array(
+                'dcn_number'        => $dcnNumber,
+                'doc_version'       => $docVersion,
+                'activity'          => 'New Document Version Created : ' . $document->document_title,
+                'createdby'         => Auth::user()->username ?? Auth::user()->email,
+                'createdon'         => getLocalDatabaseDateTime(),
+                'updatedon'         => getLocalDatabaseDateTime()
+            );
+            array_push($docHistory, $insertHistory);
+
+            foreach ($files as $efile) {
+                $filename = $dcnNumber.'V'.$docVersion.'-'.$efile->getClientOriginalName();
+                $upfiles = array(
+                    'dcn_number' => $dcnNumber,
+                    'doc_version'=> $docVersion,
+                    'efile'      => $filename,
+                    'created_at' => getLocalDatabaseDateTime(),
+                    'createdby'  => Auth::user()->username ?? Auth::user()->email
+                );
+                array_push($insertFiles, $upfiles);
+
+                $efile->move(public_path().'/files/', $filename);  
+
+                $insertHistory = array(
+                    'dcn_number'        => $dcnNumber,
+                    'doc_version'       => $docVersion,
+                    'activity'          => 'Document Attachment Created : ' . $filename,
+                    'createdby'         => Auth::user()->username ?? Auth::user()->email,
+                    'createdon'         => getLocalDatabaseDateTime(),
+                    'updatedon'         => getLocalDatabaseDateTime()
+                );
+                array_push($docHistory, $insertHistory);
+            }
+
+            // Document Affected Areas | document_affected_areas
+            $docareas = $req['docareas'];
+            $insertAreas = array();
+            for($i = 0; $i < sizeof($docareas); $i++){
+                $areas = array(
+                    'dcn_number'        => $dcnNumber,
+                    'docarea'           => $docareas[$i],
+                    'doc_version'       => $docVersion,
+                    'createdon'         => getLocalDatabaseDateTime(),
+                    'createdby'         => Auth::user()->username ?? Auth::user()->email
+                );
+                array_push($insertAreas, $areas);
+            }
+            if(sizeof($insertAreas) > 0){
+                insertOrUpdate($insertAreas,'document_affected_areas');
+            }
+
+            // Generate Document Approval Workflow
+            $wfapproval = DB::table('v_workflow_assignments')
+                ->where('workflow_group', $document->workflow_group)
+                ->orderBy('approval_level', 'asc')
+                ->get();
+
+            $insertApproval = array();
+            foreach($wfapproval as $key => $row){
+                $is_active = 'N';
+                if($row->approval_level == $wfapproval[0]->approval_level){
+                    $is_active = 'Y';
+                }
+                $approvals = array(
+                    'dcn_number'        => $dcnNumber,
+                    'approval_version'  => $docVersion,
+                    'workflow_group'    => $document->workflow_group,
+                    'approver_level'    => $row->approval_level,
+                    'approver_id'       => $row->approverid,
+                    'is_active'         => $is_active,
+                    'createdon'         => getLocalDatabaseDateTime(),
+                    // 'createdby'         => Auth::user()->username ?? Auth::user()->email
+                );
+                array_push($insertApproval, $approvals);
+            }
+            insertOrUpdate($insertApproval,'document_approvals');
+
+            // Insert Attchment Documents
+            insertOrUpdate($insertFiles,'document_attachments');
+
+            insertOrUpdate($docHistory,'document_historys');
+            
+
+            DB::commit();
+
+            $mailData = [
+                'email'    => 'husnulmub@gmail.com',
+                'docID'    => $id,
+                'dcnNumb'  => $dcnNumber,
+                'docTitle' => $req['doctitle'],
+                'docCrdt'  => date('d-m-Y'),
+                'docCrby'  => Auth::user()->name,
+                'body'     => 'This is for testing email using smtp'
+            ];
+            
+            dispatch(new SendEmailJob($mailData));
+
+            return Redirect::to("/transaction/doclist/detail/".$id)->withSuccess('New Version of Document '. $dcnNumber .' Created');
+        } catch(\Exception $e){
+            DB::rollBack();
+            return Redirect::to("/transaction/doclist/detail/".$id)->withError($e->getMessage());
         }
     }
 

@@ -50,6 +50,8 @@
     <img class="animation__wobble" src="{{ ('assets/dist/img/AdminLTELogo.png') }}" alt="AdminLTELogo" height="60" width="60">
   </div> -->
 
+  @yield('loader')
+
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-dark">
   <!-- <nav class="main-header navbar navbar-expand navbar-white navbar-light">     -->
