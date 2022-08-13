@@ -24,7 +24,7 @@
                 @csrf
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Approve Document</h3>
+                        <h3 class="card-title">Approve Document <b>[Versoin {{ $version }}]</b></h3>
                         <div class="card-tools">
                         </div>
                     </div>
@@ -105,9 +105,6 @@
                         </ul>
                     </div>
                     <div class="card-tools">
-                        <a href="#" class="btn btn-default btn-sm">
-                            <i class="fa fa-download"></i> Download All Files
-                        </a>
                         <a href="{{ url('/transaction/docapproval') }}" class="btn btn-default btn-sm">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>
@@ -139,7 +136,7 @@
                                                             ({!! formatDateTime($file->created_at) !!})
                                                         </td>
                                                         <td>
-                                                            
+                                                            <button type="button" onclick="previewFile('/files/{{$file->efile}}#toolbar=0')">Preview</button>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -214,6 +211,7 @@
                                             <div class="col-lg-12">
                                                 <form action="">
                                                     <div class="form-group">
+                                                        <input type="hidden" name="version" id="docVersion" value="{{ $version }}">
                                                         <textarea name="approver_note" id="approver_note" class="form-control" cols="30" rows="3" placeholder="Approver Note"></textarea>
                                                     </div>
                                                     <div class="form-group">
@@ -280,6 +278,34 @@
 </div>
 @endsection
 
+@section('additional-modal')
+<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalPreviewFile">
+    <div class="modal-dialog modal-xl">
+        <form class="form-horizontal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPreviewFileTitle">Preview Document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="position-relative row form-group">
+                    <div class="col-lg-12" id="fileViewer">
+                        <!-- <div id="example1"></div> -->
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal"> Close</button>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>   
+@endsection
+
 @section('additional-js')
 <script src="{{ ('/assets/ckeditor/ckeditor.js') }}"></script>
 <script src="{{ ('/assets/ckeditor/adapters/jquery.js') }}"></script>
@@ -287,6 +313,19 @@
 <!-- <script src="https://cdn.scaleflex.it/plugins/filerobot-image-editor/3/filerobot-image-editor.min.js"></script> -->
 
 <script type="text/javascript">
+    function previewFile(files){         
+        if(files !== ""){
+            $('#fileViewer').html('');
+            $('#fileViewer').append(`
+                <embed src="`+ files +`" frameborder="0" width="100%" height="500px">
+            
+            `);
+            $('#modalPreviewFile').modal('show');
+        } else{
+            swal("File Not Found", "", "warning");
+        }
+    }
+
     $(document).ready(function () { 
         $('#tbl-doc-area').DataTable();
 
@@ -306,6 +345,7 @@
                 data:{
                     dcnNumber: $('#dcnNumber').val(),
                     action:_action,
+                    version: {{ $version }},
                     approvernote:$('#approver_note').val(),
                     _token: _token
                 },

@@ -16,44 +16,61 @@ class DocumentApprovalController extends Controller
 {
     public function index(){
         // return getLocalDatabaseDateTime();
+        // dd(Auth::user()->id);
         $documents  = DB::table('v_document_approvals')
                       ->where('approver_id', Auth::user()->id)
-                    //   ->where('approval_status', 'N')
+                      ->where('doc_version_status', 'Open')
                       ->where('is_active', 'Y')
+                      ->where('approval_status', 'N')
                       ->orderBy('created_at', 'DESC')
                       ->get();
+                    //   return $documents;
         return view('transaction.documentapproval.index', ['documents' => $documents]);
     }
 
-    public function approveDetail($id){
+    public function approveDetail($id, $version){
         $documents  = DB::table('v_documents')
                       ->where('id', $id)
+                    //   ->where('doc_version', $version)
                       ->first();
 
-        $attachments = DB::table('document_attachments')->where('dcn_number', $documents->dcn_number)->get();
+        $attachments = DB::table('document_attachments')
+            ->where('dcn_number', $documents->dcn_number)
+            ->where('doc_version', $version)
+            ->get();
 
         $areas = DB::table('document_affected_areas')
-                 ->select('document_affected_areas.dcn_number', 'document_affected_areas.docarea', 'docareas.docarea as docareaname')
+                 ->select('document_affected_areas.dcn_number', 'document_affected_areas.docarea', 'docareas.docarea as docareaname', 'document_affected_areas.doc_version')
                  ->join('docareas', 'document_affected_areas.docarea', '=', 'docareas.id')
                  ->where('dcn_number', $documents->dcn_number)
+                 ->where('doc_version', $version)
                  ->get();
         
         $approvalList = DB::table('v_document_approvals')
                     ->where('dcn_number', $documents->dcn_number)
+                    ->where('approval_version', $version)
                     ->orderBy('approver_level', 'asc')
                     ->get();
 
-        $docHistory = DB::table('v_document_historys')->where('dcn_number', $documents->dcn_number)->get();
+        $docHistory = DB::table('v_document_historys')
+                    ->where('dcn_number', $documents->dcn_number)
+                    ->where('doc_version', $version)
+                    ->orderBy('id', 'desc')
+                    ->get();
 
         $docHistorydateGroup = DB::table('v_document_historys')
-                ->select('dcn_number', 'created_date')->distinct()    
-                ->orderBy('created_date', 'asc')
-                ->where('dcn_number', $documents->dcn_number)->get();
+                    ->select('dcn_number', 'created_date', 'doc_version')->distinct()    
+                    ->orderBy('created_date', 'asc')
+                    ->where('dcn_number', $documents->dcn_number)
+                    ->where('doc_version', $version)
+                    ->orderBy('created_date', 'desc')
+                    ->get();
 
         $isApprovedbyUser = DB::table('document_approvals')
-                ->where('dcn_number',  $documents->dcn_number)
-                ->where('approver_id', Auth::user()->id)
-                ->first();
+                    ->where('dcn_number',  $documents->dcn_number)
+                    ->where('approver_id', Auth::user()->id)
+                    ->where('approval_version', $version)
+                    ->first();
         // return $docHistorydateGroup;
         // return $documents;
         return view('transaction.documentapproval.detail', [
@@ -63,7 +80,8 @@ class DocumentApprovalController extends Controller
             'approvals'   => $approvalList,
             'dochistory'     => $docHistory,
             'dochistorydate' => $docHistorydateGroup,
-            'isApprovedbyUser' => $isApprovedbyUser
+            'isApprovedbyUser' => $isApprovedbyUser,
+            'version'          => $version
         ]);   
     }
 
@@ -113,6 +131,7 @@ class DocumentApprovalController extends Controller
 
             DB::table('document_approvals')
             ->where('dcn_number',  $req['dcnNumber'])
+            ->where('approval_version',  $req['version'])
             ->where('approver_id', Auth::user()->id)
             ->update([
                 'approval_status' => $req['action'],
@@ -127,6 +146,7 @@ class DocumentApprovalController extends Controller
                 if($nextApprover  != null){
                     DB::table('document_approvals')
                     ->where('dcn_number', $req['dcnNumber'])
+                    ->where('approval_version',  $req['version'])
                     ->where('approver_level', $nextApprover)
                     ->update([
                         'is_active' => 'Y'
@@ -139,7 +159,7 @@ class DocumentApprovalController extends Controller
             $insertHistory = array(
                 'dcn_number'        => $req['dcnNumber'],
                 'activity'          => $docStat,
-                'doc_version'       => 1,
+                'doc_version'       => $req['version'],
                 'createdby'         => Auth::user()->email ?? Auth::user()->username,
                 'createdon'         => getLocalDatabaseDateTime(),
                 'updatedon'         => getLocalDatabaseDateTime()

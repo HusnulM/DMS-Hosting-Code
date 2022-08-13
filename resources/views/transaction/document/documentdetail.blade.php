@@ -71,7 +71,7 @@
         <div class="col-lg-9">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Document Detail</h3>
+                    <h3 class="card-title">Document Detail <b id="hdr-version">Version {{ $docversions[0]->doc_version }}</b></h3>
                     <div class="card-tools">
                         <a href="{{ url('/transaction/doclist') }}" class="btn btn-default btn-sm">
                             <i class="fa fa-arrow-left"></i> Back
@@ -130,13 +130,16 @@
                                     <a class="nav-link" id="custom-content-above-profile-tab" data-toggle="pill" href="#custom-content-above-profile" role="tab" aria-controls="custom-content-above-profile" aria-selected="false">Document Affected Area</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="custom-content-above-approval-tab" data-toggle="pill" href="#custom-content-above-approval" role="tab" aria-controls="custom-content-above-approval" aria-selected="false">Files</a>
+                                    <a class="nav-link" id="custom-content-above-attachment-tab" data-toggle="pill" href="#custom-content-above-attachment" role="tab" aria-controls="custom-content-above-attachment" aria-selected="false">Files</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-content-above-history-tab" data-toggle="pill" href="#custom-content-above-history" role="tab" aria-controls="custom-content-above-history" aria-selected="false">Document Version History</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-content-above-history-all-tab" data-toggle="pill" href="#custom-content-above-history-all" role="tab" aria-controls="custom-content-above-history-all" aria-selected="false">Document All History</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="custom-content-above-approval-tab" data-toggle="pill" href="#custom-content-above-approval" role="tab" aria-controls="custom-content-above-approval" aria-selected="false">Approval Status</a>
                                 </li>
                             </ul>
                         </div>
@@ -204,7 +207,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="custom-content-above-approval" role="tabpanel" aria-labelledby="custom-content-above-approval-tab">
+                                <div class="tab-pane fade" id="custom-content-above-attachment" role="tabpanel" aria-labelledby="custom-content-above-attachment-tab">
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <table class="table table-sm">
@@ -219,7 +222,7 @@
                                                     <tr>
                                                         <td>{{ $key+1 }}</td>
                                                         <td>
-                                                            <a href="/files/{{ $file->efile }}" target="_blank">{{ $file->efile }}</a>
+                                                            {{ $file->efile }}
                                                         </td>
                                                         <td>
                                                             <i class="fa fa-clock"></i> {{\Carbon\Carbon::parse($file->created_at)->diffForHumans()}} - 
@@ -264,7 +267,7 @@
                                                         <span class="bg-red">{{ formatDate($hstrgrp->created_date) }}</span>
                                                     </div>
                                                     @foreach($dochistory as $hstrdtl => $dochstrdtl)
-                                                        @if(formatDate($hstrgrp->created_date) == formatDate($dochstrdtl->created_date))
+                                                        @if(formatDate($hstrgrp->created_date) == formatDate($dochstrdtl->created_date) && $latestVersion == $dochstrdtl->doc_version)
                                                         <div>
                                                             <i class="fas fa-user bg-green" title="{{$dochstrdtl->createdby}}"></i>
                                                             <div class="timeline-item">
@@ -290,7 +293,7 @@
                                 <div class="tab-pane fade" id="custom-content-above-history-all" role="tabpanel" aria-labelledby="custom-content-above-history-all-tab">
                                     <div class="col-lg-12">
                                         <div class="timeline">
-                                            @foreach($dochistorydate as $hstrdate => $hstrgrp)
+                                            @foreach($alldochistorydate as $hstrdate => $hstrgrp)
                                                 <div class="time-label">
                                                     <span class="bg-red">{{ formatDate($hstrgrp->created_date) }}</span>
                                                 </div>
@@ -314,6 +317,49 @@
                                                 @endforeach
                                             @endforeach
                                         </div>                                         
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane fade" id="custom-content-above-approval" role="tabpanel" aria-labelledby="custom-content-above-approval-tab">
+                                    <div class="col-lg-12">
+                                        <table id="tbl-approval" class="table table-bordered table-hover table-striped table-sm" style="width:100%;">
+                                            <thead>
+                                                <th>Approver Name</th>
+                                                <th>Approver Level</th>
+                                                <th>Approval Status</th>
+                                                <th>Approve/Reject Date</th>
+                                                <th>Approver Note</th>
+                                            </thead>
+                                            <tbody id="tbl-approval-body">
+                                                @foreach($docapproval as $key => $row)
+                                                <tr>
+                                                    <td>{{ $row->approver_name }}</td>
+                                                    <td>{{ $row->approver_level }} | {{ $row->wf_categoryname }}</td>
+                                                    @if($row->approval_status == "A")
+                                                    <td style="text-align:center; background-color:green; color:white;">
+                                                        Approved
+                                                    </td>
+                                                    @elseif($row->approval_status == "R")
+                                                    <td style="text-align:center; background-color:red; color:white;">
+                                                        Rejected
+                                                    </td>
+                                                    @else
+                                                    <td style="text-align:center; background-color:yellow; color:black;">
+                                                        Open
+                                                    </td>
+                                                    @endif
+                                                    
+                                                    <td>
+                                                        @if($row->approval_date != null)
+                                                            <i class="fa fa-clock"></i> {{\Carbon\Carbon::parse($row->approval_date)->diffForHumans()}} <br>
+                                                            ({{ formatDateTime($row->approval_date) }})
+                                                        @endif
+                                                    </td>
+                                                    <td>{!! $row->approval_remark !!}</td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>     
                                     </div>
                                 </div>
                             </div>
@@ -492,8 +538,8 @@
             var selData = $(this).data();
             console.log(selData);
             let _token   = $('meta[name="csrf-token"]').attr('content');
-            $('#tbl-doc-area-body, #timeline-version-history').html('');
-            $('#tbl-attachment-body').html('');
+            $('#tbl-doc-area-body, #timeline-version-history, #hdr-version').html('');
+            $('#tbl-attachment-body, #tbl-approval-body').html('');
             $.ajax({
                 url: base_url+'/transaction/doclist/detailversion/'+selData.docversion+'/'+selData.docid,
                 beforeSend: function(){
@@ -503,6 +549,8 @@
                     console.log(response);
                     if(response){
                         $('#docareaContent').val(response.docversions.remark);
+
+                        $('#hdr-version').html('Version '+ selData.docversion);
 
                         var _areas         = response.affected_area;
                         var _historyGroup  = response.docHistorydateGroup;
@@ -555,7 +603,8 @@
                             }
                         })
                         // Append Selected Version Document History
-                        $('#timeline-version-history').append(response.timeline)
+                        $('#timeline-version-history').append(response.timeline);
+                        $('#tbl-approval-body').append(response.htmlApproval);
                     }
                 },
                 complete: function(){

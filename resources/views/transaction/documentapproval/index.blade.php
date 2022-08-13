@@ -40,7 +40,7 @@
                     <hr>
                     <div class="row">
                         @foreach($documents as $docs)
-                        <a href="{{ url('/transaction/docapproval/approve/detail') }}/{{ $docs->docid }}">
+                        <a href="{{ url('/transaction/docapproval/approve/detail') }}/{{ $docs->docid }}/{{ $docs->approval_version }}">
                             <div class="col-lg-3 col-md-6 col-sm-12 m-t-20" style="cursor:pointer;">
                                 <div class="doc-box box box-widget widget-user-2">
                                     <div class="widget-user-header bg-gray bg-folder-shaper no-padding">
@@ -55,7 +55,7 @@
                                                 {{ $docs->doctype }}
                                             </span>
                                         </div>
-                                        <a href="{{ url('/transaction/docapproval/approve/detail') }}/{{ $docs->docid }}" style="color: black;">
+                                        <a href="{{ url('/transaction/docapproval/approve/detail') }}/{{ $docs->docid }}/{{ $docs->approval_version }}" style="color: black;">
                                             <h4 style="color: white; font-weight:bold;" class="widget-user-username" title="{{ $docs->document_title }}" data-toggle="tooltip">
                                                 {{ $docs->document_title }}
                                             </h4>
@@ -83,9 +83,7 @@
                             </div>
                         </a>
                         @endforeach
-                    </div>
-
-                    
+                    </div>                    
                 </div>
             </div>   
         </div>

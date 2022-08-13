@@ -43,15 +43,24 @@ class DocumentController extends Controller
                         ->get();
 
         $docHistory = DB::table('v_document_historys')
-                        ->where('dcn_number', $documents->dcn_number)->get();
+                        ->where('dcn_number', $documents->dcn_number)->orderBy('id', 'desc')->get();
 
+        
         $docHistorydateGroup = DB::table('v_document_historys')
                 ->select('dcn_number', 'created_date','doc_version')->distinct()    
                 ->orderBy('created_date', 'desc')
                 ->where('dcn_number', $documents->dcn_number)->get();
 
-                // return $docHistorydateGroup;
+        $docAllHistorydateGroup = DB::table('v_document_historys')
+                ->select('dcn_number', 'created_date')->distinct()    
+                ->orderBy('created_date', 'desc')
+                ->where('dcn_number', $documents->dcn_number)->get();
 
+        $docapproval = DB::table('v_document_approvals')
+                        ->where('dcn_number', $documents->dcn_number)
+                        ->where('approval_version', $latestVersion)
+                        ->get();
+                        // return $docHistorydateGroup;
         return view('transaction.document.documentdetail', [
             'documents'     => $documents,
             'docversions'   => $docversions,
@@ -62,9 +71,11 @@ class DocumentController extends Controller
             'affected_area' => $docareasAffected,
             'dochistory'     => $docHistory,
             'dochistorydate' => $docHistorydateGroup,
+            'alldochistorydate' => $docAllHistorydateGroup,
             'cdoctype'       => $cdoctype,
             'cdoclevel'      => $cdoclevel,
-            'latestVersion'  => $latestVersion
+            'latestVersion'  => $latestVersion,
+            'docapproval'    => $docapproval
         ]);
     }
 
@@ -100,6 +111,47 @@ class DocumentController extends Controller
                         ->where('dcn_number', $document->dcn_number)
                         ->where('doc_version', $version)
                         ->get();
+
+        $data['docapproval'] = DB::table('v_document_approvals')
+                        ->where('dcn_number', $document->dcn_number)
+                        ->where('approval_version', $version)
+                        ->get();      
+                        
+        $htmlApproval = '';
+        foreach($data['docapproval'] as $key => $row){
+            $appStatus = '';
+            $appStyle  = '';
+            if($row->approval_status == "A"){
+                $appStatus = 'Approved';
+                $appStyle  = 'text-align:center; background-color:green; color:white;';
+            }elseif($row->approval_status == "R"){
+                $appStatus = 'Rejected';
+                $appStyle  = 'text-align:center; background-color:red; color:white;';
+            }else{
+                $appStatus = 'Open';
+                $appStyle  = 'text-align:center; background-color:yellow; color:black;';
+            }
+            $htmlApproval .= "
+            <tr>    
+                <td> $row->approver_name </td>
+                <td> $row->approver_level | $row->wf_categoryname</td>
+                <td style='$appStyle'>
+                    $appStatus
+                </td>                
+                <td>";
+                    if($row->approval_date != null){
+                        $htmlApproval .= "<i class='fa fa-clock'></i> ".\Carbon\Carbon::parse($row->approval_date)->diffForHumans(). " <br>
+                        (".formatDateTime($row->approval_date).")";
+                    }else{
+                        $htmlApproval .="";
+                    }
+            $htmlApproval .="</td>
+                <td>$row->approval_remark</td>
+            </tr>
+            ";    
+        }
+        $data['htmlApproval'] = $htmlApproval;
+                                                
 
         $htmlAttachment = '';
         foreach($data['attachments'] as $key => $file){
@@ -177,11 +229,13 @@ class DocumentController extends Controller
                 $query->where('crtdate', $req->dateto);
             }
     
-            $documents  = $query->where('createdby', Auth::user()->username)
+            $documents  = $query
+                        //   ->where('createdby', Auth::user()->username)
                           ->orderBy('created_at', 'DESC')
                           ->get();
         }else{
-            $documents  = $query->where('createdby', Auth::user()->username)
+            $documents  = $query
+                        //   ->where('createdby', Auth::user()->username)
                           ->limit(10)
                           ->orderBy('created_at', 'DESC')
                           ->get();
@@ -360,7 +414,7 @@ class DocumentController extends Controller
             $docHistory = array();
             $insertFiles = array();
 
-            DB::table('documents')->where('id', $req['id'])->update([
+            DB::table('documents')->where('id', $id)->update([
                 'revision_number' => $document->revision_number + 1,
                 'updated_at'      => getLocalDatabaseDateTime(),
                 'updatedby'       => Auth::user()->username ?? Auth::user()->email
@@ -451,8 +505,24 @@ class DocumentController extends Controller
                 );
                 array_push($insertApproval, $approvals);
             }
-            insertOrUpdate($insertApproval,'document_approvals');
 
+            DB::table('document_approvals')
+                ->where('dcn_number', $dcnNumber)
+                ->where('approval_version', '!=', $docVersion)
+                ->update([
+                    'is_active'         => 'N',
+                    'approval_remark'   => 'Auto Closed by New Version',
+                    'approval_date'     => getLocalDatabaseDateTime()
+            ]);
+
+            DB::table('document_versions')
+            ->where('dcn_number', $dcnNumber)
+            ->where('doc_version', '!=', $docVersion)
+            ->update([
+                'status'         => 'Closed',
+            ]);
+
+            insertOrUpdate($insertApproval,'document_approvals');
             // Insert Attchment Documents
             insertOrUpdate($insertFiles,'document_attachments');
 

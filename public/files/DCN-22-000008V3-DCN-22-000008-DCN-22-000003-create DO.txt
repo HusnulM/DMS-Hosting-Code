@@ -1,0 +1,75 @@
+&---------------------------------------------------------------------
+*& Form F_CREATE_DELIVERY
+&---------------------------------------------------------------------
+*& text
+&---------------------------------------------------------------------
+*& -->  p1        text
+*& <--  p2        text
+&---------------------------------------------------------------------
+FORM f_create_delivery .
+  DATA:
+    ship_point        TYPE vstel,
+    deliv_no          TYPE vbeln_vl,
+    sales_order_items TYPE TABLE OF bapidlvreftosalesorder WITH HEADER LINE,
+    return            TYPE TABLE OF bapiret2,
+    vcounter          TYPE i,
+    vdatacount        TYPE i,
+    header_data       LIKE  bapiobdlvhdrchg,
+    header_control    LIKE  bapiobdlvhdrctrlchg,
+    delivery          LIKE  bapiobdlvhdrchg-deliv_numb,
+    return2           TYPE TABLE OF bapiret2.
+
+  ship_point = p_vkbur.
+
+  CLEAR: vdatacount,vcounter.
+  DESCRIBE TABLE it_grid LINES vdatacount.
+
+  LOOP AT it_grid ASSIGNING FIELD-SYMBOL(<fs>).
+    IF <fs>-status = icon_complete.
+      CONTINUE.
+    ENDIF.
+    IF <fs>-vbelndo <> space.
+      <fs>-status = '@09@'.
+      <fs>-message = 'Delivery already created'.
+      CONTINUE.
+    ENDIF.
+
+    REFRESH: sales_order_items, return.
+    sales_order_items-ref_doc = <fs>-vbelnso.
+    APPEND sales_order_items.
+
+    CALL FUNCTION 'BAPI_OUTB_DELIVERY_CREATE_SLS'
+      EXPORTING
+        ship_point        = ship_point
+*       due_date          = p_audat
+      IMPORTING
+        delivery          = deliv_no
+      TABLES
+        sales_order_items = sales_order_items
+        return            = return.
+
+    IF deliv_no IS NOT INITIAL.
+      <fs>-vbelndo = deliv_no.
+      ADD 1 TO vcounter.
+      CALL FUNCTION 'BAPI_TRANSACTION_COMMIT'.
+      <fs>-status = '@08@'.
+      <fs>-message = 'Delivery Created'.
+
+*      CLEAR : header_data,header_control,delivery,return2.
+*      delivery = deliv_no.
+*      CALL FUNCTION 'BAPI_OUTB_DELIVERY_CHANGE'
+*        EXPORTING
+*          header_data    = header_data
+*          header_control = header_control
+*          delivery       = delivery
+*        TABLES
+*          return         = return.
+
+    ELSE.
+      CALL FUNCTION 'BAPI_TRANSACTION_ROLLBACK'.
+      <fs>-status = '@0A@'.
+      READ TABLE return INTO DATA(wa_return) WITH KEY type = 'E'.
+      <fs>-message = wa_return-message.
+    ENDIF.
+
+  ENDLOOP.
