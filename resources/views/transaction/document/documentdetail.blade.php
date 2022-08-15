@@ -239,7 +239,11 @@
                                                             ({!! formatDateTime($file->created_at) !!})
                                                         </td>
                                                         <td>
+                                                            @if(checkIsLocalhost() == 1)
                                                             <button type="button" onclick="previewFile('/files/{{$file->efile}}#toolbar=0')">Preview</button>
+                                                            @else
+                                                            <button type="button" onclick="previewFile('/main/public/files/{{$file->efile}}#toolbar=0')">Preview</button>
+                                                            @endif
                                                         </td>
                                                     </tr>
                                                 @endforeach

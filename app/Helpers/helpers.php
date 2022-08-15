@@ -197,3 +197,11 @@ function userAllowChangeDocument(){
         return 0;
     }
 }
+
+function checkIsLocalhost(){
+    if(request()->getHost() == "localhost"){
+        return 1;
+    }else{
+        return 0;
+    }
+}
