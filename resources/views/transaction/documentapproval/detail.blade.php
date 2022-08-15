@@ -359,7 +359,8 @@
                         }                        
 
                         setTimeout(function(){ 
-                            location.reload();
+                            // location.reload();
+                            window.location.href = base_url+'/transaction/docapproval';
                         }, 2000);
                     }
                 },

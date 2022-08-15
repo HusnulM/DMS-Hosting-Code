@@ -30,9 +30,11 @@
                 <div class="card-header">
                     <h3 class="card-title">Document Version</h3>
                     <div class="card-tools">
+                        @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
                         <button type="button" class="btn btn-success btn-sm btnAddVersion">
                             <i class="fa fa-plus"></i> Add New Version
                         </button>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body">
@@ -113,9 +115,11 @@
                                     <input type="text" name="docnumber" class="form-control" value="{{ $documents->document_number }}">
                                 </div>
                                 <div class="col-lg-6 col-sm-12 form-group">
+                                    @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
                                     <button class="btn btn-primary btn-sm">
                                         <i class="fa fa-edit"></i> Update Document Info
                                     </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -171,9 +175,11 @@
                                                     <thead>
                                                         <th>Document Area</th>
                                                         <th style="width: 150px; text-align:center;">
+                                                            @if(userAllowChangeDocument() == 1)
                                                             <button type="button" class="btn btn-success btn-sm btn-select-docarea">
                                                                 <i class="fa fa-plus"></i>
                                                             </button>
+                                                            @endif
                                                         </th>
                                                     </thead>
                                                     <tbody class="mainbodynpo" id="tbl-doc-area-body">
@@ -185,9 +191,11 @@
                                                                 </select>
                                                             </td>
                                                             <td style="text-align:center;">
+                                                                @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
                                                                 <button type="button" class="btn btn-danger btn-sm btnRemoveArea" data-docareaid="{{ $row->docarea }}">
                                                                     <i class="fa fa-trash"></i>
                                                                 </button>
+                                                                @endif
                                                             </td>
                                                         </tr>
                                                         @endforeach
@@ -196,9 +204,11 @@
                                                         <tr>
                                                             <td></td>
                                                             <td style="width: 150px; text-align:center;">
+                                                                @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
                                                                 <button type="submit" class="btn btn-primary btn-sm">
                                                                     <i class="fa fa-edit"></i> Update Area
                                                                 </button>
+                                                                @endif
                                                             </td>
                                                         </tr>
                                                     </tfoot>
@@ -238,6 +248,7 @@
                                         </div>
                                     </div>
                                     <hr>
+                                    @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
                                     <form action="{{ url('transaction/document/updatefiles') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row">
@@ -256,6 +267,7 @@
                                             </div>
                                         </div>
                                     </form>
+                                    @endif
                                 </div>
 
                                 <div class="tab-pane fade" id="custom-content-above-history" role="tabpanel" aria-labelledby="custom-content-above-history-tab">
@@ -329,6 +341,7 @@
                                                 <th>Approval Status</th>
                                                 <th>Approve/Reject Date</th>
                                                 <th>Approver Note</th>
+                                                <th>User</th>
                                             </thead>
                                             <tbody id="tbl-approval-body">
                                                 @foreach($docapproval as $key => $row)
@@ -356,6 +369,7 @@
                                                         @endif
                                                     </td>
                                                     <td>{!! $row->approval_remark !!}</td>
+                                                    <td>{{ $row->approved_by }}</td>
                                                 </tr>
                                                 @endforeach
                                             </tbody>
@@ -393,6 +407,13 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal"> Close</button>
+                @if(userAllowDownloadDocument() == 1)
+                <a href="#" id="btnDownloadFile" class="btn btn-default btnDownloadFile" download="">
+                    <i class="fa fa-download"></i> Download Document
+                </a>
+                <!-- <a href="http://localhost:8181/digidocu/admin/_files/original/2XSkOTza1MJ5H0TewEFQbjeeKXgCkyGcvM16Og0U.pdf?force=true" download="">Download
+                                                                original</a> -->
+                @endif
             </div>
         </div>
         </form>
@@ -492,6 +513,9 @@
             // $('#viewBookmark').hide();
             // $('#openFile').hide();
             // $('#exd-logo').hide();
+            var fileUri = files;
+            fileUri = fileUri.replace("#toolbar=0", "?force=true");
+            document.getElementById("btnDownloadFile").href=base_url+fileUri; 
             $('#modalPreviewFile').modal('show');
         } else{
             swal("File Not Found", "", "warning");

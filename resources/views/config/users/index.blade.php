@@ -72,7 +72,10 @@
                 {data: "email", className: 'fname'},
                 {data: "name", className: 'uname'},
                 {"defaultContent": 
-                    "<button class='btn btn-danger btn-sm button-delete'> <i class='fa fa-trash'></i> DELETE</button> <button class='btn btn-primary btn-sm button-edit'> <i class='fa fa-edit'></i> EDIT</button>"
+                    `<button class='btn btn-danger btn-sm button-delete'> <i class='fa fa-trash'></i> DELETE</button> 
+                    <button class='btn btn-primary btn-sm button-edit'> <i class='fa fa-edit'></i> EDIT</button>
+                    <button class='btn btn-success btn-sm button-object-auth'> <i class='fa fa-find'></i> OBJECT AUTH</button>
+                    `
                 }
             ]  
         });
@@ -88,6 +91,12 @@
             selected_data = [];
             selected_data = table.row($(this).closest('tr')).data();
             window.location = base_url+"/config/users/edit/"+selected_data.id;
+        });
+        $('#tbl-users tbody').on( 'click', '.button-object-auth', function () {
+            var table = $('#tbl-users').DataTable();
+            selected_data = [];
+            selected_data = table.row($(this).closest('tr')).data();
+            window.location = base_url+"/config/users/objectauth/"+selected_data.id;
         });
     });
 </script>

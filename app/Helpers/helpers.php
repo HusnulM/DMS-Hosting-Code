@@ -37,12 +37,6 @@ function formatDate($date, $format = "d-m-Y")
     return date($format, strtotime($date));
 }
 
-/**
- * Format the datetime
- * @param $dateTime
- * @param string $format default= 'd/m/Y h:i A'
- * @return false|string
- */
 function formatDateTime($dateTime, $format = "d-m-Y h:i A")
 {
     if (is_null($dateTime)) {
@@ -170,4 +164,36 @@ function insertOrUpdate(array $rows, $table){
     $sql = "INSERT INTO {$table}({$columns}) VALUES {$values} ON DUPLICATE KEY UPDATE {$updates}";
 
     return \DB::statement($sql);
+}
+
+function userAllowDownloadDocument(){
+    $checkData = DB::table('user_object_auth')
+                ->where('userid', Auth::user()->id)
+                ->where('object_name', 'ALLOW_DOWNLOAD_DOC')
+                ->first();
+    if($checkData){
+        if($checkData->object_val === "Y"){
+            return 1;
+        }else{
+            return 0;
+        }
+    }else{
+        return 0;
+    }
+}
+
+function userAllowChangeDocument(){
+    $checkData = DB::table('user_object_auth')
+                ->where('userid', Auth::user()->id)
+                ->where('object_name', 'ALLOW_CHANGE_DOC')
+                ->first();
+    if($checkData){
+        if($checkData->object_val === "Y"){
+            return 1;
+        }else{
+            return 0;
+        }
+    }else{
+        return 0;
+    }
 }

@@ -18,7 +18,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/',                       'Config\UserController@index')->middleware('checkAuth:config/users');
         Route::get('/create',                 'Config\UserController@create')->middleware('checkAuth:config/users');
         Route::get('/edit/{id}',              'Config\UserController@edit')->middleware('checkAuth:config/users');
-
+        Route::get('/objectauth/{id}',        'Config\UserController@objectauth')->middleware('checkAuth:config/users');
+        Route::get('/objectauth/delete/{p1}/{p2}', 'Config\UserController@deleteObjectauth')->middleware('checkAuth:config/users');
+        
+        Route::post('/saveobjectauth',        'Config\UserController@saveObjectauth')->middleware('checkAuth:config/users');
         Route::post('/save',                  'Config\UserController@save')->middleware('checkAuth:config/users');
         Route::post('/update',                'Config\UserController@update')->middleware('checkAuth:config/users');
         Route::get('/delete/{id}',            'Config\UserController@delete')->middleware('checkAuth:config/users');

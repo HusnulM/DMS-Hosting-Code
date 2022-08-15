@@ -45,7 +45,7 @@
         <tbody>
             <tr>
                 <td>
-                    <a href="{{ url('/transaction/docapproval/approve/detail') }}/{{ $data['docID'] }}" target="_blank">{{ $data['dcnNumb'] }}</a> 
+                    <a href="{{ url('/transaction/docapproval/approve/detail') }}/{{ $data['docID'] }}/{{ $data['version'] }}" target="_blank">{{ $data['dcnNumb'] }}</a> 
                 </td>
                 <td>{{ $data['docTitle'] }}</td>
                 <td>{{ $data['docCrdt'] }}</td>

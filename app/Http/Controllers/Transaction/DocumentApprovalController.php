@@ -8,16 +8,19 @@ use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
+use App\Jobs\SendEmailJob;
+use App\Mail\MailNotif;
 
 use DataTables, Auth, DB;
 use Validator,Redirect,Response;
+use Mail;
 
 class DocumentApprovalController extends Controller
 {
     public function index(){
         // return getLocalDatabaseDateTime();
         // dd(Auth::user()->id);
-        $documents  = DB::table('v_document_approvals')
+        $documents  = DB::table('v_doc_approval_list')
                       ->where('approver_id', Auth::user()->id)
                       ->where('doc_version_status', 'Open')
                       ->where('is_active', 'Y')
@@ -33,6 +36,9 @@ class DocumentApprovalController extends Controller
                       ->where('id', $id)
                     //   ->where('doc_version', $version)
                       ->first();
+        if(!$documents){
+            return Redirect::to("/transaction/docapproval")->withError("Document not found or alreday approved/rejected!");
+        }
 
         $attachments = DB::table('document_attachments')
             ->where('dcn_number', $documents->dcn_number)
@@ -46,7 +52,7 @@ class DocumentApprovalController extends Controller
                  ->where('doc_version', $version)
                  ->get();
         
-        $approvalList = DB::table('v_document_approvals')
+        $approvalList = DB::table('v_document_approvals_v2')
                     ->where('dcn_number', $documents->dcn_number)
                     ->where('approval_version', $version)
                     ->orderBy('approver_level', 'asc')
@@ -66,23 +72,31 @@ class DocumentApprovalController extends Controller
                     ->orderBy('created_date', 'desc')
                     ->get();
 
-        $isApprovedbyUser = DB::table('document_approvals')
+        $isApprovedbyUser = DB::table('v_document_approvals_v2')
                     ->where('dcn_number',  $documents->dcn_number)
                     ->where('approver_id', Auth::user()->id)
                     ->where('approval_version', $version)
+                    ->where('doc_version_status', 'Open')
+                    ->where('is_active', 'Y')
+                    ->where('approval_version', $version)
+                    ->where('approval_status', 'N')
                     ->first();
         // return $docHistorydateGroup;
         // return $documents;
-        return view('transaction.documentapproval.detail', [
-            'document'    => $documents, 
-            'attachments' => $attachments, 
-            'areas'       => $areas, 
-            'approvals'   => $approvalList,
-            'dochistory'     => $docHistory,
-            'dochistorydate' => $docHistorydateGroup,
-            'isApprovedbyUser' => $isApprovedbyUser,
-            'version'          => $version
-        ]);   
+        if($isApprovedbyUser){
+            return view('transaction.documentapproval.detail', [
+                'document'    => $documents, 
+                'attachments' => $attachments, 
+                'areas'       => $areas, 
+                'approvals'   => $approvalList,
+                'dochistory'     => $docHistory,
+                'dochistorydate' => $docHistorydateGroup,
+                'isApprovedbyUser' => $isApprovedbyUser,
+                'version'          => $version
+            ]);   
+        }else{
+            return Redirect::to("/transaction/docapproval")->withError("Document not found or alreday approved/rejected!");
+        }
     }
 
     public function showFile(Request $request, $dir = 'original', $file = null)
@@ -129,20 +143,31 @@ class DocumentApprovalController extends Controller
         try{
             $docHistory = array();
 
+            $document = DB::table('documents')->where('dcn_number', $req['dcnNumber'])->first();
+            $userAppLevel = DB::table('v_document_approvals_v2')
+                            ->select('approver_level')
+                            ->where('dcn_number',  $req['dcnNumber'])
+                            ->where('approval_version',  $req['version'])
+                            ->where('approver_id', Auth::user()->id)
+                            ->first();
+
             DB::table('document_approvals')
-            ->where('dcn_number',  $req['dcnNumber'])
+            ->where('dcn_number',        $req['dcnNumber'])
             ->where('approval_version',  $req['version'])
-            ->where('approver_id', Auth::user()->id)
+            // ->where('approver_id', Auth::user()->id)
+            ->where('approver_level',$userAppLevel->approver_level)
             ->update([
                 'approval_status' => $req['action'],
                 'approval_remark' => $req['approvernote'],
+                'approved_by'     => Auth::user()->username,
                 'approval_date'   => getLocalDatabaseDateTime()
             ]);
+
+            $nextApprover = $this->getNextApproval($req['dcnNumber']);
 
             $docStat = '';
             if($req['action'] === "A"){
                 $docStat = 'Document Approved';
-                $nextApprover = $this->getNextApproval($req['dcnNumber']);
                 if($nextApprover  != null){
                     DB::table('document_approvals')
                     ->where('dcn_number', $req['dcnNumber'])
@@ -172,6 +197,27 @@ class DocumentApprovalController extends Controller
             ]);
 
             DB::commit();
+
+            if($nextApprover  != null){
+                $mailTo = DB::table('v_workflow_assignments')
+                          ->where('workflow_group', $document->workflow_group)
+                          ->where('approval_level', $nextApprover)
+                          ->pluck('approver_email');
+                
+                $mailData = [
+                            'email'    => 'husnulmub@gmail.com',
+                            'docID'    => $document->id,
+                            'version'  => $req['version'],
+                            'dcnNumb'  => $document->dcn_number,
+                            'docTitle' => $document->document_title,
+                            'docCrdt'  => formatDate($document->created_at),
+                            'docCrby'  => $document->createdby,
+                            'body'     => 'This is for testing email using smtp'
+                ];
+                        
+                        // dispatch(new SendEmailJob($mailData));
+                Mail::to($mailTo)->queue(new MailNotif($mailData));
+            }
 
             $result = array(
                 'msgtype' => '200',

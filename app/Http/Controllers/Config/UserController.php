@@ -17,6 +17,13 @@ class UserController extends Controller
         return view('config.users.create');
     }
 
+    public function objectauth($userid){
+        $datauser = DB::table('users')->where('id', $userid)->first();
+        $objauth  = DB::table('object_auth')->get();
+        $uobjauth = DB::table('v_user_obj_auth')->where('userid', $userid)->get();
+        return view('config.users.objectauth', ['datauser' => $datauser, 'objauth' => $objauth, 'uobjauth' => $uobjauth]); 
+    }
+
     public function edit($id){
         $data = DB::table('users')->where('id', $id)->first();
         return view('config.users.edit', ['datauser' => $data]);
@@ -96,6 +103,36 @@ class UserController extends Controller
         }
     }
 
+    public function saveObjectauth(Request $req){
+        DB::beginTransaction();
+        try{
+            $objname  = $req['objauth'];
+            $objval   = $req['objval'];
+
+            $insertData = array();
+            for($i = 0; $i < sizeof($objname); $i++){
+                $menus = array(
+                    'userid'        => $req['userid'],
+                    'object_name'   => $objname[$i],
+                    'object_val'    => $objval[$i],
+                    'createdon'     => date('Y-m-d H:m:s'),
+                    'createdby'     => Auth::user()->username ?? Auth::user()->email
+                );
+                array_push($insertData, $menus);
+            }
+            insertOrUpdate($insertData,'user_object_auth');
+            DB::commit();
+
+            // DB::table('user_object_auth')->where('id', $id)->delete();
+
+            DB::commit();
+            return Redirect::to("/config/users/objectauth/".$req['userid'])->withSuccess('User Object Authorization Added');
+        }catch(\Exception $e){
+            DB::rollBack();
+            return Redirect::to("/config/users/objectauth/".$req['userid'])->withError($e->getMessage());
+        }
+    }
+
     public function delete($id){
         DB::beginTransaction();
         try{
@@ -106,6 +143,22 @@ class UserController extends Controller
         }catch(\Exception $e){
             DB::rollBack();
             return Redirect::to("/config/users")->withError($e->getMessage());
+        }
+    }
+
+    public function deleteObjectauth($uid, $objname){
+        DB::beginTransaction();
+        try{
+            DB::table('user_object_auth')
+            ->where('userid', $uid)
+            ->where('object_name', $objname)
+            ->delete();
+
+            DB::commit();
+            return Redirect::to("/config/users/objectauth/".$uid)->withSuccess('User Object Authorization deleted');
+        }catch(\Exception $e){
+            DB::rollBack();
+            return Redirect::to("/config/users/objectauth/".$uid)->withError($e->getMessage());
         }
     }
 

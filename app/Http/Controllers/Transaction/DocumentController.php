@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Transaction;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\SendEmailJob;
+use App\Mail\MailNotif;
 use Illuminate\Http\Request;
+
 use DataTables, Auth, DB;
 use Validator,Redirect,Response;
+use Mail;
 
 class DocumentController extends Controller
 {
@@ -56,7 +59,7 @@ class DocumentController extends Controller
                 ->orderBy('created_date', 'desc')
                 ->where('dcn_number', $documents->dcn_number)->get();
 
-        $docapproval = DB::table('v_document_approvals')
+        $docapproval = DB::table('v_document_approvals_v2')
                         ->where('dcn_number', $documents->dcn_number)
                         ->where('approval_version', $latestVersion)
                         ->get();
@@ -322,20 +325,22 @@ class DocumentController extends Controller
             }
 
             // Document Affected Areas | document_affected_areas
-            $docareas = $req['docareas'];
-            $insertAreas = array();
-            for($i = 0; $i < sizeof($docareas); $i++){
-                $areas = array(
-                    'dcn_number'        => $dcnNumber,
-                    'docarea'           => $docareas[$i],
-                    'doc_version'       => 1,
-                    'createdon'         => getLocalDatabaseDateTime(),
-                    'createdby'         => Auth::user()->username ?? Auth::user()->email
-                );
-                array_push($insertAreas, $areas);
-            }
-            if(sizeof($insertAreas) > 0){
-                insertOrUpdate($insertAreas,'document_affected_areas');
+            if(isset($req['docareas'])){
+                $docareas = $req['docareas'];
+                $insertAreas = array();
+                for($i = 0; $i < sizeof($docareas); $i++){
+                    $areas = array(
+                        'dcn_number'        => $dcnNumber,
+                        'docarea'           => $docareas[$i],
+                        'doc_version'       => 1,
+                        'createdon'         => getLocalDatabaseDateTime(),
+                        'createdby'         => Auth::user()->username ?? Auth::user()->email
+                    );
+                    array_push($insertAreas, $areas);
+                }
+                if(sizeof($insertAreas) > 0){
+                    insertOrUpdate($insertAreas,'document_affected_areas');
+                }
             }
 
             // Generate Document Approval Workflow
@@ -356,6 +361,7 @@ class DocumentController extends Controller
                     'workflow_group'    => $wfgroup,
                     'approver_level'    => $row->approval_level,
                     'approver_id'       => $row->approverid,
+                    'creator_id'        => Auth::user()->id,
                     'is_active'         => $is_active,
                     'createdon'         => getLocalDatabaseDateTime(),
                     // 'createdby'         => Auth::user()->username ?? Auth::user()->email
@@ -363,7 +369,6 @@ class DocumentController extends Controller
                 array_push($insertApproval, $approvals);
             }
             insertOrUpdate($insertApproval,'document_approvals');
-
             // Insert Attchment Documents
             insertOrUpdate($insertFiles,'document_attachments');
 
@@ -372,17 +377,32 @@ class DocumentController extends Controller
 
             DB::commit();
 
+            // v_workflow_assignments
+            $mailTo = DB::table('v_workflow_assignments')
+                      ->where('workflow_group', $wfgroup)
+                      ->where('approval_level', 1)
+                      ->pluck('approver_email');
+
+            // return $mailTo;
+
             $mailData = [
                 'email'    => 'husnulmub@gmail.com',
                 'docID'    => $docID,
+                'version'  => 1,
                 'dcnNumb'  => $dcnNumber,
                 'docTitle' => $req['doctitle'],
                 'docCrdt'  => date('d-m-Y'),
                 'docCrby'  => Auth::user()->name,
-                'body'     => 'This is for testing email using smtp'
+                'body'     => 'This is for testing email using smtp',
+                'mailto'   => [
+                    $mailTo
+                ]
             ];
-            
-            dispatch(new SendEmailJob($mailData));
+
+            // return $mailData;
+            // $email = new MailNotif($this->data);
+            Mail::to($mailTo)->queue(new MailNotif($mailData));
+            // dispatch(new SendEmailJob($mailData, $mailTo));
 
             return Redirect::to("/transaction/document")->withSuccess('New Document Created With Number '. $dcnNumber);
         } catch(\Exception $e){
@@ -528,12 +548,17 @@ class DocumentController extends Controller
 
             insertOrUpdate($docHistory,'document_historys');
             
-
             DB::commit();
+
+            $mailTo = DB::table('v_workflow_assignments')
+                      ->where('workflow_group', $wfgroup)
+                      ->where('approval_level', 1)
+                      ->pluck('approver_email');
 
             $mailData = [
                 'email'    => 'husnulmub@gmail.com',
                 'docID'    => $id,
+                'version'  => $docVersion,
                 'dcnNumb'  => $dcnNumber,
                 'docTitle' => $req['doctitle'],
                 'docCrdt'  => date('d-m-Y'),
@@ -541,7 +566,8 @@ class DocumentController extends Controller
                 'body'     => 'This is for testing email using smtp'
             ];
             
-            dispatch(new SendEmailJob($mailData));
+            // dispatch(new SendEmailJob($mailData));
+            Mail::to($mailTo)->queue(new MailNotif($mailData));
 
             return Redirect::to("/transaction/doclist/detail/".$id)->withSuccess('New Version of Document '. $dcnNumber .' Created');
         } catch(\Exception $e){

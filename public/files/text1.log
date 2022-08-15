@@ -1,0 +1,10 @@
+
+**** Log file opened at 2021-11-19 16:33:01.641901 UTC+07:00 (SE Asia Standard Time), Encoding UTF-8
+NW RFC Library: Kernel variant, Release 750 Patch Level 7, Compiled on Jan 20 2021 03:05:38
+ CPIC library: 753.2020.10.14 version 3, NI library: 40, Kernel Release: 753 Patch Level 728
+ Current working directory: D:\, Program: gneux
+ Hardware: PC with Windows NT 8x Intel 80686 (Mod 140 Step 1), Operating_system: Windows NT 10.0
+ Hostname: DESKTOP-5SMU31B, IP address: 192.168.89.108, IPv6 address: fe80::f4da:2d34:95b6:a522
+
+2021-11-19 16:33:01.642124 [18388] >> Info entry
+	Did not find config file D:\\sapnwrfc.ini.
