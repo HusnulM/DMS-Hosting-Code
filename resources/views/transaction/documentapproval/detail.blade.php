@@ -129,7 +129,7 @@
                                                     <tr>
                                                         <td>{{ $key+1 }}</td>
                                                         <td>
-                                                            <a href="/files/{{ $file->efile }}" target="_blank">{{ $file->efile }}</a>
+                                                            {{ $file->efile }}
                                                         </td>
                                                         <td>
                                                             <i class="fa fa-clock"></i> {{\Carbon\Carbon::parse($file->created_at)->diffForHumans()}} - 
