@@ -123,7 +123,9 @@
                     },
                     {data: "createdby"},
                     {"defaultContent": 
-                        "<button class='btn btn-primary btn-sm button-view-detail'> <i class='fa fa-search'></i> View Detail</button>"
+                        `<button class='btn btn-primary btn-sm button-view-detail'> <i class='fa fa-search'></i> View Detail</button>
+                         <button class='btn btn-success btn-sm button-print'> <i class='fa fa-print'></i> Print</button>
+                        `
                     }
                 ]  
             });
@@ -134,6 +136,19 @@
                 selected_data = table.row($(this).closest('tr')).data();
                 window.location = base_url+"/transaction/doclist/detail/"+selected_data.id;
             });
+
+            $('#tbl-doclist tbody').on( 'click', '.button-print', function () {                
+                var table = $('#tbl-doclist').DataTable();
+                selected_data = [];
+                selected_data = table.row($(this).closest('tr')).data();
+                // window.location = base_url+"/transaction/doclist/print/"+selected_data.id;
+                window.open(
+                    base_url+"/transaction/doclist/print/"+selected_data.id,
+                    '_blank' // <- This is what makes it open in a new window.
+                );
+            });
+
+            // print
         }
 
     });

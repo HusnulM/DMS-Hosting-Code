@@ -30,6 +30,7 @@ class UserController extends Controller
     }
 
     public function save(Request $request){
+        // return $request;
         $validated = $request->validate([
             'email'    => 'required|unique:users|max:255',
             'name'     => 'required',
@@ -46,14 +47,25 @@ class UserController extends Controller
 
         DB::beginTransaction();
         try{
+            $esignfile = $request->file('esignfile');
+            $filename  = $esignfile->getClientOriginalName();
+            $esignpath = '/files/e_signature/'. $filename;  
+            // public_path().'/files/e_signature/', $filename;
+            
+
             DB::table('users')->insert([
                 'name'        => $request['name'],
                 'email'       => $request['email'],
                 'username'    => $request['username'],
                 'password'    => $password,
+                's_signfile'  => $esignpath ?? null,
                 'created_at'  => date('Y-m-d H:m:s'),
                 'createdby'   => Auth::user()->email ?? Auth::user()->username
             ]);
+
+            if($esignfile){
+                $esignfile->move(public_path().'/files/e_signature/', $filename);  
+            }
 
             DB::commit();
             return Redirect::to("/config/users")->withSuccess('New user created');
@@ -93,6 +105,18 @@ class UserController extends Controller
                     'email'       => $request['email'],
                     'username'    => $request['username']
                 ]);
+            }
+
+            $esignfile = $request->file('esignfile');
+            if($esignfile){
+                $filename  = $esignfile->getClientOriginalName();
+                $esignpath = '/files/e_signature/'. $filename;  
+
+                DB::table('users')->where('id',$request['iduser'])->update([
+                    's_signfile'     => $esignpath,
+                ]);
+
+                $esignfile->move(public_path().'/files/e_signature/', $filename);  
             }
             
             DB::commit();

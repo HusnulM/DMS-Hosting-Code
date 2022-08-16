@@ -23,44 +23,57 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form action="{{ url('/config/users/update') }}" method="post">
+                    <form action="{{ url('/config/users/update') }}" method="post" enctype="multipart/form-data">
                         @csrf
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="form-group">
-                                        <label for="name">Name of User</label>
-                                        <input type="text" name="name" id="name" class="form-control" value="{{ $datauser->name }}" required>
-                                        <input type="hidden" name="iduser" id="iduser" class="form-control" value="{{ $datauser->id }}" required>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label for="name">Name of User</label>
+                                            <input type="text" name="name" id="name" class="form-control" value="{{ $datauser->name }}" required>
+                                            <input type="hidden" name="iduser" id="iduser" class="form-control" value="{{ $datauser->id }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12">
+                                        <div class="form-group">
+                                            <label for="username">User ID</label>
+                                            <input type="text" name="username" id="username" class="form-control" value="{{ $datauser->username }}" required readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12">
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="email" name="email" id="email" class="form-control" value="{{ $datauser->email }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12">
+                                        <div class="form-group">
+                                            <label for="password">Password</label>
+                                            <input type="password" name="password" id="password" class="form-control" autocomplete="new-password" >
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12">
+                                        <div class="form-group">
+                                            <label for="esignfile">e-signature</label>
+                                            <input type="file" name="esignfile" id="esignfile" class="form-control">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-12 col-md-12">
-                                    <div class="form-group">
-                                        <label for="username">User ID</label>
-                                        <input type="text" name="username" id="username" class="form-control" value="{{ $datauser->username }}" required>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12">
-                                    <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <input type="email" name="email" id="email" class="form-control" value="{{ $datauser->email }}" required>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12">
-                                    <div class="form-group">
-                                        <label for="password">Password</label>
-                                        <input type="password" name="password" id="password" class="form-control" autocomplete="new-password" >
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12">
+                                        <a href="{{ url('/config/users') }}" class="btn btn-default btn-sm">
+                                            <i class="fa fa-arrow-left"></i> Back
+                                        </a>
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="fa fa-save"></i> SAVE
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12">
-                                    <a href="{{ url('/config/users') }}" class="btn btn-default btn-sm">
-                                        <i class="fa fa-arrow-left"></i> Back
-                                    </a>
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        <i class="fa fa-save"></i> SAVE
-                                    </button>
+                            <div class="col-lg-6">
+                                <div class="col-lg-12 col-md-12 text-center">
+                                    <img src="{{ $datauser->s_signfile ?? '/assets/dist/img/no-image.png' }}" class="img-thumbnail" alt="E-sign" style="width:200px; height:200px;">
                                 </div>
                             </div>
                         </div>

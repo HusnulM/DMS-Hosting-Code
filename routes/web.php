@@ -88,6 +88,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/detailversion/{p1}/{p2}','Transaction\DocumentController@documentDetailVersion')->middleware('checkAuth:transaction/doclist');
 
         Route::get('/load',                   'Transaction\DocumentController@loadDocList')->middleware('checkAuth:transaction/doclist');
+        Route::get('/print/{p1}',             'Transaction\DocumentController@printOutDocument')->middleware('checkAuth:transaction/doclist');
     });
 
     Route::group(['prefix' => '/transaction/docapproval'], function () {

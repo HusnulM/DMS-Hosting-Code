@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form action="{{ url('/config/users/save') }}" method="post">
+                    <form action="{{ url('/config/users/save') }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="col-lg-6">
                             <div class="row">
@@ -36,13 +36,13 @@
                                 <div class="col-lg-12 col-md-12">
                                     <div class="form-group">
                                         <label for="username">User ID</label>
-                                        <input type="text" name="username" id="username" class="form-control" required>
+                                        <input type="text" name="username" id="username" class="form-control" autocomplete="off" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12">
                                     <div class="form-group">
                                         <label for="email">Email</label>
-                                        <input type="email" name="email" id="email" class="form-control" required>
+                                        <input type="email" name="email" id="email" class="form-control" autocomplete="off" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12">
@@ -51,6 +51,13 @@
                                         <input type="password" name="password" id="password" class="form-control" autocomplete="new-password" required>
                                     </div>
                                 </div>
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="form-group">
+                                        <label for="esignfile">e-signature</label>
+                                        <input type="file" name="esignfile" id="esignfile" class="form-control">
+                                    </div>
+                                </div>
+                                
                             </div>
                             <div class="row">
                                 <div class="col-lg-12 col-md-12">

@@ -32,7 +32,7 @@
                     <div class="card-tools">
                         @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
                         <button type="button" class="btn btn-success btn-sm btnAddVersion">
-                            <i class="fa fa-plus"></i> Add New Version
+                            <i class="fa fa-plus"></i> Add new revision
                         </button>
                         @endif
                     </div>
@@ -430,7 +430,7 @@
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalAddVersionTitle">Create New Document Version</h5>
+                    <h5 class="modal-title" id="modalAddVersionTitle">Create New Document Revision</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

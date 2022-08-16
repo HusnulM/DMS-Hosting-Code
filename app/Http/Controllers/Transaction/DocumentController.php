@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use DataTables, Auth, DB;
 use Validator,Redirect,Response;
 use Mail;
+use PDF;
 
 class DocumentController extends Controller
 {
@@ -80,6 +81,16 @@ class DocumentController extends Controller
             'latestVersion'  => $latestVersion,
             'docapproval'    => $docapproval
         ]);
+    }
+
+    public function printOutDocument($docid)
+    {
+    	$doc = DB::table('v_documents')->where('id', $docid)->first();
+        
+        // return view('transaction.document.printout', ['document'=>$doc]);
+    	$pdf = PDF::loadview('transaction.document.printout',['document'=>$doc]);
+    	// return $pdf->download('laporan-pegawai-pdf');
+        return $pdf->stream();
     }
 
     public function documentDetailVersion($version, $docid){
@@ -360,6 +371,7 @@ class DocumentController extends Controller
                     'dcn_number' => $dcnNumber,
                     'doc_version'=> 1,
                     'efile'      => $filename,
+                    'pathfile'   => public_path().'/files/', $filename,
                     'created_at' => getLocalDatabaseDateTime(),
                     'createdby'  => Auth::user()->username ?? Auth::user()->email
                 );
