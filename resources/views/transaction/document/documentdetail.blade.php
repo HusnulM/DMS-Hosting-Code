@@ -519,7 +519,9 @@
             // $('#exd-logo').hide();
             var fileUri = files;
             fileUri = fileUri.replace("#toolbar=0", "?force=true");
-            document.getElementById("btnDownloadFile").href=base_url+fileUri; 
+            @if(userAllowDownloadDocument() == 1)
+                document.getElementById("btnDownloadFile").href=base_url+fileUri; 
+            @endif
             $('#modalPreviewFile').modal('show');
         } else{
             swal("File Not Found", "", "warning");
