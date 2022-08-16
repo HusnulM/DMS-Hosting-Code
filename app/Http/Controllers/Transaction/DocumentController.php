@@ -245,7 +245,9 @@ class DocumentController extends Controller
         // }
 
         // return view('transaction.document.doclist', ['documents' => $documents]);
-        return view('transaction.document.doclist');
+        $doctypes  = DB::table('doctypes')->get();
+
+        return view('transaction.document.doclist', ['doctypes' => $doctypes]);
     }
 
     public function loadDocList(Request $req){
@@ -270,6 +272,14 @@ class DocumentController extends Controller
                 $query->where('crtdate', $req->datefrom);
             }elseif(isset($req->dateto)){
                 $query->where('crtdate', $req->dateto);
+            }
+
+            if(isset($req->doctype)){
+                if($req->doctype == 'All'){
+
+                }else{
+                    $query->where('document_type', $req->doctype);
+                }
             }
         }
 

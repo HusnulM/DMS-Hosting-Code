@@ -25,14 +25,15 @@
                             <label for="">To Date</label>
                             <input type="date" class="form-control" name="dateto" id="dateto" value="{{ $_GET['dateto'] ?? '' }}">
                         </div>
-                        <!-- <div class="col-lg-3">
-                            <label for="">Document Status</label>
-                            <select name="approvalStatus" id="approvalStatus" class="form-control">
+                        <div class="col-lg-3">
+                            <label for="">Document Type</label>
+                            <select name="doctype" id="doctype" class="form-control">
                                 <option value="All">All</option>
-                                <option value="O">Open</option>
-                                <option value="C">Close</option>
+                                @foreach($doctypes as $key => $row)
+                                <option value="{{ $row->id }}">{{ $row->doctype }}</option>
+                                @endforeach
                             </select>
-                        </div> -->
+                        </div>
                         <div class="col-lg-3">
                             <br>
                             <button type="button" class="btn btn-default mt-2 btn-search"> 
@@ -75,7 +76,7 @@
         // ?datefrom=2022-08-02&dateto=2022-08-16
         $('.btn-search').on('click', function(){
             $('#tbl-doclist-body').html('');
-            var param = '?datefrom='+ $('#datefrom').val() +'&dateto='+ $('#dateto').val();
+            var param = '?datefrom='+ $('#datefrom').val() +'&dateto='+ $('#dateto').val()+'&doctype='+$('#doctype').val();
             loadDocument(param);
         })
 
