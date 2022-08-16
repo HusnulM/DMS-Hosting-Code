@@ -16,32 +16,32 @@
                     <h3 class="card-title">Document List</h3>
                 </div>
                 <div class="card-body">
-                    <form action="" method="GET">
-                        <div class="row">
-                            <div class="col-lg-3">
-                                <label for="">From Date</label>
-                                <input type="date" class="form-control" name="datefrom" id="datefrom" value="{{ $_GET['datefrom'] ?? '' }}">
-                            </div>
-                            <div class="col-lg-3">
-                                <label for="">To Date</label>
-                                <input type="date" class="form-control" name="dateto" id="dateto" value="{{ $_GET['dateto'] ?? '' }}">
-                            </div>
-                            <div class="col-lg-3">
-                                <label for="">Document Status</label>
-                                <select name="approvalStatus" id="approvalStatus" class="form-control">
-                                    <option value="All">All</option>
-                                    <option value="O">Open</option>
-                                    <option value="C">Close</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-3">
-                                <br>
-                                <button type="submit" class="btn btn-default mt-2"> 
-                                    <i class="fa fa-search"></i> Filter
-                                </button>
-                            </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label for="">From Date</label>
+                            <input type="date" class="form-control" name="datefrom" id="datefrom" value="{{ $_GET['datefrom'] ?? '' }}">
                         </div>
-                    </form>
+                        <div class="col-lg-3">
+                            <label for="">To Date</label>
+                            <input type="date" class="form-control" name="dateto" id="dateto" value="{{ $_GET['dateto'] ?? '' }}">
+                        </div>
+                        <!-- <div class="col-lg-3">
+                            <label for="">Document Status</label>
+                            <select name="approvalStatus" id="approvalStatus" class="form-control">
+                                <option value="All">All</option>
+                                <option value="O">Open</option>
+                                <option value="C">Close</option>
+                            </select>
+                        </div> -->
+                        <div class="col-lg-3">
+                            <br>
+                            <button type="button" class="btn btn-default mt-2 btn-search"> 
+                                <i class="fa fa-search"></i> Filter
+                            </button>
+                        </div>
+                    </div>
+                    <!-- <form action="" method="GET">
+                    </form> -->
                     <hr>
                     <div class="row">
                         <div class="col-lg-12">
@@ -56,29 +56,8 @@
                                     <th>Created By</th>
                                     <th></th>
                                 </thead>
-                                <tbody>
-                                @foreach($documents as $key => $row)
-                                    <tr>
-                                        <td>{{ $key+1 }}</td>
-                                        <td>{{ $row->dcn_number }}</td>
-                                        <td>{{ $row->document_title }}</td>
-                                        <td>{{ $row->doctype }}</td>
-                                        <td>
-                                            <i class="fa fa-clock"></i> {{\Carbon\Carbon::parse($row->created_at)->diffForHumans()}} ({{ formatDateTime($row->created_at) }})
-                                        </td>
-                                        <td>
-                                            @if($row->updated_at != null)
-                                            <i class="fa fa-clock"></i> {{\Carbon\Carbon::parse($row->updated_at)->diffForHumans()}} ({{ formatDateTime($row->updated_at) }})
-                                            @endif
-                                        </td>
-                                        <td>{{ $row->createdby }}</td>
-                                        <td style="text-align:center;">
-                                            <a href="{{ url('/transaction/doclist/detail') }}/{{ $row->id }}" class="btn btn-primary btn-sm">
-                                                View Detail
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                <tbody id="tbl-doclist-body">
+                                
                                 </tbody>
                             </table>
                         </div>
@@ -93,7 +72,69 @@
 @section('additional-js')
 <script>
     $(function(){
-        $('#tbl-doclist').DataTable();
+        // ?datefrom=2022-08-02&dateto=2022-08-16
+        $('.btn-search').on('click', function(){
+            $('#tbl-doclist-body').html('');
+            var param = '?datefrom='+ $('#datefrom').val() +'&dateto='+ $('#dateto').val();
+            loadDocument(param);
+        })
+
+        loadDocument('');
+
+        function loadDocument(_params){
+            $('#tbl-doclist').DataTable({
+                "serverSide": true,
+                    ajax: {
+                        url: base_url+'/transaction/doclist/load'+_params,
+                        data: function (data) {
+                            data.params = {
+                                sac: "sac"
+                            }
+                        }
+                },
+                "processing": true,
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "bDestroy": true,
+                columns: [
+                    { "data": null,"sortable": false, 
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }  
+                    },
+                    {data: "dcn_number"},
+                    {data: "document_title"},
+                    {data: "doctype"},
+                    {data: "created_at",
+                        render: function (data, type, row){
+                            return `<i class="fa fa-clock"></i> `+ row.created_at.date1 + `(`+ row.created_at.originaldate1 +`)`;
+                        }
+                    },
+                    {data: "updated_at",
+                        render: function (data, type, row){
+                            return `<i class="fa fa-clock"></i> `+ row.updated_at.date2 + `(`+ row.updated_at.originaldate2 +`)`;
+                        }
+                    },
+                    {data: "createdby"},
+                    {"defaultContent": 
+                        "<button class='btn btn-primary btn-sm button-view-detail'> <i class='fa fa-search'></i> View Detail</button>"
+                    }
+                ]  
+            });
+    
+            $('#tbl-doclist tbody').on( 'click', '.button-view-detail', function () {                
+                var table = $('#tbl-doclist').DataTable();
+                selected_data = [];
+                selected_data = table.row($(this).closest('tr')).data();
+                window.location = base_url+"/transaction/doclist/detail/"+selected_data.id;
+            });
+        }
+
     });
 </script>
 @endsection
