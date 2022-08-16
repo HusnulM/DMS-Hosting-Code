@@ -618,7 +618,7 @@ class DocumentController extends Controller
             DB::commit();
 
             $mailTo = DB::table('v_workflow_assignments')
-                      ->where('workflow_group', $wfgroup)
+                      ->where('workflow_group', $document->workflow_group)
                       ->where('approval_level', 1)
                       ->pluck('approver_email');
 
