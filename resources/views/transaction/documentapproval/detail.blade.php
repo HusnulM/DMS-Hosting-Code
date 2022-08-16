@@ -236,7 +236,7 @@
                                 <div class="tab-pane fade" id="custom-content-above-description" role="tabpanel" aria-labelledby="custom-content-above-description-tab">
                                     <div class="col-lg-12">
                                         <textarea class="docremark form-control" name="docremark">
-                                            {!! $document->description !!}
+                                            {!! $docremark->remark !!}
                                         </textarea>                                      
                                     </div>
                                 </div>

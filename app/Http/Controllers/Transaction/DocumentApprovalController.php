@@ -81,6 +81,8 @@ class DocumentApprovalController extends Controller
                     ->where('approval_version', $version)
                     ->where('approval_status', 'N')
                     ->first();
+
+        $docremark = DB::table('document_versions')->where('dcn_number',  $documents->dcn_number)->where('doc_version', $version)->first();
         // return $docHistorydateGroup;
         // return $documents;
         if($isApprovedbyUser){
@@ -92,7 +94,8 @@ class DocumentApprovalController extends Controller
                 'dochistory'     => $docHistory,
                 'dochistorydate' => $docHistorydateGroup,
                 'isApprovedbyUser' => $isApprovedbyUser,
-                'version'          => $version
+                'version'          => $version,
+                'docremark'   => $docremark
             ]);   
         }else{
             return Redirect::to("/transaction/docapproval")->withError("Document not found or alreday approved/rejected!");
