@@ -85,7 +85,7 @@ class UserController extends Controller
         
         DB::beginTransaction();
         try{
-            if(isset($request['password'])){
+            if($request['password'] != null || $request['password'] != ""){
                 $options = [
                     'cost' => 12,
                 ];

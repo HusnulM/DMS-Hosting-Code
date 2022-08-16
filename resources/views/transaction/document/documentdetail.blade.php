@@ -466,7 +466,7 @@
                             <input type="file" name="docfiles[]" class="form-control" multiple="multiple" required>
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-12 form-group">
-                            <label for="efectivitydate">Add New Attachment</label>
+                            <label for="efectivitydate">Effectivity Date</label>
                             <input type="date" name="efectivitydate" class="form-control" required>
                         </div>
                     </div>

@@ -585,6 +585,7 @@ class DocumentController extends Controller
                     'workflow_group'    => $document->workflow_group,
                     'approver_level'    => $row->approval_level,
                     'approver_id'       => $row->approverid,
+                    'creator_id'        => Auth::user()->id,
                     'is_active'         => $is_active,
                     'createdon'         => getLocalDatabaseDateTime(),
                     // 'createdby'         => Auth::user()->username ?? Auth::user()->email
