@@ -73,7 +73,11 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="col-lg-12 col-md-12 text-center">
+                                    @if(checkIsLocalhost() == 1)
                                     <img src="{{ $datauser->s_signfile ?? '/assets/dist/img/no-image.png' }}" class="img-thumbnail" alt="E-sign" style="width:200px; height:200px;">
+                                    @else
+                                    <img src="/main/public/{{ $datauser->s_signfile ?? '/assets/dist/img/no-image.png' }}" class="img-thumbnail" alt="E-sign" style="width:200px; height:200px;">
+                                    @endif
                                 </div>
                             </div>
                         </div>
