@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Route;
 */
 Route::group(['middleware' => 'auth'], function () {
 
+    Route::group(['prefix' => '/general/setting'], function () {
+        Route::get('/',                       'Config\GeneralSettingController@index')->middleware('checkAuth:general/setting');
+        Route::post('/save',                  'Config\GeneralSettingController@save')->middleware('checkAuth:general/setting');
+    });
+
     Route::group(['prefix' => '/config/users'], function () {
         Route::get('/',                       'Config\UserController@index')->middleware('checkAuth:config/users');
         Route::get('/create',                 'Config\UserController@create')->middleware('checkAuth:config/users');

@@ -85,10 +85,19 @@ class DocumentController extends Controller
 
     public function printOutDocument($docid)
     {
-    	$doc = DB::table('v_documents')->where('id', $docid)->first();
-        
+    	$doc  = DB::table('v_documents')->where('id', $docid)->first();
+        $logo = DB::table('general_setting')->where('setting_name', 'COMPANY_LOGO')->first();
+        $docversions = DB::table('document_versions')->where('dcn_number', $doc->dcn_number)->get();
+
+        $latestVersion = DB::table('document_versions')->select('doc_version')
+                        ->where('dcn_number', $doc->dcn_number)->orderBy('doc_version', 'DESC')->first();
+
+                        // return $latestVersion;
+        $approval    = DB::table('document_approvals')->where('dcn_number', $doc->dcn_number)
+                        ->where('approval_version', $latestVersion->doc_version)->get();
+        // return $approval;
         // return view('transaction.document.printout', ['document'=>$doc]);
-    	$pdf = PDF::loadview('transaction.document.printout',['document'=>$doc]);
+    	$pdf = PDF::loadview('transaction.document.printout',['document'=>$doc, 'logo' => $logo, 'versions' => $docversions, 'approval' => $approval]);
     	// return $pdf->download('laporan-pegawai-pdf');
         return $pdf->stream();
     }

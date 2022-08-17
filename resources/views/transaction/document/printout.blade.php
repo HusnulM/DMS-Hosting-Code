@@ -1,3 +1,16 @@
+<?php
+    $firstApproval = false;
+    $secondApprocal = false;
+
+    foreach($approval as $key => $row ){
+        if($row->approver_level == 1 && $row->approval_status === 'A'){
+            $firstApproval = true;
+        }elseif($row->approver_level == 2 && $row->approval_status === 'A'){
+            $secondApprocal = true;
+        }
+    }
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -32,14 +45,21 @@
     <table class="customers" style="margin-bottom: 20px !important;">
         <thead>
             <tr style="text-align:center;font-weight:bold;">
-                <td style="width:120px;"></td>
-                <td style="width:120px;">PREPARED</td>
+                <td style="width:120px;">
+                <!-- LOGO -->
+                </td>
+                <td style="width:120px;">PREPARED {{ $firstApproval }}</td>
                 <td style="width:120px;">CHECKED</td>
                 <td style="width:120px;">APPROVED</td>
                 <td style="width:120px;">APPROVED</td>
             </tr>
             <tr style="text-align:center;">
-                <td rowspan="2">&nbsp;</td>
+                <td  style="height:60px;">
+                <!-- $logo -->
+                    @if($logo->setting_value != null)
+                        <img src="{{ public_path($logo->setting_value) }}" class="img-thumbnail" alt="E-Logo" style="width:100px; height:60px;">
+                    @endif
+                </td>
                 <td style="height:60px;">
                     <img src="{{ public_path('/files/e_signature/esign1.png') }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
                 </td>
@@ -47,31 +67,40 @@
                     <img src="{{ public_path('/files/e_signature/esign1.png') }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
                 </td>
                 <td>
+                    @if($firstApproval == true)
                     <img src="{{ public_path('/files/e_signature/esign1.png') }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
+                    @endif
                 </td>
                 <td>
+                    @if($secondApprocal == true)
                     <img src="{{ public_path('/files/e_signature/esign1.png') }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
+                    @endif
                 </td>
             </tr>
             <tr style="text-align:center;font-weight:bold;">
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
+                <td></td>
                 <td>
-                    Approver1
+                    @if($firstApproval == true)
+                        Approver1
+                    @endif
                 </td>
                 <td>
-                    Approver2
+                    @if($secondApprocal == true)
+                        Approver 2
+                    @endif
                 </td>
             </tr>
         </thead>
         <tfoot style="font-weight:bold;">
             <tr>
-                <td colspan="3">DOCUMENT NO : {{ $document->document_number }}</td>
+                <td colspan="3">DOCUMENT NO : {{ $document->dcn_number }}</td>
                 <td></td>
                 <td>REVISION NO : {{ $document->revision_number }}</td>
             </tr>
             <tr>
-                <td colspan="3">DATE</td>
+                <td colspan="3">DATE : {{ formatDate($document->created_at) }}</td>
                 <td></td>
                 <td></td>
             </tr>
@@ -99,13 +128,19 @@
             <td>EFFECTIVITY</td>
         </thead>
         <tbody>
+            @foreach($versions as $key => $row)
             <tr>
-                <td>00</td>
+                <td>{{ $row->doc_version }}</td>
                 <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                @if($row->doc_version == 1)
+                <td>Origination</td>
+                @else
+                <td>{!! $row->remark !!}</td>
+                @endif
+                <td>{{ formatDate($row->createdon) }}</td>
+                <td>{{ formatDate($row->effectivity_date) }}</td>
             </tr>
+            @endforeach
         </tbody>
     </table>
 </body>
