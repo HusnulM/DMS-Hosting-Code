@@ -93,9 +93,11 @@ class DocumentController extends Controller
                         ->where('dcn_number', $doc->dcn_number)->orderBy('doc_version', 'DESC')->first();
 
                         // return $latestVersion;
-        $approval    = DB::table('document_approvals')->where('dcn_number', $doc->dcn_number)
+        $approval    = DB::table('v_document_approvals_v2')
+                        ->where('dcn_number', $doc->dcn_number)
                         ->where('approval_version', $latestVersion->doc_version)->get();
-        // return $approval;
+        
+        // $esignature = DB::table('document_approvals')
         // return view('transaction.document.printout', ['document'=>$doc]);
     	$pdf = PDF::loadview('transaction.document.printout',['document'=>$doc, 'logo' => $logo, 'versions' => $docversions, 'approval' => $approval]);
     	// return $pdf->download('laporan-pegawai-pdf');
@@ -541,7 +543,8 @@ class DocumentController extends Controller
                 $upfiles = array(
                     'dcn_number' => $dcnNumber,
                     'doc_version'=> $docVersion,
-                    'efile'      => '/files/'.$filename,
+                    'efile'      => $filename,
+                    'pathfile'   => '/files/'. $filename,
                     'created_at' => getLocalDatabaseDateTime(),
                     'createdby'  => Auth::user()->username ?? Auth::user()->email
                 );
