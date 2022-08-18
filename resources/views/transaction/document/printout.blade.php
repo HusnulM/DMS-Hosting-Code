@@ -103,7 +103,7 @@
         </thead>
         <tfoot style="font-weight:bold;">
             <tr>
-                <td colspan="3">DOCUMENT NO : {{ $document->dcn_number }}</td>
+                <td colspan="3">DOCUMENT NO : {{ $document->dcn_number }} - ({{ $document->document_number }})</td>
                 <td></td>
                 <td>REVISION NO : {{ $document->revision_number }}</td>
             </tr>
