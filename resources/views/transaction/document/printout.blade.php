@@ -69,10 +69,10 @@
                     @endif
                 </td>
                 <td style="height:60px;">
-                    <img src="{{ public_path('/files/e_signature/esign1.png') }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
+                    <!-- <img src="{{ public_path('/files/e_signature/esign1.png') }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;"> -->
                 </td>
                 <td>
-                    <img src="{{ public_path('/files/e_signature/esign1.png') }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
+                    <!-- <img src="{{ public_path('/files/e_signature/esign1.png') }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;"> -->
                 </td>
                 <td>
                     @if($firstApproval == true && $firstApprovalSign != null)
