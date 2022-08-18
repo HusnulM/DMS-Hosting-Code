@@ -380,7 +380,7 @@ class DocumentController extends Controller
                     'dcn_number' => $dcnNumber,
                     'doc_version'=> 1,
                     'efile'      => $filename,
-                    'pathfile'   => public_path().'/files/', $filename,
+                    'pathfile'   => '/files/'. $filename,
                     'created_at' => getLocalDatabaseDateTime(),
                     'createdby'  => Auth::user()->username ?? Auth::user()->email
                 );
@@ -540,7 +540,7 @@ class DocumentController extends Controller
                 $upfiles = array(
                     'dcn_number' => $dcnNumber,
                     'doc_version'=> $docVersion,
-                    'efile'      => $filename,
+                    'efile'      => '/files/'.$filename,
                     'created_at' => getLocalDatabaseDateTime(),
                     'createdby'  => Auth::user()->username ?? Auth::user()->email
                 );
