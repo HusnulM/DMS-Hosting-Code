@@ -623,10 +623,15 @@
                             console.log(_dataFile)
                             if(_dataFile.filepath !== ""){
                                 $('#fileViewer').html('');
-                                $('#fileViewer').append(`
-                                    <embed src="`+ _dataFile.filepath +`" frameborder="0" width="100%" height="500px">
-                                
-                                `);
+                                @if(checkIsLocalhost() == 1)
+                                    $('#fileViewer').append(`
+                                        <embed src="`+ _dataFile.filepath +`" frameborder="0" width="100%" height="500px">
+                                    `);
+                                @else
+                                    $('#fileViewer').append(`
+                                        <embed src="/main/public`+ _dataFile.filepath +`" frameborder="0" width="100%" height="500px">
+                                    `);
+                                @endif
                                 $('#modalPreviewFile').modal('show');
                             } else{
                                 swal("File Not Found", "", "warning");
