@@ -641,7 +641,7 @@ class DocumentController extends Controller
                 'docID'    => $id,
                 'version'  => $docVersion,
                 'dcnNumb'  => $dcnNumber,
-                'docTitle' => $req['doctitle'],
+                'docTitle' => $document->document_title,
                 'docCrdt'  => date('d-m-Y'),
                 'docCrby'  => Auth::user()->name,
                 'body'     => 'This is for testing email using smtp'
