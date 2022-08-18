@@ -137,7 +137,7 @@ class DocumentController extends Controller
                         ->where('doc_version', $version)
                         ->get();
 
-        $data['docapproval'] = DB::table('v_document_approvals')
+        $data['docapproval'] = DB::table('v_document_approvals_v2')
                         ->where('dcn_number', $document->dcn_number)
                         ->where('approval_version', $version)
                         ->get();      
