@@ -334,10 +334,14 @@
         $('#tbl-doc-area').DataTable();
 
         $('#btn-approve').on('click', function(){
+            $('#btn-approve').prop('disabled', true);
+            $('#btn-reject').prop('disabled', true);
             approveDocument('A');
         });
 
         $('#btn-reject').on('click', function(){
+            $('#btn-approve').prop('disabled', true);
+            $('#btn-reject').prop('disabled', true);
             approveDocument('R');
         });
 
