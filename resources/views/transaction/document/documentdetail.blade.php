@@ -544,9 +544,11 @@
                         </select>
                     </td>
                     <td style="text-align:center;">
+                        @if(userAllowChangeDocument() == 1)
                         <button type="button" class="btn btn-danger btn-sm btnRemove">
                             <i class="fa fa-trash"></i>
                         </button>
+                        @endif
                     </td>
                 <tr>
             `);
