@@ -75,6 +75,9 @@
                 <div class="card-header">
                     <h3 class="card-title">Document Detail <b id="hdr-version">Version {{ $docversions[0]->doc_version }}</b></h3>
                     <div class="card-tools">
+                        <a href="{{ url('/transaction/doclist/print') }}/{{$documents->id}}" target="_blank" class='btn btn-success btn-sm button-print'> 
+                            <i class='fa fa-print'></i> Print
+                        </a>
                         <a href="{{ url('/transaction/doclist') }}" class="btn btn-default btn-sm">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>
