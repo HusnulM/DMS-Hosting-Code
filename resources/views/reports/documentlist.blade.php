@@ -1,6 +1,6 @@
 @extends('layouts/App')
 
-@section('title', 'Document List')
+@section('title', 'Report Document List')
 
 @section('additional-css')
     <!-- <link rel="stylesheet" href="http://localhost:8181/digidocu/css/lte/AdminLTE.min.css"> -->
@@ -13,15 +13,15 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Document List</h3>
+                    <h3 class="card-title">Report Document List</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-3">
+                        <div class="col-lg-2">
                             <label for="">From Date</label>
                             <input type="date" class="form-control" name="datefrom" id="datefrom" value="{{ $_GET['datefrom'] ?? '' }}">
                         </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg-2">
                             <label for="">To Date</label>
                             <input type="date" class="form-control" name="dateto" id="dateto" value="{{ $_GET['dateto'] ?? '' }}">
                         </div>
@@ -35,6 +35,16 @@
                             </select>
                         </div>
                         <div class="col-lg-3">
+                            <label for="">Approval Status</label>
+                            <select name="approvalStatus" id="approvalStatus" class="form-control">
+                                <option value="All">All</option>
+                                <option value="O">Open</option>
+                                <option value="C">Closed</option>
+                                <option value="R">Rejected</option>
+                                <!-- <option value="">Obsolete</option> -->
+                            </select>
+                        </div>
+                        <div class="col-lg-2">
                             <br>
                             <button type="button" class="btn btn-default mt-2 btn-search"> 
                                 <i class="fa fa-search"></i> Filter
@@ -86,7 +96,7 @@
             $('#tbl-doclist').DataTable({
                 "serverSide": true,
                     ajax: {
-                        url: base_url+'/transaction/doclist/load'+_params,
+                        url: base_url+'/reports/loaddoclist'+_params,
                         data: function (data) {
                             data.params = {
                                 sac: "sac"

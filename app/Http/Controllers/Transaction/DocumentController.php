@@ -87,7 +87,7 @@ class DocumentController extends Controller
     {
     	$doc  = DB::table('v_documents')->where('id', $docid)->first();
         $logo = DB::table('general_setting')->where('setting_name', 'COMPANY_LOGO')->first();
-        $docversions = DB::table('document_versions')->where('dcn_number', $doc->dcn_number)->get();
+        $docversions = DB::table('document_versions')->where('dcn_number', $doc->dcn_number)->orderBy('doc_version', 'desc')->get();
 
         $latestVersion = DB::table('document_versions')->select('doc_version')
                         ->where('dcn_number', $doc->dcn_number)->orderBy('doc_version', 'DESC')->first();
