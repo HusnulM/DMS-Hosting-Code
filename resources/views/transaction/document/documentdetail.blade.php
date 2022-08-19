@@ -51,6 +51,9 @@
                                                 {{ $documents->document_title }} <br>
                                                 {{ $row->dcn_number }}
                                             </span>
+                                            <span class="pull-right" style="margin-right: 15px; color:white;" data-toggle="tooltip" title="{{ $documents->document_number }}">
+                                            {{ $documents->document_number }}
+                                            </span>
                                         </div>
                                         <hr style="background-color:white; margin-top: 0px; margin-bottom: 2px;">
                                         <h5 class="widget-user-desc" style="font-size: 12px; margin-left: 10px; margin-top: 0px; margin-bottom: 0px;">

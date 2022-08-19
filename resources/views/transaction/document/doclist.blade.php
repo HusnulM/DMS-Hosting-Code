@@ -50,6 +50,7 @@
                                 <thead>
                                     <th>No</th>
                                     <th>DCN Number</th>
+                                    <th>Doc. Number</th>
                                     <th>Document Title</th>
                                     <th>Document Type</th>
                                     <th>Created Date</th>
@@ -109,6 +110,7 @@
                         }  
                     },
                     {data: "dcn_number"},
+                    {data: "document_number"},
                     {data: "document_title"},
                     {data: "doctype"},
                     {data: "created_at",
