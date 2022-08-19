@@ -1,0 +1,3 @@
+Nama	Alamat	Hoby
+Berjo	Malang	Makan
+Kuncro	Surabaya	Makan

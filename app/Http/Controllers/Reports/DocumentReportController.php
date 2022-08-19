@@ -25,14 +25,18 @@ class DocumentReportController extends Controller
 
         // $whereClause = $params['sac'];
 
-        $query   = DB::table('v_documents');
+        $query   = DB::table('v_report_doclist');
         if(count($req->all()) > 0){
-            if(isset($req->approvalStatus)){
-                if($req->approvalStatus === "O"){
-                    $query->where('status', 'Open');
-                }elseif($req->approvalStatus === "C"){
-                    $query->where('status', 'Closed');                
-                }        
+            if(isset($req->approvalstat)){
+                if($req->approvalstat === "O"){
+                    $query->where('version_status', 'Open');
+                }elseif($req->approvalstat === "C"){
+                    $query->where('version_status', 'Obsolete');                
+                }elseif($req->approvalstat === "R"){
+                    $query->where('version_status', 'Rejected');                
+                }elseif($req->approvalstat === "A"){
+                    $query->where('version_status', 'Approved');                
+                }
             }
     
             if(isset($req->datefrom) && isset($req->dateto)){
@@ -68,5 +72,13 @@ class DocumentReportController extends Controller
                          ];
                     })
                     ->toJson();
+    }
+
+    public function loadDocVersionDetail(Request $req){
+        $data = DB::table('v_document_approvals_v2')
+                ->where('docid', $req->docid)
+                ->where('approval_version', $req->version)
+                ->get();
+        return $data;
     }
 }

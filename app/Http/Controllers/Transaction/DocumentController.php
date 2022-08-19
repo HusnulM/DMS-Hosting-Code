@@ -15,6 +15,7 @@ use PDF;
 class DocumentController extends Controller
 {
     public function index(){
+        // $filterdoctype = DB::
         $doctypes  = DB::table('doctypes')->get();
         $doclevels = DB::table('doclevels')->get();
         $docareas  = DB::table('docareas')->get();
@@ -427,26 +428,34 @@ class DocumentController extends Controller
                 ->orderBy('approval_level', 'asc')
                 ->get();
 
-            $insertApproval = array();
-            foreach($wfapproval as $key => $row){
-                $is_active = 'N';
-                if($row->approval_level == $wfapproval[0]->approval_level){
-                    $is_active = 'Y';
+            if(sizeof($wfapproval) > 0){
+                $insertApproval = array();
+                foreach($wfapproval as $key => $row){
+                    $is_active = 'N';
+                    if($row->approval_level == $wfapproval[0]->approval_level){
+                        $is_active = 'Y';
+                    }
+                    $approvals = array(
+                        'dcn_number'        => $dcnNumber,
+                        'approval_version'  => 1,
+                        'workflow_group'    => $wfgroup,
+                        'approver_level'    => $row->approval_level,
+                        'approver_id'       => $row->approverid,
+                        'creator_id'        => Auth::user()->id,
+                        'is_active'         => $is_active,
+                        'createdon'         => getLocalDatabaseDateTime(),
+                        // 'createdby'         => Auth::user()->username ?? Auth::user()->email
+                    );
+                    array_push($insertApproval, $approvals);
                 }
-                $approvals = array(
-                    'dcn_number'        => $dcnNumber,
-                    'approval_version'  => 1,
-                    'workflow_group'    => $wfgroup,
-                    'approver_level'    => $row->approval_level,
-                    'approver_id'       => $row->approverid,
-                    'creator_id'        => Auth::user()->id,
-                    'is_active'         => $is_active,
-                    'createdon'         => getLocalDatabaseDateTime(),
-                    // 'createdby'         => Auth::user()->username ?? Auth::user()->email
-                );
-                array_push($insertApproval, $approvals);
+                insertOrUpdate($insertApproval,'document_approvals');
+            }else{
+                DB::rollBack();
+                $doctype = DB::table('doctypes')->where('id', $req['doctype'])->first();
+                return Redirect::to("/transaction/document")
+                ->withError('Approval Workflow Not Maintained Yet for user '. Auth::user()->username . ' in document type ' . $doctype->doctype);
             }
-            insertOrUpdate($insertApproval,'document_approvals');
+
             // Insert Attchment Documents
             insertOrUpdate($insertFiles,'document_attachments');
 
@@ -587,24 +596,32 @@ class DocumentController extends Controller
                 ->orderBy('approval_level', 'asc')
                 ->get();
 
-            $insertApproval = array();
-            foreach($wfapproval as $key => $row){
-                $is_active = 'N';
-                if($row->approval_level == $wfapproval[0]->approval_level){
-                    $is_active = 'Y';
+            if(sizeof($wfapproval) > 0){
+                $insertApproval = array();
+                foreach($wfapproval as $key => $row){
+                    $is_active = 'N';
+                    if($row->approval_level == $wfapproval[0]->approval_level){
+                        $is_active = 'Y';
+                    }
+                    $approvals = array(
+                        'dcn_number'        => $dcnNumber,
+                        'approval_version'  => $docVersion,
+                        'workflow_group'    => $document->workflow_group,
+                        'approver_level'    => $row->approval_level,
+                        'approver_id'       => $row->approverid,
+                        'creator_id'        => Auth::user()->id,
+                        'is_active'         => $is_active,
+                        'createdon'         => getLocalDatabaseDateTime(),
+                        // 'createdby'         => Auth::user()->username ?? Auth::user()->email
+                    );
+                    array_push($insertApproval, $approvals);
                 }
-                $approvals = array(
-                    'dcn_number'        => $dcnNumber,
-                    'approval_version'  => $docVersion,
-                    'workflow_group'    => $document->workflow_group,
-                    'approver_level'    => $row->approval_level,
-                    'approver_id'       => $row->approverid,
-                    'creator_id'        => Auth::user()->id,
-                    'is_active'         => $is_active,
-                    'createdon'         => getLocalDatabaseDateTime(),
-                    // 'createdby'         => Auth::user()->username ?? Auth::user()->email
-                );
-                array_push($insertApproval, $approvals);
+                insertOrUpdate($insertApproval,'document_approvals');   
+            }else{
+                DB::rollBack();
+                $doctype = DB::table('doctypes')->where('id', $document->document_type)->first();
+                return Redirect::to("/transaction/doclist/detail/".$id)
+                    ->withError('Approval Workflow Not Maintained Yet for user '. Auth::user()->username . ' in document type ' . $doctype->doctype);
             }
 
             DB::table('document_approvals')
@@ -612,6 +629,7 @@ class DocumentController extends Controller
                 ->where('approval_version', '!=', $docVersion)
                 ->update([
                     'is_active'         => 'N',
+                    'approval_status'   => 'C',
                     'approval_remark'   => 'Auto Closed by New Version',
                     'approval_date'     => getLocalDatabaseDateTime()
             ]);
@@ -620,10 +638,10 @@ class DocumentController extends Controller
             ->where('dcn_number', $dcnNumber)
             ->where('doc_version', '!=', $docVersion)
             ->update([
-                'status'         => 'Closed',
+                'status'         => 'Obsolete',
             ]);
 
-            insertOrUpdate($insertApproval,'document_approvals');
+            
             // Insert Attchment Documents
             insertOrUpdate($insertFiles,'document_attachments');
 

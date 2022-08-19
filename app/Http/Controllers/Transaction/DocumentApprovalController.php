@@ -102,25 +102,6 @@ class DocumentApprovalController extends Controller
         }
     }
 
-    public function showFile(Request $request, $dir = 'original', $file = null)
-    {
-        // $name = $file;
-        // $attachment = 'inline';
-        // if($request->has('force')){//for force download
-        //     $attachment = 'attachment';
-        // }
-        // if (!empty($file)) {
-        //     $fileModels = File::where('file', $file)->get();
-        //     if ($fileModels->isNotEmpty()) {
-        //         $fileModel = $fileModels[0];
-        //         $name = Str::slug($fileModel->document->name). "_" .$fileModel->document->id . "_" . $dir . "_" . Str::slug($fileModel->name);
-        //         $name .= "." . last(explode('.', $file));
-        //     }
-        // }
-        // $file = storage_path('app/files/' . $dir . '/') . $file;
-        // return response()->file($file, ['Content-disposition' => $attachment.'; filename="' . $name . '"']);
-    }
-
     public function getNextApproval($dcnNum){
         $userLevel = DB::table('document_approvals')
                     ->where('approver_id', Auth::user()->id)
@@ -167,7 +148,7 @@ class DocumentApprovalController extends Controller
             ]);
 
             $nextApprover = $this->getNextApproval($req['dcnNumber']);
-
+            
             $docStat = '';
             if($req['action'] === "A"){
                 $docStat = 'Document Approved';
@@ -201,6 +182,24 @@ class DocumentApprovalController extends Controller
 
             DB::commit();
 
+            $checkIsFullApprove = DB::table('document_approvals')
+                                  ->where('dcn_number', $req['dcnNumber'])
+                                  ->where('approval_version', $req['version'])
+                                  ->where('approval_status', '!=', 'A')
+                                  ->get();
+
+            if(sizeof($checkIsFullApprove) > 0){
+
+            }else{
+                DB::table('document_versions')
+                ->where('dcn_number',  $req['dcnNumber'])
+                ->where('doc_version', $req['version'])
+                ->update([
+                    'status'         => 'Approved',
+                ]);
+
+                DB::commit();
+            }
             if($nextApprover  != null){
                 $mailTo = DB::table('v_workflow_assignments')
                           ->where('workflow_group', $document->workflow_group)
