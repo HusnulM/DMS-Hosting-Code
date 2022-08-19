@@ -123,12 +123,12 @@
                     {data: "doctype"},
                     {data: "created_at",
                         render: function (data, type, row){
-                            return `<i class="fa fa-clock"></i> `+ row.created_at.date1 + `(`+ row.created_at.originaldate1 +`)`;
+                            return `<i class="fa fa-clock"></i> `+ row.created_at.date1 + `<br>(`+ row.created_at.originaldate1 +`)`;
                         }
                     },
                     {data: "updated_at",
                         render: function (data, type, row){
-                            return `<i class="fa fa-clock"></i> `+ row.updated_at.date2 + `(`+ row.updated_at.originaldate2 +`)`;
+                            return `<i class="fa fa-clock"></i> `+ row.updated_at.date2 + `<br>(`+ row.updated_at.originaldate2 +`)`;
                         }
                     },
                     {data: "createdby"},
