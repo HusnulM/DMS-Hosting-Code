@@ -45,9 +45,9 @@ function formatDateTime($dateTime, $format = "d-m-Y h:i A")
     return ($dateTime) ? date($format, strtotime($dateTime)) : $dateTime;
 }
 
-function generateDcnNumber(){
+function generateDcnNumber($doctype){
     $dcnNumber = '';
-    $getdata = DB::table('dcn_nriv')->where('year', date('Y'))->first();
+    $getdata = DB::table('dcn_nriv')->where('year', date('Y'))->where('object',$doctype)->first();
     if($getdata){
         DB::beginTransaction();
         try{

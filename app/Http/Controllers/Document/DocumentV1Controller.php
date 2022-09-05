@@ -337,7 +337,7 @@ class DocumentV1Controller extends Controller
 
             $files = $req['docfiles'];
             
-            $dcnNumber = generateDcnNumber();
+            $dcnNumber = generateDcnNumber('CP');
             $wfgroup   = getWfGroup($req['doctype']);
 
             $docHistory = array();
