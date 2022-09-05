@@ -67,12 +67,12 @@ function generateDcnNumber($doctype){
             $lastnum = ($getdata->current_number*1) + 1;
 
             if($leadingZero == ''){
-                $dcnNumber = 'DCN-'. substr($getdata->year,2) .'-'. $lastnum; 
+                $dcnNumber = 'DCN-'. $doctype . '-' . substr($getdata->year,2) .'-'. $lastnum; 
             }else{
-                $dcnNumber = 'DCN-'. substr($getdata->year,2) .'-'. $leadingZero . $lastnum; 
+                $dcnNumber = 'DCN-'. $doctype . '-' . substr($getdata->year,2) .'-'. $leadingZero . $lastnum; 
             }
 
-            DB::table('dcn_nriv')->where('year',$getdata->year)->update([
+            DB::table('dcn_nriv')->where('year',$getdata->year)->where('object',$doctype)->update([
                 'current_number' => $lastnum
             ]);
 
