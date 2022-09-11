@@ -51,6 +51,14 @@ class DocumentController extends Controller
                         ->where('dcn_number', $documents->dcn_number)->orderBy('id', 'desc')->get();
 
         
+        $wiDocData = DB::table('document_wi')
+                        ->where('dcn_number', $documents->dcn_number)
+                        ->where('doc_version', $latestVersion)
+                        ->first();
+                        if(!$wiDocData){
+                            $wiDocData = null;
+                        }
+
         $docHistorydateGroup = DB::table('v_document_historys')
                 ->select('dcn_number', 'created_date','doc_version')->distinct()    
                 ->orderBy('created_date', 'desc')

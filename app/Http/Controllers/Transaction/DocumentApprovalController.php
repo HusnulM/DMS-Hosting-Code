@@ -45,6 +45,14 @@ class DocumentApprovalController extends Controller
             ->where('doc_version', $version)
             ->get();
 
+        $wiDocData = DB::table('document_wi')
+        ->where('dcn_number', $documents->dcn_number)
+        ->where('doc_version', $version)
+        ->first();
+        if(!$wiDocData){
+            $wiDocData = null;
+        }
+
         $areas = DB::table('document_affected_areas')
                  ->select('document_affected_areas.dcn_number', 'document_affected_areas.docarea', 'docareas.docarea as docareaname', 'document_affected_areas.doc_version')
                  ->join('docareas', 'document_affected_areas.docarea', '=', 'docareas.id')
@@ -82,21 +90,36 @@ class DocumentApprovalController extends Controller
                     ->where('approval_status', 'N')
                     ->first();
 
-        $docremark = DB::table('document_versions')->where('dcn_number',  $documents->dcn_number)->where('doc_version', $version)->first();
+        $docVersionData = DB::table('document_versions')->where('dcn_number',  $documents->dcn_number)->where('doc_version', $version)->first();
         // return $docHistorydateGroup;
         // return $documents;
         if($isApprovedbyUser){
-            return view('transaction.documentapproval.detail', [
-                'document'    => $documents, 
-                'attachments' => $attachments, 
-                'areas'       => $areas, 
-                'approvals'   => $approvalList,
-                'dochistory'     => $docHistory,
-                'dochistorydate' => $docHistorydateGroup,
-                'isApprovedbyUser' => $isApprovedbyUser,
-                'version'          => $version,
-                'docremark'   => $docremark
-            ]);   
+            if($documents->doctype == 'Corporate Procedure'){
+                return view('transaction.documentapproval.detail', [
+                    'document'    => $documents, 
+                    'attachments' => $attachments, 
+                    'areas'       => $areas, 
+                    'approvals'   => $approvalList,
+                    'dochistory'     => $docHistory,
+                    'dochistorydate' => $docHistorydateGroup,
+                    'isApprovedbyUser' => $isApprovedbyUser,
+                    'version'          => $version,
+                    'docremark'        => $docVersionData
+                ]); 
+            }elseif($documents->doctype == 'Work Instruction'){
+                return view('transaction.documentapproval.detailv2', [
+                    'document'    => $documents, 
+                    'attachments' => $attachments, 
+                    'areas'       => $areas, 
+                    'approvals'   => $approvalList,
+                    'dochistory'       => $docHistory,
+                    'dochistorydate'   => $docHistorydateGroup,
+                    'isApprovedbyUser' => $isApprovedbyUser,
+                    'version'          => $version,
+                    'docVersionData'   => $docVersionData,
+                    'wiDocData'        => $wiDocData
+                ]);
+            }
         }else{
             return Redirect::to("/transaction/docapproval")->withError("Document not found or alreday approved/rejected!");
         }

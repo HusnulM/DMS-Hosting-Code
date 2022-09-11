@@ -15,7 +15,7 @@ use PDF;
 class DocumentV1Controller extends Controller
 {
     public function index(){
-        $doctypes  = DB::table('doctypes')->get();
+        $doctypes  = DB::table('doctypes')->where('doctype', 'Corporate Procedure')->get();
         $doclevels = DB::table('doclevels')->get();
         $docareas  = DB::table('docareas')->get();
         return view('transaction.document.v1.index', ['doctypes' => $doctypes, 'doclevels' => $doclevels, 'docareas' => $docareas]);
@@ -359,7 +359,7 @@ class DocumentV1Controller extends Controller
             DB::table('document_versions')->insert([
                 'dcn_number'  => $dcnNumber,
                 'doc_version' => 1,
-                'remark'      => 'Test Remark',
+                'remark'      => $req['docremark'],
                 'effectivity_date' => $req['effectivedate'],
                 'createdon'   => getLocalDatabaseDateTime(),
                 'createdby'       => Auth::user()->username ?? Auth::user()->email

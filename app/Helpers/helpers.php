@@ -83,12 +83,13 @@ function generateDcnNumber($doctype){
             return null;
         }
     }else{
-        $dcnNumber = 'DCN-'.substr(date('Y'),2).'-000001';
+        $dcnNumber = 'DCN-' . $doctype . '-' .substr(date('Y'),2).'-000001';
         DB::beginTransaction();
         try{
             DB::table('dcn_nriv')->insert([
-                'year' => date('Y'),
-                'current_number' => '1',
+                'year'            => date('Y'),
+                'object'          => $doctype,
+                'current_number'  => '1',
                 'createdon'       => date('Y-m-d H:m:s'),
                 'createdby'       => Auth::user()->email ?? Auth::user()->username
             ]);

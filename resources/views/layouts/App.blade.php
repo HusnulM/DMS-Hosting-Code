@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
   <!-- overlayScrollbars -->
   <link rel="stylesheet" href="{{ ('/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
-
+  <link rel="stylesheet" href="{{ ('/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ ('/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
   <link rel="stylesheet" href="{{ ('/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
   <link rel="stylesheet" href="{{ ('/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
