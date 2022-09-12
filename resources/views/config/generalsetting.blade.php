@@ -53,6 +53,22 @@
                                                 @endif
                                             </div>
                                         </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <form action="{{ url('/general/setting/saveipdapid') }}" method="post" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" class="form-control" name="ipdapi" value="{{ $ipdapi->setting_value ?? '' }}">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-primary btn-sm" type="submit">
+                                                                <i class="fa fa-save"></i> SAVE IPD MODEL API
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>                                        
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
