@@ -30,12 +30,15 @@ class DocumentController extends Controller
         $documents  = DB::table('v_documents')
                       ->where('id', $id)
                       ->first();
+        
         $docversions = DB::table('document_versions')->where('dcn_number', $documents->dcn_number)->orderBy('doc_version', 'DESC')->get();
 
         $latestVersion = $docversions[0]->doc_version;
 
         $cdoctype  = DB::table('doctypes')->where('id', $documents->document_type)->first();
         $cdoclevel = DB::table('doclevels')->where('id', $documents->document_level)->first();
+
+        // return $cdoctype;
 
         $attachments = DB::table('document_attachments')
                         ->where('dcn_number', $documents->dcn_number)
@@ -74,22 +77,45 @@ class DocumentController extends Controller
                         ->where('approval_version', $latestVersion)
                         ->get();
                         // return $docHistorydateGroup;
-        return view('transaction.document.documentdetail', [
-            'documents'     => $documents,
-            'docversions'   => $docversions,
-            'doctypes'      => $doctypes, 
-            'doclevels'     => $doclevels, 
-            'docareas'      => $docareas, 
-            'attachments'   => $attachments,
-            'affected_area' => $docareasAffected,
-            'dochistory'     => $docHistory,
-            'dochistorydate' => $docHistorydateGroup,
-            'alldochistorydate' => $docAllHistorydateGroup,
-            'cdoctype'       => $cdoctype,
-            'cdoclevel'      => $cdoclevel,
-            'latestVersion'  => $latestVersion,
-            'docapproval'    => $docapproval
-        ]);
+        $docVersionData = DB::table('document_versions')->where('dcn_number',  $documents->dcn_number)->where('doc_version', $latestVersion)->first();
+        
+        if($documents->doctype == 'Corporate Procedure'){
+            return view('transaction.document.documentdetail', [
+                'documents'     => $documents,
+                'docversions'   => $docversions,
+                'doctypes'      => $doctypes, 
+                'doclevels'     => $doclevels, 
+                'docareas'      => $docareas, 
+                'attachments'   => $attachments,
+                'affected_area' => $docareasAffected,
+                'dochistory'     => $docHistory,
+                'dochistorydate' => $docHistorydateGroup,
+                'alldochistorydate' => $docAllHistorydateGroup,
+                'cdoctype'       => $cdoctype,
+                'cdoclevel'      => $cdoclevel,
+                'latestVersion'  => $latestVersion,
+                'docapproval'    => $docapproval
+            ]);
+        }elseif($documents->doctype == 'Work Instruction'){
+            return view('transaction.document.documentdetailv2', [
+                'documents'     => $documents,
+                'docversions'   => $docversions,
+                'doctypes'      => $doctypes, 
+                'doclevels'     => $doclevels, 
+                'docareas'      => $docareas, 
+                'attachments'   => $attachments,
+                'affected_area' => $docareasAffected,
+                'dochistory'     => $docHistory,
+                'dochistorydate' => $docHistorydateGroup,
+                'alldochistorydate' => $docAllHistorydateGroup,
+                'cdoctype'       => $cdoctype,
+                'cdoclevel'      => $cdoclevel,
+                'latestVersion'  => $latestVersion,
+                'docapproval'    => $docapproval,
+                'wiDocData'      => $wiDocData,
+                'docVersionData'   => $docVersionData,
+            ]);
+        }
     }
 
     public function printOutDocument($docid)
@@ -124,10 +150,10 @@ class DocumentController extends Controller
                                 ->where('doc_version', $version)
                                 ->first();
         
-        $data['affected_area'] = DB::table('v_docarea_affected')
-                                ->where('dcn_number', $document->dcn_number)
-                                ->where('doc_version', $version)
-                                ->get();
+        // $data['affected_area'] = DB::table('v_docarea_affected')
+        //                         ->where('dcn_number', $document->dcn_number)
+        //                         ->where('doc_version', $version)
+        //                         ->get();
 
         $data['attachments']   = DB::table('document_attachments')
                                 ->where('dcn_number', $document->dcn_number)
@@ -150,7 +176,9 @@ class DocumentController extends Controller
                         ->where('dcn_number', $document->dcn_number)
                         ->where('approval_version', $version)
                         ->get();      
-                        
+        
+        $data['docVersionData'] = DB::table('document_versions')->where('dcn_number',  $document->dcn_number)->where('doc_version', $version)->first();      
+        
         $htmlApproval = '';
         foreach($data['docapproval'] as $key => $row){
             $appStatus = '';

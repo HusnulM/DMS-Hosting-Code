@@ -85,7 +85,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="row">
+                    <!-- <div class="row">
                         <div class="col-lg-12">
                             <div class="row">
                                 <div class="col-lg-6 col-sm-12 form-group">
@@ -96,20 +96,9 @@
                                     <label for="doctype">Document Type</label>
                                     <select name="doctype" id="doctype" class="form-control">
                                         <option value="{{ $cdoctype->id }}"> {{ $cdoctype->doctype }} </option>
-                                        <!-- @foreach($doctypes as $key => $row)
-                                            <option value="{{ $row->id }}">{{ $row->doctype }}</option>
-                                        @endforeach -->
                                     </select>
                                 </div>    
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    <label for="doclevel">Document Level</label>
-                                    <select name="doclevel" id="doclevel" class="form-control">
-                                        <option value="{{ $cdoclevel->id }}"> {{ $cdoclevel->doclevel }} </option>
-                                        @foreach($doclevels as $key => $row)
-                                            <option value="{{ $row->id }}">{{ $row->doclevel }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                
                                 <div class="col-lg-3 col-sm-12 form-group">
                                     <label for="effectivedate">Effectivity Date</label>
                                     <input type="date" name="effectivedate" class="form-control" value="{{ $documents->effectivity_date }}" required>
@@ -127,15 +116,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="row">
                         <div class="col-lg-12">
                             <ul class="nav nav-tabs" id="custom-content-above-tab" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" id="custom-content-above-home-tab" data-toggle="pill" href="#custom-content-above-home" role="tab" aria-controls="custom-content-above-home" aria-selected="true">Document Info</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="custom-content-above-profile-tab" data-toggle="pill" href="#custom-content-above-profile" role="tab" aria-controls="custom-content-above-profile" aria-selected="false">Document Affected Area</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-content-above-attachment-tab" data-toggle="pill" href="#custom-content-above-attachment" role="tab" aria-controls="custom-content-above-attachment" aria-selected="false">Files</a>
@@ -157,70 +143,203 @@
                                 <div class="tab-pane fade show active" id="custom-content-above-home" role="tabpanel" aria-labelledby="custom-content-above-home-tab">
                                     <form action="{{ url('transaction/document/updateinfo') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
                                         @csrf
-                                        <div class="row"> 
-                                            <div class="col-lg-12">
-                                                <div class="form-group">
-                                                    <label for="docremark">Document Remark</label>
-                                                    <textarea class="docremark form-control" name="docremark" id="docareaContent">
-                                                        {!! $docversions[0]->remark; !!}
-                                                    </textarea>
-                                                </div>   
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <div class="form-group">
+                                                            <label for="doctitle">Document Title</label>
+                                                            <input type="text" class="form-control" value="{{ $documents->document_title }}" readonly>
+                                                        </div>  
+                                                    </div>  
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label for="doctitle">DCN Number</label>
+                                                            <input type="text" class="form-control" value="{{ $documents->dcn_number }}" readonly>
+                                                            <input type="hidden" id="dcnNumber" value="{{ $documents->dcn_number }}">
+                                                        </div>   
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label for="doctype">Document Type</label>
+                                                            <input type="text" class="form-control" value="{{ $documents->doctype }}" readonly>
+                                                        </div>   
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label for="doclevel">Assy Code</label>
+                                                            <input type="text" class="form-control" value="{{ $wiDocData->assy_code }}" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label for="model">Model</label>
+                                                            <input type="text" class="form-control" value="{{ $wiDocData->model_name }}" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12">
+                                                        <div class="form-group">
+                                                            <label for="model">Scope</label>
+                                                            <input type="text" class="form-control" value="{{ $wiDocData->scope }}" readonly>
+                                                        </div>                                                    
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label for="establisheddate">Established Date</label>
+                                                            <p>{{ formatDate($docVersionData->established_date) }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label for="ValidityDate">Validity Date</label>
+                                                            <p>{{ formatDate($docVersionData->validity_date) }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label>Created By:</label> {{$documents->createdby}}<br>
+                                                            <label>Created At:</label>
+                                                            <p>{!! formatDateTime($documents->created_at) !!} 
+                                                                ({{\Carbon\Carbon::parse($documents->created_at)->diffForHumans()}})
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label>Last Updated:</label>
+                                                            <p>{!! formatDateTime($documents->updated_at) !!} 
+                                                                @if($documents->updated_at != null)
+                                                                ({{\Carbon\Carbon::parse($documents->updated_at)->diffForHumans()}})
+                                                                @endif
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <div class="card card-gray">
+                                                            <div class="card-header">
+                                                                <h3 class="card-title">IMPLEMENTATION</h3>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
+                                                                    <div class="form-group clearfix">
+                                                                        <div class="icheck-primary d-inline">                                                                        
+                                                                            @if(substr($wiDocData->implementation,0,1) === "Y")
+                                                                                <input type="checkbox" id="imp1" name="imp1" checked disabled>
+                                                                            @else
+                                                                                <input type="checkbox" id="imp1" name="imp1" disabled>
+                                                                            @endif
+                                                                            <label for="imp1"> IMMEDIATE </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
+                                                                    <div class="form-group clearfix">
+                                                                        <div class="icheck-primary d-inline">
+                                                                            @if(substr($wiDocData->implementation,1,1) === "Y")
+                                                                                <input type="checkbox" id="imp2" name="imp2" checked disabled>
+                                                                            @else
+                                                                                <input type="checkbox" id="imp2" name="imp2" disabled>
+                                                                            @endif
+                                                                            <label for="imp2"> RUNNING CHANGE </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
+                                                                    <div class="form-group clearfix">
+                                                                        <div class="icheck-primary d-inline">
+                                                                            @if(substr($wiDocData->implementation,2,1) === "Y")
+                                                                                <input type="checkbox" id="imp3" name="imp3" checked disabled>
+                                                                            @else
+                                                                                <input type="checkbox" id="imp3" name="imp3" disabled>
+                                                                            @endif
+                                                                            <label for="imp3"> TEMPORARY </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12">
+                                                        <div class="card card-gray">
+                                                            <div class="card-header">
+                                                                <h3 class="card-title">REASON</h3>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
+                                                                    <div class="form-group clearfix">
+                                                                        <div class="icheck-primary d-inline">
+                                                                            @if(substr($wiDocData->reason,0,1) === "Y")
+                                                                                <input type="checkbox" id="reason1" name="reason1" checked disabled>  
+                                                                            @else
+                                                                                <input type="checkbox" id="reason1" name="reason1" disabled>
+                                                                            @endif
+                                                                            <label for="reason1"> NEW </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
+                                                                    <div class="form-group clearfix">
+                                                                        <div class="icheck-primary d-inline">
+                                                                            @if(substr($wiDocData->reason,1,1) === "Y")
+                                                                                <input type="checkbox" id="reason2" name="reason2" checked disabled>  
+                                                                            @else
+                                                                                <input type="checkbox" id="reason2" name="reason2" disabled>
+                                                                            @endif
+                                                                            <label for="reason2"> ADDITION </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
+                                                                    <div class="form-group clearfix">
+                                                                        <div class="icheck-primary d-inline">
+                                                                            @if(substr($wiDocData->reason,2,1) === "Y")
+                                                                                <input type="checkbox" id="reason3" name="reason3" checked disabled>  
+                                                                            @else
+                                                                                <input type="checkbox" id="reason3" name="reason3" disabled>
+                                                                            @endif
+                                                                            <label for="reason3"> REVISION </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
+                                                                    <div class="form-group clearfix">
+                                                                        <div class="icheck-primary d-inline">
+                                                                            @if(substr($wiDocData->reason,3,1) === "Y")
+                                                                                <input type="checkbox" id="reason4" name="reason4" checked disabled>  
+                                                                            @else
+                                                                                <input type="checkbox" id="reason4" name="reason4" disabled>
+                                                                            @endif
+                                                                            <label for="reason4"> OTHERS </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
                                 </div>
-                                <div class="tab-pane fade" id="custom-content-above-profile" role="tabpanel" aria-labelledby="custom-content-above-profile-tab">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <h5>Document Area</h5>
-                                            <form action="{{ url('transaction/document/updatearea') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
-                                                @csrf
-                                                <table id="tbl-doc-area" class="table table-bordered table-stripped table-sm">
-                                                    <thead>
-                                                        <th>Document Area</th>
-                                                        <th style="width: 150px; text-align:center;">
-                                                            @if(userAllowChangeDocument() == 1)
-                                                            <button type="button" class="btn btn-success btn-sm btn-select-docarea">
-                                                                <i class="fa fa-plus"></i>
-                                                            </button>
-                                                            @endif
-                                                        </th>
-                                                    </thead>
-                                                    <tbody class="mainbodynpo" id="tbl-doc-area-body">
-                                                        @foreach($affected_area as $key => $row)
-                                                        <tr>
-                                                            <td>
-                                                                <select name="docareas[]" class="form-control docareas">
-                                                                    <option value="{{ $row->docarea }}">{{ $row->docareaname }}</option>
-                                                                </select>
-                                                            </td>
-                                                            <td style="text-align:center;">
-                                                                @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
-                                                                <button type="button" class="btn btn-danger btn-sm btnRemoveArea" data-docareaid="{{ $row->docarea }}">
-                                                                    <i class="fa fa-trash"></i>
-                                                                </button>
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                    <tfoot>
-                                                        <tr>
-                                                            <td></td>
-                                                            <td style="width: 150px; text-align:center;">
-                                                                @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
-                                                                <button type="submit" class="btn btn-primary btn-sm">
-                                                                    <i class="fa fa-edit"></i> Update Area
-                                                                </button>
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                    </tfoot>
-                                                </table>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                                 <div class="tab-pane fade" id="custom-content-above-attachment" role="tabpanel" aria-labelledby="custom-content-above-attachment-tab">
                                     <div class="row">
                                         <div class="col-lg-12">
@@ -255,27 +374,7 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <hr>
-                                    @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
-                                    <form action="{{ url('transaction/document/updatefiles') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
-                                        @csrf
-                                        <div class="row">
-                                            <div class="col-lg-12 col-sm-12 form-group">
-                                                <label for="docfiles">Add New Attachment</label>
-                                                <input type="file" name="docfiles[]" class="form-control" multiple="multiple" required>
-                                            </div>
-                                            <!-- <div class="col-lg-12">
-                                                <label for="">Attachment Notes</label>
-                                                <textarea name="attachmentNote" id="attachmentNote" cols="30" rows="3" class="form-control"></textarea>
-                                            </div> -->
-                                            <div class="col-lg-12">
-                                                <button type="submit" class="btn btn-primary btn-sm">
-                                                    <i class="fa fa-upload"></i> Upload New Files
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    @endif
+                                    
                                 </div>
 
                                 <div class="tab-pane fade" id="custom-content-above-history" role="tabpanel" aria-labelledby="custom-content-above-history-tab">
@@ -590,39 +689,7 @@
 
                         var _areas         = response.affected_area;
                         var _historyGroup  = response.docHistorydateGroup;
-                        var _historyDetail = response.docHistory;
-
-                        // Append Selected Version Affected Document Area
-                        for(var i = 0; i < _areas.length; i++){
-                            $('#tbl-doc-area-body').append(`
-                                <tr>
-                                    <td>
-                                        <select name="docareas[]" class="form-control docareas">
-                                            <option value="`+ _areas[i].docarea +`">`+ _areas[i].docareaname +`</option>
-                                            @foreach($docareas as $key => $row)
-                                                <option value="{{ $row->id }}">{{ $row->docarea }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td style="text-align:center;">
-                                        @if(userAllowChangeDocument() == 1)
-                                        <button type="button" class="btn btn-danger btn-sm btnRemove">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                        @endif
-                                    </td>
-                                <tr>
-                            `);
-    
-                            $('.btnRemove').on('click', function(e){
-                                e.preventDefault();
-                                $(this).closest("tr").remove();
-                            });
-    
-                            $(".docareas").select2();
-                        }
-
-                        
+                        var _historyDetail = response.docHistory;                        
 
                         $('#tbl-attachment-body').append(response.htmlAttachment);
 

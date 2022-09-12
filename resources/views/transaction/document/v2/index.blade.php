@@ -48,15 +48,12 @@
                                     </div>    
                                     <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                                         <label for="model">Model</label>
-                                        <select name="model" id="model" class="form-control">
-                                            @foreach($doclevels as $key => $row)
-                                                <option value="{{ $row->id }}">{{ $row->doclevel }}</option>
-                                            @endforeach
+                                        <select name="model" id="find-model" class="form-control">
                                         </select>
                                     </div>
                                     <div class="col-lg-6 col-sm-12 form-group">
                                         <label for="assycode">Assy Code</label>
-                                        <input type="text" name="assycode" class="form-control" required>
+                                        <input type="text" name="assycode" id="assycode" class="form-control" required>
                                     </div>
                                     <div class="col-lg-6 col-sm-12 form-group">
                                         <label for="scope">Scope</label>
@@ -185,6 +182,52 @@
     $(document).ready(function () {        
         var count = 0;
        
+        $(document).on('select2:open', (event) => {
+            const searchField = document.querySelector(
+                `.select2-search__field`,
+            );
+            if (searchField) {
+                searchField.focus();
+            }
+        });
+
+        $('#find-model').select2({ 
+            placeholder: 'Type Model Name',
+            width: '100%',
+            minimumInputLength: 3,
+            ajax: {
+                url: 'https://ipdsystem.toekangketik.com/ipdfordms/searchAssycode',
+                dataType: 'json',
+                delay: 250,
+                data: function(data){
+                    return{
+                        searchName: data.term
+                    }
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data.data, function (item) {                            
+                            return {
+                                text: item.matdesc,
+                                slug: item.material,
+                                id: item.matdesc,
+                                ...item
+                            }
+                        })
+                    };
+                },
+            }
+        });
+
+        $('#find-model').on('change', function(){
+            // alert(this.value)
+            
+            var data = $('#find-model').select2('data')
+            console.log(data);
+
+            // alert(data[0].material);
+            $('#assycode').val(data[0].material);
+        })
 
         $('.docremark').ckeditor();
     });

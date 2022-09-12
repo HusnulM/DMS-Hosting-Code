@@ -22,6 +22,7 @@ class DocumentV2Controller extends Controller
     }
 
     public function save(Request $req){
+        // return $req;
         // return generateDcnNumber();
         // return public_path();
         DB::beginTransaction();
