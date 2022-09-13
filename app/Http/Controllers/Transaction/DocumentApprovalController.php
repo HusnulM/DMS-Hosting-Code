@@ -262,6 +262,152 @@ class DocumentApprovalController extends Controller
         }
     }
 
+    public function approvewithattachment(Request $req){
+        DB::beginTransaction();
+        try{
+            $docHistory = array();
+
+            $document = DB::table('documents')->where('dcn_number', $req['dcnNumber'])->first();
+            $userAppLevel = DB::table('v_document_approvals_v2')
+                            ->select('approver_level')
+                            ->where('dcn_number',  $req['dcnNumber'])
+                            ->where('approval_version',  $req['version'])
+                            ->where('approver_id', Auth::user()->id)
+                            ->first();
+
+            DB::table('document_approvals')
+            ->where('dcn_number',        $req['dcnNumber'])
+            ->where('approval_version',  $req['version'])
+            // ->where('approver_id', Auth::user()->id)
+            ->where('approver_level',$userAppLevel->approver_level)
+            ->update([
+                'approval_status' => $req['action'],
+                'approval_remark' => $req['approvernote'],
+                'approved_by'     => Auth::user()->username,
+                'approval_date'   => getLocalDatabaseDateTime()
+            ]);
+
+            $nextApprover = $this->getNextApproval($req['dcnNumber']);
+            
+            $docStat = '';
+            if($req['action'] === "A"){
+                $docStat = 'Document Approved';
+                if($nextApprover  != null){
+                    DB::table('document_approvals')
+                    ->where('dcn_number', $req['dcnNumber'])
+                    ->where('approval_version',  $req['version'])
+                    ->where('approver_level', $nextApprover)
+                    ->update([
+                        'is_active' => 'Y'
+                    ]);
+                }
+            }elseif($req['action'] === "R"){
+                $docStat = 'Document Rejected';
+            }
+
+            $insertHistory = array(
+                'dcn_number'        => $req['dcnNumber'],
+                'activity'          => $docStat,
+                'doc_version'       => $req['version'],
+                'createdby'         => Auth::user()->email ?? Auth::user()->username,
+                'createdon'         => getLocalDatabaseDateTime(),
+                'updatedon'         => getLocalDatabaseDateTime()
+            );
+            array_push($docHistory, $insertHistory);
+            insertOrUpdate($docHistory,'document_historys');
+
+            DB::table('documents')->where('dcn_number', $req['dcnNumber'])->update([
+                'updated_at' => getLocalDatabaseDateTime()
+            ]);
+
+            $approvalfile     = $req->file('approveddoc');
+            $filename         = $approvalfile->getClientOriginalName();
+            $approvalfilepath = 'storage/files/approvaldocs/'. $filename;  
+
+            if($approvalfile){
+                $approvalfile->move('storage/files/approvaldocs/', $filename);  
+            }
+
+            $AppDocData = array();
+            $insertAppDoc = array(
+                'dcn_number'        => $req['dcnNumber'],
+                'doc_version'       => $req['version'],
+                'efile'             => $approvalfilepath,
+                // 'isactive'          => 'Y',
+                'createdby'         => Auth::user()->email ?? Auth::user()->username,
+                'createdon'         => getLocalDatabaseDateTime()
+            );
+            array_push($AppDocData, $insertAppDoc);
+            insertOrUpdate($AppDocData,'approval_attachments');
+
+            DB::table('approval_attachments')
+                ->where('dcn_number', $req['dcnNumber'])
+                ->where('doc_version', '!=', $req['version'])
+                ->update([
+                    'isactive'          => 'N'
+                ]);
+
+            // approval_attachments
+
+            DB::commit();
+
+            $checkIsFullApprove = DB::table('document_approvals')
+                                  ->where('dcn_number', $req['dcnNumber'])
+                                  ->where('approval_version', $req['version'])
+                                  ->where('approval_status', '!=', 'A')
+                                  ->get();
+
+            if(sizeof($checkIsFullApprove) > 0){
+
+            }else{
+                DB::table('document_versions')
+                ->where('dcn_number',  $req['dcnNumber'])
+                ->where('doc_version', $req['version'])
+                ->update([
+                    'status'         => 'Approved',
+                ]);
+
+                DB::commit();
+            }
+            if($nextApprover  != null){
+                $mailTo = DB::table('v_workflow_assignments')
+                          ->where('workflow_group', $document->workflow_group)
+                          ->where('approval_level', $nextApprover)
+                          ->pluck('approver_email');
+                
+                $mailData = [
+                            'email'    => 'husnulmub@gmail.com',
+                            'docID'    => $document->id,
+                            'version'  => $req['version'],
+                            'dcnNumb'  => $document->dcn_number,
+                            'docTitle' => $document->document_title,
+                            'docCrdt'  => formatDate($document->created_at),
+                            'docCrby'  => $document->createdby,
+                            'body'     => 'This is for testing email using smtp'
+                ];
+                        
+                        // dispatch(new SendEmailJob($mailData));
+                Mail::to($mailTo)->queue(new MailNotif($mailData));
+            }
+
+            $result = array(
+                'msgtype' => '200',
+                'message' => 'Success'
+            );
+
+            return $result;
+        }catch(\Exception $e){
+            DB::rollBack();
+            // return Redirect::to("/transaction/document")->withError($e->getMessage());
+            $result = array(
+                'msgtype' => '401',
+                'message' => $e->getMessage()
+            );
+
+            return $result;
+        }
+    }
+
     public function rejectDocument(){
 
     }

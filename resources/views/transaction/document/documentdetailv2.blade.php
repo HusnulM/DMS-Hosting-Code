@@ -4,7 +4,7 @@
 
 @section('additional-css')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ ('/assets/css/customstyle.css') }}">
+    <link rel="stylesheet" href="{{ asset('/assets/css/customstyle.css') }}">
     <style type="text/css">
         .select2-container {
             display: block
@@ -76,9 +76,9 @@
                 <div class="card-header">
                     <h3 class="card-title">Document Detail <b id="hdr-version">Version {{ $docversions[0]->doc_version }}</b></h3>
                     <div class="card-tools">
-                        <a href="{{ url('/transaction/doclist/print') }}/{{$documents->id}}" target="_blank" class='btn btn-success btn-sm button-print'> 
+                        <!-- <a href="{{ url('/transaction/doclist/print') }}/{{$documents->id}}" target="_blank" class='btn btn-success btn-sm button-print'> 
                             <i class='fa fa-print'></i> Print
-                        </a>
+                        </a> -->
                         <a href="{{ url('/transaction/doclist') }}" class="btn btn-default btn-sm">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>
@@ -362,10 +362,10 @@
                                                             ({!! formatDateTime($file->created_at) !!})
                                                         </td>
                                                         <td>
+                                                            <button type="button" onclick="previewFile('storage/files/{{$file->efile}}#toolbar=0')">Preview</button>
                                                             @if(checkIsLocalhost() == 1)
-                                                            <button type="button" onclick="previewFile('/files/{{$file->efile}}#toolbar=0')">Preview</button>
                                                             @else
-                                                            <button type="button" onclick="previewFile('/main/public/files/{{$file->efile}}#toolbar=0')">Preview</button>
+                                                            <!-- <button type="button" onclick="previewFile('/main/public/files/{{$file->efile}}#toolbar=0')">Preview</button> -->
                                                             @endif
                                                         </td>
                                                     </tr>
@@ -481,6 +481,11 @@
                                                 @endforeach
                                             </tbody>
                                         </table>     
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <a href="{{ url('') }}/{{$approvalDoc->efile}}" target="_blank" class='btn btn-success btn-sm pull-right'> 
+                                            <i class='fa fa-download'></i> Download Approval Document
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -598,16 +603,17 @@
 @endsection
 
 @section('additional-js')
-<script src="{{ ('/assets/ckeditor/ckeditor.js') }}"></script>
-<script src="{{ ('/assets/ckeditor/adapters/jquery.js') }}"></script>
+<script src="{{ asset('/assets/ckeditor/ckeditor.js') }}"></script>
+<script src="{{ asset('/assets/ckeditor/adapters/jquery.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script type="text/javascript">
 
-    function previewFile(files){         
+    function previewFile(files){
+        var pathfile = base_url+'/'+files;         
         if(files !== ""){
             $('#fileViewer').html('');
             $('#fileViewer').append(`
-                <embed src="`+ files +`" frameborder="0" width="100%" height="500px">
+                <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
             
             `);
             // var options = {

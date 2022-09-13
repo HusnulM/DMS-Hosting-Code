@@ -64,7 +64,7 @@ class UserController extends Controller
             ]);
 
             if($esignfile){
-                $esignfile->move(public_path().'/files/e_signature/', $filename);  
+                $esignfile->move('/files/e_signature/', $filename);  
             }
 
             DB::commit();

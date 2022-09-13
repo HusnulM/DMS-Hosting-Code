@@ -12,17 +12,17 @@
   <link rel="stylesheet" href="{{ ('/assets/plugins/fontawesome-free/css/all.min.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
   <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="{{ ('/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
-  <link rel="stylesheet" href="{{ ('/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
-  <link rel="stylesheet" href="{{ ('/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
-  <link rel="stylesheet" href="{{ ('/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
-  <link rel="stylesheet" href="{{ ('/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     <!-- SweetAlert2 -->
-  <link rel="stylesheet" href="{{ ('/assets/plugins/sweetalert2/sweetalert2.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/assets/plugins/sweetalert2/sweetalert2.min.css') }}">
   <!-- Toastr -->
-  <link rel="stylesheet" href="{{ ('/assets/plugins/toastr/toastr.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/assets/plugins/toastr/toastr.min.css') }}">
   <!-- Theme style -->
-  <link rel="stylesheet" href="{{ ('/assets/dist/css/adminlte.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/assets/dist/css/adminlte.min.css') }}">
 
   @yield('additional-css')
 
@@ -150,49 +150,49 @@
 <!-- ./wrapper -->
 <!-- REQUIRED SCRIPTS -->
 <!-- jQuery -->
-<script src="{{ ('/assets/plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/jquery/jquery.min.js') }}"></script>
 
 <!-- Bootstrap -->
-<script src="{{ ('/assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- overlayScrollbars -->
-<script src="{{ ('/assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
 
-<script src="{{ ('/assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/jszip/jszip.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/pdfmake/pdfmake.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/pdfmake/vfs_fonts.js') }}"></script>
-<script src="{{ ('/assets/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/jszip/jszip.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/pdfmake/pdfmake.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/pdfmake/vfs_fonts.js') }}"></script>
+<script src="{{ asset('/assets/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
 
-<script src="{{ ('/assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 
-<script src="{{ ('/assets/plugins/toastr/toastr.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/toastr/toastr.min.js') }}"></script>
 <!-- AdminLTE App -->
-<script src="{{ ('/assets/dist/js/adminlte.js') }}"></script>
+<script src="{{ asset('/assets/dist/js/adminlte.js') }}"></script>
 
-<script src="{{ ('/assets/js/pdfobject.min.js') }}"></script>
+<script src="{{ asset('/assets/js/pdfobject.min.js') }}"></script>
 
 
 <!-- <script src="//cdn.ckeditor.com/4.14.1/standard/ckeditor.js"></script> -->
 <!-- PAGE PLUGINS -->
 <!-- jQuery Mapael -->
-<!-- <script src="{{ ('/assets/plugins/jquery-mousewheel/jquery.mousewheel.js') }}"></script>
-<script src="{{ ('/assets/plugins/raphael/raphael.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/jquery-mapael/jquery.mapael.min.js') }}"></script>
-<script src="{{ ('/assets/plugins/jquery-mapael/maps/usa_states.min.js') }}"></script> -->
+<!-- <script src="{{ asset('/assets/plugins/jquery-mousewheel/jquery.mousewheel.js') }}"></script>
+<script src="{{ asset('/assets/plugins/raphael/raphael.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/jquery-mapael/jquery.mapael.min.js') }}"></script>
+<script src="{{ asset('/assets/plugins/jquery-mapael/maps/usa_states.min.js') }}"></script> -->
 <!-- ChartJS -->
-<!-- <script src="{{ ('/assets/plugins/chart.js/Chart.min.js') }}"></script> -->
+<!-- <script src="{{ asset('/assets/plugins/chart.js/Chart.min.js') }}"></script> -->
 
 <!-- AdminLTE for demo purposes -->
 <!-- <script src="dist/js/demo.js"></script> -->
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<!-- <script src="{{ ('/assets/dist/js/pages/dashboard2.js') }}"></script> -->
+<!-- <script src="{{ asset('/assets/dist/js/pages/dashboard2.js') }}"></script> -->
 
 <script>
   $(function(){

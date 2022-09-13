@@ -18,7 +18,8 @@ class DocumentV2Controller extends Controller
         $doctypes  = DB::table('doctypes')->where('doctype', 'Work Instruction')->get();
         $doclevels = DB::table('doclevels')->get();
         $docareas  = DB::table('docareas')->get();
-        return view('transaction.document.v2.index', ['doctypes' => $doctypes, 'doclevels' => $doclevels, 'docareas' => $docareas]);
+        $ipdapi    = DB::table('general_setting')->where('setting_name', 'IPD_MODEL_API')->first();
+        return view('transaction.document.v2.index', ['doctypes' => $doctypes, 'doclevels' => $doclevels, 'docareas' => $docareas, 'ipdapi' => $ipdapi]);
     }
 
     public function save(Request $req){
@@ -82,13 +83,13 @@ class DocumentV2Controller extends Controller
                     'dcn_number' => $dcnNumber,
                     'doc_version'=> 1,
                     'efile'      => $filename,
-                    'pathfile'   => '/files/'. $filename,
+                    'pathfile'   => 'storage/files/'. $filename,
                     'created_at' => getLocalDatabaseDateTime(),
                     'createdby'  => Auth::user()->username ?? Auth::user()->email
                 );
                 array_push($insertFiles, $upfiles);
 
-                $efile->move(public_path().'/files/', $filename);  
+                $efile->move('storage/files/', $filename);  
 
                 $insertHistory = array(
                     'dcn_number'        => $dcnNumber,

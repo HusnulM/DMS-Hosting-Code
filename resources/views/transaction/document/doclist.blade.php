@@ -4,7 +4,7 @@
 
 @section('additional-css')
     <!-- <link rel="stylesheet" href="http://localhost:8181/digidocu/css/lte/AdminLTE.min.css"> -->
-    <link rel="stylesheet" href="{{ ('/assets/css/customstyle.css') }}">
+    <link rel="stylesheet" href="{{ asset('/assets/css/customstyle.css') }}">
 @endsection
 
 @section('content')
@@ -137,6 +137,7 @@
                 selected_data = [];
                 selected_data = table.row($(this).closest('tr')).data();
                 window.location = base_url+"/transaction/doclist/detail/"+selected_data.id;
+                
             });
 
             $('#tbl-doclist tbody').on( 'click', '.button-print', function () {                
@@ -144,10 +145,12 @@
                 selected_data = [];
                 selected_data = table.row($(this).closest('tr')).data();
                 // window.location = base_url+"/transaction/doclist/print/"+selected_data.id;
-                window.open(
-                    base_url+"/transaction/doclist/print/"+selected_data.id,
-                    '_blank' // <- This is what makes it open in a new window.
-                );
+                if(selected_data.doctype === "Corporate Procedure"){
+                    window.open(
+                        base_url+"/transaction/doclist/print/"+selected_data.id,
+                        '_blank' // <- This is what makes it open in a new window.
+                    );
+                }
             });
 
             // print

@@ -4,7 +4,7 @@
 
 @section('additional-css')
     <!-- <link rel="stylesheet" href="http://localhost:8181/digidocu/css/lte/AdminLTE.min.css"> -->
-    <link rel="stylesheet" href="{{ ('/assets/css/customstyle.css') }}">
+    <link rel="stylesheet" href="{{ asset('/assets/css/customstyle.css') }}">
 @endsection
 
 @section('content')

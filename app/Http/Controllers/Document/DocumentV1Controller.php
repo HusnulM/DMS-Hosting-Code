@@ -382,13 +382,13 @@ class DocumentV1Controller extends Controller
                     'dcn_number' => $dcnNumber,
                     'doc_version'=> 1,
                     'efile'      => $filename,
-                    'pathfile'   => '/files/'. $filename,
+                    'pathfile'   => 'storage/files/'. $filename,
                     'created_at' => getLocalDatabaseDateTime(),
                     'createdby'  => Auth::user()->username ?? Auth::user()->email
                 );
                 array_push($insertFiles, $upfiles);
 
-                $efile->move(public_path().'/files/', $filename);  
+                $efile->move('storage/files/', $filename);  
 
                 $insertHistory = array(
                     'dcn_number'        => $dcnNumber,

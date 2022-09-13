@@ -97,6 +97,11 @@ class DocumentController extends Controller
                 'docapproval'    => $docapproval
             ]);
         }elseif($documents->doctype == 'Work Instruction'){
+
+            $approvalDoc = DB::table('approval_attachments')
+                            ->where('dcn_number',  $documents->dcn_number)
+                            ->where('doc_version', $latestVersion)
+                            ->first();
             return view('transaction.document.documentdetailv2', [
                 'documents'     => $documents,
                 'docversions'   => $docversions,
@@ -114,6 +119,7 @@ class DocumentController extends Controller
                 'docapproval'    => $docapproval,
                 'wiDocData'      => $wiDocData,
                 'docVersionData'   => $docVersionData,
+                'approvalDoc'      => $approvalDoc
             ]);
         }
     }

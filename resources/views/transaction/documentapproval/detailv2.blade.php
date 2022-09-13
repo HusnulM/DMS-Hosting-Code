@@ -4,7 +4,7 @@
 
 @section('additional-css')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ ('/assets/css/customstyle.css') }}">
+    <link rel="stylesheet" href="{{ asset('/assets/css/customstyle.css') }}">
     <style type="text/css">
         .select2-container {
             display: block
@@ -266,10 +266,10 @@
                                                             ({!! formatDateTime($file->created_at) !!})
                                                         </td>
                                                         <td>
+                                                            <button type="button" onclick="previewFile('storage/files/{{$file->efile}}#toolbar=0')">Preview</button>
                                                             @if(checkIsLocalhost() == 1)
-                                                            <button type="button" onclick="previewFile('/files/{{$file->efile}}#toolbar=0')">Preview</button>
                                                             @else
-                                                            <button type="button" onclick="previewFile('/main/public/files/{{$file->efile}}#toolbar=0')">Preview</button>
+                                                            <!-- <button type="button" onclick="previewFile('/main/public/files/{{$file->efile}}#toolbar=0')">Preview</button> -->
                                                             @endif
                                                         </td>
                                                     </tr>
@@ -330,21 +330,27 @@
                                                     @csrf
                                                     <div class="form-group">
                                                         <input type="hidden" name="version" id="docVersion" value="{{ $version }}">
+                                                        <input type="hidden" name="action" value="A">
+                                                        <input type="hidden" name="dcnNumber" value="{{ $document->dcn_number }}">
                                                         <textarea name="approver_note" id="approver_note" class="form-control" cols="30" rows="3" placeholder="Approver Note"></textarea>
                                                     </div>
                                                     <div class="input-group mb-3">
                                                         <input type="file" class="form-control" name="approveddoc" required>
                                                         <div class="input-group-append">
-                                                            <button class="btn btn-success btn-sm" type="submit">
-                                                                <i class="fa fa-check"></i> APPROVE
+                                                            <button class="btn btn-success btn-sm btn-approve" type="submit">
+                                                                <i class="fa fa-check"></i> APPROVE DOCUMENT
                                                             </button>
                                                             <button type="button" class="btn btn-danger btn-sm mr-3" id="btn-reject">
                                                                 <i class="fa fa-xmark"></i> REJECT
                                                             </button>
                                                         </div>
                                                     </div>
-                                                </form>    
+                                                </form> 
                                                 <!-- <div class="form-group">
+                                                    <input type="hidden" name="version" id="docVersion" value="{{ $version }}">
+                                                    <textarea name="approver_note" id="approver_note" class="form-control" cols="30" rows="3" placeholder="Approver Note"></textarea>
+                                                </div>
+                                                <div class="form-group">
                                                     <button type="button" class="btn btn-success pull-right ml-1" id="btn-approve">
                                                         <i class="fa fa-check"></i> APPROVE
                                                     </button>
@@ -428,17 +434,18 @@
 @endsection
 
 @section('additional-js')
-<script src="{{ ('/assets/ckeditor/ckeditor.js') }}"></script>
-<script src="{{ ('/assets/ckeditor/adapters/jquery.js') }}"></script>
+<script src="{{ asset('/assets/ckeditor/ckeditor.js') }}"></script>
+<script src="{{ asset('/assets/ckeditor/adapters/jquery.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <!-- <script src="https://cdn.scaleflex.it/plugins/filerobot-image-editor/3/filerobot-image-editor.min.js"></script> -->
 
 <script type="text/javascript">
-    function previewFile(files){         
+    function previewFile(files){     
+        var pathfile = base_url+'/'+files;    
         if(files !== ""){
             $('#fileViewer').html('');
             $('#fileViewer').append(`
-                <embed src="`+ files +`" frameborder="0" width="100%" height="500px">
+                <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
             
             `);
             $('#modalPreviewFile').modal('show');
@@ -451,13 +458,13 @@
         $('#tbl-doc-area').DataTable();
 
         $('#btn-approve').on('click', function(){
-            $('#btn-approve').prop('disabled', true);
+            $('.btn-approve').prop('disabled', true);
             $('#btn-reject').prop('disabled', true);
             approveDocument('A');
         });
 
         $('#btn-reject').on('click', function(){
-            $('#btn-approve').prop('disabled', true);
+            $('.btn-approve').prop('disabled', true);
             $('#btn-reject').prop('disabled', true);
             approveDocument('R');
         });
@@ -506,7 +513,7 @@
             var formData = new FormData(this);
             console.log($(this).serialize())
             $.ajax({
-                url:base_url+'/handworkprocess/saveshandwork',
+                url:base_url+'/transaction/docapproval/approvewithattachment',
                 method:'post',
                 data:formData,
                 dataType:'JSON',
@@ -515,6 +522,7 @@
                 processData: false,
                 beforeSend:function(){
                     // showBasicMessage();
+                    $('.btn-approve').prop('disabled', true);
                 },
                 success:function(data)
                 {
@@ -525,7 +533,12 @@
                 }
             }).done(function(result){
                 console.log(result);
-                
+                if(result){                        
+                    toastr.success('Document Approved');
+                    setTimeout(function(){ 
+                        window.location.href = base_url+'/transaction/docapproval';
+                    }, 2000);
+                }
             });
         });
 
