@@ -483,9 +483,11 @@
                                         </table>     
                                     </div>
                                     <div class="col-lg-12">
-                                        <a href="{{ url('') }}/{{$approvalDoc->efile}}" target="_blank" class='btn btn-success btn-sm pull-right'> 
+                                        @if($approvalDoc)
+                                        <a href="{{ url('') }}/{{$approvalDoc->efile ?? ''}}" target="_blank" class='btn btn-success btn-sm pull-right'> 
                                             <i class='fa fa-download'></i> Download Approval Document
                                         </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
