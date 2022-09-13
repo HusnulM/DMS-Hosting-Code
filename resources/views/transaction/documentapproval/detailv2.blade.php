@@ -326,20 +326,34 @@
                                         @if($isApprovedbyUser->approval_status <> "A")
                                         <div class="row">
                                             <div class="col-lg-12">
-                                                <form action="">
+                                                <form id="form-approve-document" method="post" enctype="multipart/form-data">
+                                                    @csrf
                                                     <div class="form-group">
                                                         <input type="hidden" name="version" id="docVersion" value="{{ $version }}">
                                                         <textarea name="approver_note" id="approver_note" class="form-control" cols="30" rows="3" placeholder="Approver Note"></textarea>
                                                     </div>
-                                                    <div class="form-group">
-                                                        <button type="button" class="btn btn-success pull-right ml-1" id="btn-approve">
-                                                            <i class="fa fa-check"></i> APPROVE
-                                                        </button>
-                                                        <button type="button" class="btn btn-danger pull-right" id="btn-reject">
-                                                            <i class="fa fa-xmark"></i> REJECT
-                                                        </button>
+                                                    <div class="input-group mb-3">
+                                                        <input type="file" class="form-control" name="approveddoc" required>
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-success btn-sm" type="submit">
+                                                                <i class="fa fa-check"></i> APPROVE
+                                                            </button>
+                                                            <button type="button" class="btn btn-danger btn-sm mr-3" id="btn-reject">
+                                                                <i class="fa fa-xmark"></i> REJECT
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                </form>
+                                                </form>    
+                                                <!-- <div class="form-group">
+                                                    <button type="button" class="btn btn-success pull-right ml-1" id="btn-approve">
+                                                        <i class="fa fa-check"></i> APPROVE
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger pull-right" id="btn-reject">
+                                                        <i class="fa fa-xmark"></i> REJECT
+                                                    </button>
+                                                </div>
+                                                <form action="">
+                                                </form> -->
                                             </div>
                                         </div>
                                         @endif
@@ -485,6 +499,35 @@
                 }
             });
         }
+
+        $('#form-approve-document').on('submit', function(event){
+            event.preventDefault();
+                
+            var formData = new FormData(this);
+            console.log($(this).serialize())
+            $.ajax({
+                url:base_url+'/handworkprocess/saveshandwork',
+                method:'post',
+                data:formData,
+                dataType:'JSON',
+                contentType: false,
+                cache: false,
+                processData: false,
+                beforeSend:function(){
+                    // showBasicMessage();
+                },
+                success:function(data)
+                {
+                    console.log(data);
+                },
+                error:function(err){
+                    // showErrorMessage(JSON.stringify(err))
+                }
+            }).done(function(result){
+                console.log(result);
+                
+            });
+        });
 
         $('.docremark').ckeditor();
     });
