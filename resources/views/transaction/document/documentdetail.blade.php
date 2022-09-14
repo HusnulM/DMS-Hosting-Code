@@ -631,8 +631,10 @@
 
                         $('.btn-preview').on('click', function(){
                             var _dataFile = $(this).data();
-                            console.log(_dataFile)
+                            
                             var pathfile = base_url+'/'+_dataFile.filepath;
+
+                            console.log(pathfile)
 
                             if(_dataFile.filepath !== ""){
                                 $('#fileViewer').html('');
