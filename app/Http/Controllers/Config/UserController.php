@@ -48,8 +48,10 @@ class UserController extends Controller
         DB::beginTransaction();
         try{
             $esignfile = $request->file('esignfile');
-            $filename  = $esignfile->getClientOriginalName();
-            $esignpath = '/files/e_signature/'. $filename;  
+            if($esignfile){
+                $filename  = $esignfile->getClientOriginalName();
+                $esignpath = '/files/e_signature/'. $filename;  
+            }
             // public_path().'/files/e_signature/', $filename;
             
 
