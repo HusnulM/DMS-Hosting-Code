@@ -317,9 +317,7 @@ class DocumentController extends Controller
 
     public function loadDocList(Request $req){
         $params = $req->params;
-        
-
-        // $whereClause = $params['sac'];
+        $whereClause = $params['sac'];
 
         $query   = DB::table('v_documents');
         if(count($req->all()) > 0){

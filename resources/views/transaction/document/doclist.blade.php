@@ -104,7 +104,7 @@
                 "responsive": true,
                 "bDestroy": true,
                 columns: [
-                    { "data": null,"sortable": false, 
+                    { "data": null,"sortable": false,  "searchable": false,
                         render: function (data, type, row, meta) {
                             return meta.row + meta.settings._iDisplayStart + 1;
                         }  

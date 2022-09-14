@@ -134,11 +134,12 @@
                     {
                         "className":      'details-control',
                         "orderable":      false,
+                        "searchable": false,
                         "data":           null,
                         "defaultContent": '',
                         "width": "30px"
                     },
-                    { "data": null,"sortable": false, 
+                    { "data": null,"sortable": false, "searchable": false,
                         render: function (data, type, row, meta) {
                             return meta.row + meta.settings._iDisplayStart + 1;
                         }  
