@@ -46,10 +46,10 @@
                                             </div>
                                             <hr>
                                             <div class="col-lg-12">
+                                                <img src="{{ $complogo->setting_value ?? '/assets/dist/img/no-image.png' }}" alt="Company-Logo" class="img-thumbnail" style="width:200px; height:200px;">
                                                 @if(checkIsLocalhost() == 1)
-                                                    <img src="{{ $complogo->setting_value ?? '/assets/dist/img/no-image.png' }}" alt="Company-Logo" class="img-thumbnail" style="width:200px; height:200px;">
                                                 @else
-                                                    <img src="/main/public/{{ $complogo->setting_value ?? '/assets/dist/img/no-image.png' }}" alt="Company-Logo" class="img-thumbnail" style="width:200px; height:200px;">
+                                                    <!-- <img src="/main/public/{{ $complogo->setting_value ?? '/assets/dist/img/no-image.png' }}" alt="Company-Logo" class="img-thumbnail" style="width:200px; height:200px;"> -->
                                                 @endif
                                             </div>
                                         </div>
