@@ -20,8 +20,8 @@ class GeneralSettingController extends Controller
         try{
             $companyLogo = $request->file('companylogo');
             $filename    = $companyLogo->getClientOriginalName();
-            $filepath    = '/files/companylogo/'. $filename;  
-            $companyLogo->move('/files/companylogo/', $filename);  
+            $filepath    = 'storage/files/companylogo/'. $filename;  
+            $companyLogo->move('storage/files/companylogo/', $filename);  
 
             $check = DB::table('general_setting')->where('setting_name', 'COMPANY_LOGO')->first();
             if($check){

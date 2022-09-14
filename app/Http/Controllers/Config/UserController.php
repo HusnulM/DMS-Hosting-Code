@@ -50,7 +50,7 @@ class UserController extends Controller
             $esignfile = $request->file('esignfile');
             if($esignfile){
                 $filename  = $esignfile->getClientOriginalName();
-                $esignpath = '/files/e_signature/'. $filename;  
+                $esignpath = 'storage/files/e_signature/'. $filename;  
             }
             // public_path().'/files/e_signature/', $filename;
             
@@ -66,7 +66,7 @@ class UserController extends Controller
             ]);
 
             if($esignfile){
-                $esignfile->move('/files/e_signature/', $filename);  
+                $esignfile->move('storage/files/e_signature/', $filename);  
             }
 
             DB::commit();
@@ -112,13 +112,13 @@ class UserController extends Controller
             $esignfile = $request->file('esignfile');
             if($esignfile){
                 $filename  = $esignfile->getClientOriginalName();
-                $esignpath = '/files/e_signature/'. $filename;  
+                $esignpath = 'storage/files/e_signature/'. $filename;  
 
                 DB::table('users')->where('id',$request['iduser'])->update([
                     's_signfile'     => $esignpath,
                 ]);
 
-                $esignfile->move(public_path().'/files/e_signature/', $filename);  
+                $esignfile->move('storage/files/e_signature/', $filename);  
             }
             
             DB::commit();
