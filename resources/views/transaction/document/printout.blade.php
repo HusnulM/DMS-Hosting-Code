@@ -65,7 +65,7 @@
                 <td  style="height:60px;">
                 <!-- $logo -->
                     @if($logo->setting_value != null)
-                        <img src="{{ public_path($logo->setting_value) }}" class="img-thumbnail" alt="E-Logo" style="width:90px; height:60px;">
+                        <img src="{{ asset($logo->setting_value) }}" class="img-thumbnail" alt="E-Logo" style="width:90px; height:60px;">
                     @endif
                 </td>
                 <td style="height:60px;">
