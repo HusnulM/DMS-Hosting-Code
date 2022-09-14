@@ -235,7 +235,7 @@ class DocumentController extends Controller
                         (".formatDateTime($file->created_at).")
                     </td>
                     <td>
-                        <button type='button' class='btn-preview' data-filepath='/files/$file->efile#toolbar=0'>Preview</button>
+                        <button type='button' class='btn-preview' data-filepath='$file->pathfile#toolbar=0'>Preview</button>
                     </td>
                 </tr>";
         }

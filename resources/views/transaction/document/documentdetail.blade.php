@@ -632,7 +632,7 @@
                         $('.btn-preview').on('click', function(){
                             var _dataFile = $(this).data();
                             
-                            var pathfile = base_url+'/'+_dataFile.filepath;
+                            var pathfile = base_url+_dataFile.filepath;
 
                             console.log(pathfile)
 
@@ -641,12 +641,6 @@
                                 $('#fileViewer').append(`
                                     <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
                                 `);
-                                // @if(checkIsLocalhost() == 1)
-                                // @else
-                                //     $('#fileViewer').append(`
-                                //         <embed src="/main/public`+ _dataFile.filepath +`" frameborder="0" width="100%" height="500px">
-                                //     `);
-                                // @endif
                                 $('#modalPreviewFile').modal('show');
                             } else{
                                 swal("File Not Found", "", "warning");
