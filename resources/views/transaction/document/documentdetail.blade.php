@@ -430,7 +430,7 @@
 
 <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalAddVersion">
     <div class="modal-dialog modal-xl">
-        <form action="{{ url('/transaction/document/savenewversion') }}/{{ $documents->id }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+        <form action="{{ url('/document/v1/savenewversion') }}/{{ $documents->id }}" method="post" class="form-horizontal" enctype="multipart/form-data">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">

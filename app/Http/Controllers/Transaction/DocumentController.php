@@ -156,10 +156,10 @@ class DocumentController extends Controller
                                 ->where('doc_version', $version)
                                 ->first();
         
-        // $data['affected_area'] = DB::table('v_docarea_affected')
-        //                         ->where('dcn_number', $document->dcn_number)
-        //                         ->where('doc_version', $version)
-        //                         ->get();
+        $data['affected_area'] = DB::table('v_docarea_affected')
+                                ->where('dcn_number', $document->dcn_number)
+                                ->where('doc_version', $version)
+                                ->get();
 
         $data['attachments']   = DB::table('document_attachments')
                                 ->where('dcn_number', $document->dcn_number)
