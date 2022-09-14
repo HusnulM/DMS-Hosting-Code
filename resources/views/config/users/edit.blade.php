@@ -77,7 +77,7 @@
                                     <!-- <img src="{{ $datauser->s_signfile ?? '/assets/dist/img/no-image.png' }}" class="img-thumbnail" alt="E-sign" style="width:200px; height:200px;"> -->
                                     @else
                                     @endif
-                                    <img src="{{ asset($datauser->s_signfile) ?? '/assets/dist/img/no-image.png' }}" class="img-thumbnail" alt="E-sign" style="width:200px; height:200px;">
+                                    <img src="{{ asset($datauser->s_signfile) ?? asset('/assets/dist/img/no-image.png') }}" class="img-thumbnail" alt="E-sign" style="width:200px; height:200px;">
                                 </div>
                             </div>
                         </div>
