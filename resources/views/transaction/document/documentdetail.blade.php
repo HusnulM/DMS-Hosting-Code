@@ -632,7 +632,7 @@
                         $('.btn-preview').on('click', function(){
                             var _dataFile = $(this).data();
                             
-                            var pathfile = base_url+_dataFile.filepath;
+                            var pathfile = base_url+'/'+_dataFile.filepath;
 
                             console.log(pathfile)
 
