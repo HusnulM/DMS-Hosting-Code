@@ -490,7 +490,7 @@
         <form class="form-horizontal">
             <div class="modal-content">
                 <div class="preloader flex-column justify-content-center align-items-center LoadingData">
-                    <img class="animation__wobble" src="{{ ('/assets/dist/img/loading1.gif') }}" alt="AdminLTELogo" height="60" width="60">
+                    <img class="animation__wobble" src="{{ asset('/assets/dist/img/loading1.gif') }}" alt="AdminLTELogo" height="60" width="60">
                 </div>
             </div>
         </form>
