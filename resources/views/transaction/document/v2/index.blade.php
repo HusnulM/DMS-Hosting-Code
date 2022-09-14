@@ -198,7 +198,7 @@
             minimumInputLength: 3,
             ajax: {
                 // url: 'https://ipdsystem.toekangketik.com/ipdfordms/searchAssycode',
-                url: '{{ $ipdapi->setting_value }}',
+                url: '{{ $ipdapi->setting_value ?? '' }}',
                 dataType: 'json',
                 delay: 250,
                 data: function(data){
