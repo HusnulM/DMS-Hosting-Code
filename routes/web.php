@@ -63,6 +63,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard', 'HomeController@dashboard');
         Route::post('logout',    'HomeController@logout')->name('logout');
         Route::get('logout2',    'HomeController@logout')->name('logout');
+        Route::post('changepassword', 'HomeController@changepassword')->name('changepassword');
     });
 
     Route::group(['prefix' => '/transaction/document'], function () {

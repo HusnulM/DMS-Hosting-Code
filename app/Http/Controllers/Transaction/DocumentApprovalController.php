@@ -119,6 +119,19 @@ class DocumentApprovalController extends Controller
                     'docVersionData'   => $docVersionData,
                     'wiDocData'        => $wiDocData
                 ]);
+            }elseif($documents->doctype == 'Work Standard'){
+                return view('transaction.documentapproval.detailv3', [
+                    'document'    => $documents, 
+                    'attachments' => $attachments, 
+                    'areas'       => $areas, 
+                    'approvals'   => $approvalList,
+                    'dochistory'       => $docHistory,
+                    'dochistorydate'   => $docHistorydateGroup,
+                    'isApprovedbyUser' => $isApprovedbyUser,
+                    'version'          => $version,
+                    'docVersionData'   => $docVersionData,
+                    'wiDocData'        => $wiDocData
+                ]);
             }
         }else{
             return Redirect::to("/transaction/docapproval")->withError("Document not found or alreday approved/rejected!");

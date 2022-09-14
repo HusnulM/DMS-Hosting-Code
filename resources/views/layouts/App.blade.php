@@ -94,11 +94,11 @@
           <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
         </div>
       </li> -->
-      <!-- <li class="nav-item">
-        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-          <i class="fas fa-expand-arrows-alt"></i>
+      <li class="nav-item">
+        <a class="nav-link" href="#" id="btn-change-pass" role="button">
+          <i class="fas fa-key"></i> Change Password
         </a>
-      </li> -->
+      </li>
       <li class="nav-item">
         <form id="logout-form" method="post" action="{{ url('logout') }}">
           @csrf
@@ -147,6 +147,35 @@
     </div>
   </footer>
 </div>
+
+
+<div class="modal fade" id="modal-change-pass">
+  <form action="{{ url('changepassword') }}" method="post">
+    @csrf
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Change Password</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-lg-12">
+                    <input type="password" class="form-control" name="password" autocomplete="new-password">
+                </div> 
+            </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Change Password</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
 <!-- ./wrapper -->
 <!-- REQUIRED SCRIPTS -->
 <!-- jQuery -->
@@ -196,6 +225,11 @@
 
 <script>
   $(function(){
+
+    $('#btn-change-pass').on('click', function(){
+      // alert('tes')
+      $('#modal-change-pass').modal('show');
+    });
     setTimeout(function(){ 
       $('.msgAlert').hide();
     }, 4000);

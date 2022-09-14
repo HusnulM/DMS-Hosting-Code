@@ -29,4 +29,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/update',    'Master\DoclevelController@update')->middleware('checkAuth:master/doclevel');
         Route::get('/delete/{id}','Master\DoclevelController@delete')->middleware('checkAuth:master/doclevel');  
     });
+
+    Route::group(['prefix' => '/master/customer'], function () {
+        Route::get('/',             'Master\CustomerController@index')->middleware('checkAuth:master/customer');  
+        Route::post('/save',        'Master\CustomerController@save')->middleware('checkAuth:master/customer');
+        Route::post('/update',      'Master\CustomerController@update')->middleware('checkAuth:master/customer');
+        Route::get('/delete/{id}',  'Master\CustomerController@delete')->middleware('checkAuth:master/customer');  
+
+        Route::get('/lists',        'Master\CustomerController@customerlist')->middleware('checkAuth:master/customer');  
+        Route::post('/findcustomer', 'Master\CustomerController@findcustomer')->middleware('checkAuth:master/customer');  
+    });
 });

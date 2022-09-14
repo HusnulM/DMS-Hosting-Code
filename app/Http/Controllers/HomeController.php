@@ -97,4 +97,25 @@ class HomeController extends Controller
         }
         return Redirect::to("login")->withErrors('Opps! You do not have access');
     }
+
+    public function changepassword(Request $request){
+        DB::beginTransaction();
+        try{
+            $options = [
+                'cost' => 12,
+            ];
+            $password = password_hash($request['password'], PASSWORD_BCRYPT, $options);
+    
+            $output = array();
+
+            DB::table('users')->where('id',Auth::user()->id)->update([
+                'password'    => $password
+            ]);
+            DB::commit();
+            return Redirect::to("/dashboard")->withSuccess('Password Updated');
+        }catch(\Exception $e){
+            DB::rollBack();
+            return Redirect::to("/dashboard")->withError($e->getMessage());
+        }
+    }
 }

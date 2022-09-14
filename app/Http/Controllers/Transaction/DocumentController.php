@@ -122,6 +122,32 @@ class DocumentController extends Controller
                 'approvalDoc'      => $approvalDoc
             ]);
         }
+        elseif($documents->doctype == 'Work Standard'){
+
+            $approvalDoc = DB::table('approval_attachments')
+                            ->where('dcn_number',  $documents->dcn_number)
+                            ->where('doc_version', $latestVersion)
+                            ->first();
+            return view('transaction.document.documentdetailv3', [
+                'documents'     => $documents,
+                'docversions'   => $docversions,
+                'doctypes'      => $doctypes, 
+                'doclevels'     => $doclevels, 
+                'docareas'      => $docareas, 
+                'attachments'   => $attachments,
+                'affected_area' => $docareasAffected,
+                'dochistory'     => $docHistory,
+                'dochistorydate' => $docHistorydateGroup,
+                'alldochistorydate' => $docAllHistorydateGroup,
+                'cdoctype'       => $cdoctype,
+                'cdoclevel'      => $cdoclevel,
+                'latestVersion'  => $latestVersion,
+                'docapproval'    => $docapproval,
+                'wiDocData'      => $wiDocData,
+                'docVersionData'   => $docVersionData,
+                'approvalDoc'      => $approvalDoc
+            ]);
+        }
     }
 
     public function printOutDocument($docid)
