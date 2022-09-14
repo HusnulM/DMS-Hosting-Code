@@ -632,17 +632,19 @@
                         $('.btn-preview').on('click', function(){
                             var _dataFile = $(this).data();
                             console.log(_dataFile)
+                            var pathfile = base_url+'/'+_dataFile.filepath;
+
                             if(_dataFile.filepath !== ""){
                                 $('#fileViewer').html('');
-                                @if(checkIsLocalhost() == 1)
-                                    $('#fileViewer').append(`
-                                        <embed src="`+ _dataFile.filepath +`" frameborder="0" width="100%" height="500px">
-                                    `);
-                                @else
-                                    $('#fileViewer').append(`
-                                        <embed src="/main/public`+ _dataFile.filepath +`" frameborder="0" width="100%" height="500px">
-                                    `);
-                                @endif
+                                $('#fileViewer').append(`
+                                    <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
+                                `);
+                                // @if(checkIsLocalhost() == 1)
+                                // @else
+                                //     $('#fileViewer').append(`
+                                //         <embed src="/main/public`+ _dataFile.filepath +`" frameborder="0" width="100%" height="500px">
+                                //     `);
+                                // @endif
                                 $('#modalPreviewFile').modal('show');
                             } else{
                                 swal("File Not Found", "", "warning");
