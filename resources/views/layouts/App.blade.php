@@ -37,7 +37,10 @@
     }
   </style> -->
   <script>
-    var base_url = window.location.origin;
+    var base_url = '{{ getbaseurl() }}'
+    // var base_url = window.location.origin;
+    // var xurl = '{{ getbaseurl() }}';
+    // alert(xurl)
   </script>
 
 </head>

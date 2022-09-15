@@ -206,3 +206,8 @@ function checkIsLocalhost(){
         return 0;
     }
 }
+
+function getbaseurl(){
+    $baseurl = env('APP_BASEURL');
+    return $baseurl;
+}
