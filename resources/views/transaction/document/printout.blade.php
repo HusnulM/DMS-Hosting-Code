@@ -1,10 +1,13 @@
 <?php
-    $firstApproval = false;
-    $secondApprocal = false;
-    $firstApprvalName = null;
-    $firstApprovalSign = null;
-    $secondApprvalName = null;
+    $firstApproval      = false;
+    $secondApprocal     = false;
+    $thirdApproval      = false;
+    $firstApprvalName   = null;
+    $firstApprovalSign  = null;
+    $thirdApprovalSign  = null;
+    $secondApprvalName  = null;
     $secondApprovalSign = null;
+    $thirdApprovalName  = null;
 
     foreach($approval as $key => $row ){
         if($row->approver_level == 1 && $row->approval_status === 'A'){
@@ -15,6 +18,10 @@
             $secondApprocal     = true;
             $secondApprvalName  = $row->approved_by;
             $secondApprovalSign = $row->esign;
+        }elseif($row->approver_level == 3 && $row->approval_status === 'A'){
+            $thirdApproval     = true;
+            $thirdApprovalName = $row->approved_by;
+            $thirdApprovalSign = $row->esign;
         }
     }
 ?>
@@ -72,23 +79,24 @@
                     <img src="{{ public_path($creatorSignature->s_signfile ?? '') }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
                 </td>
                 <td>
-                    <!-- <img src="{{ public_path('/files/e_signature/esign1.png') }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;"> -->
-                </td>
-                <td>
                     @if($firstApproval == true && $firstApprovalSign != null)
                         <img src="{{ public_path($firstApprovalSign) }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
                     @endif
                 </td>
                 <td>
                     @if($secondApprocal == true && $secondApprovalSign != null)
-                    <img src="{{ public_path($secondApprovalSign) }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
+                        <img src="{{ public_path($secondApprovalSign) }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
+                    @endif                    
+                </td>
+                <td>
+                    @if($thirdApproval == true && $thirdApprovalSign != null)
+                        <img src="{{ public_path($secondApprovalSign) }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
                     @endif
                 </td>
             </tr>
             <tr style="text-align:center;font-weight:bold;">
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
-                <td></td>
                 <td>
                     @if($firstApproval == true)
                         {{ $firstApprvalName }}
@@ -97,6 +105,11 @@
                 <td>
                     @if($secondApprocal == true)
                         {{ $secondApprvalName }}
+                    @endif
+                </td>
+                <td>
+                    @if($thirdApproval == true)
+                        {{ $thirdApprovalName }}
                     @endif
                 </td>
             </tr>
