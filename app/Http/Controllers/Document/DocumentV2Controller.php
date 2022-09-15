@@ -105,7 +105,7 @@ class DocumentV2Controller extends Controller
             // Generate Document Approval Workflow
             $wfapproval = DB::table('v_workflow_assignments')
                 ->where('workflow_group', $wfgroup)
-                ->where('creatorid', Auth::user()->id)
+                // ->where('creatorid', Auth::user()->id)
                 ->orderBy('approval_level', 'asc')
                 ->get();
 
