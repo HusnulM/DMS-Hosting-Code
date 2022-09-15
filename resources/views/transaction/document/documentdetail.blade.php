@@ -109,6 +109,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-content-above-approval-tab" data-toggle="pill" href="#custom-content-above-approval" role="tab" aria-controls="custom-content-above-approval" aria-selected="false">Approval Status</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="custom-content-above-controldoc-tab" data-toggle="pill" href="#custom-content-above-controldoc" role="tab" aria-controls="custom-content-above-controldoc" aria-selected="false">Controlled Document</a>
+                                </li>
                             </ul>
                         </div>
                         <div class="col-lg-12">
@@ -408,6 +411,22 @@
                                     <!-- $data['approvalDoc'] -->
                                     </div>
                                 </div>
+
+                                <div class="tab-pane fade" id="custom-content-above-controldoc" role="tabpanel" aria-labelledby="custom-content-above-controldoc-tab">
+                                    <div class="col-lg-12">
+                                        <table id="tbl-approvaldoc" class="table table-bordered table-hover table-striped table-sm" style="width:100%;">
+                                            <thead>
+                                                <th>Document Name</th>
+                                                <th></th>
+                                            </thead>
+                                            <tbody id="tbl-approvaldoc-body">
+                                                
+                                            </tbody>
+                                        </table>     
+                                    </div>
+                                </div>
+
+                                <!-- controldoc -->
                             </div>
                         </div>
                     </div>
