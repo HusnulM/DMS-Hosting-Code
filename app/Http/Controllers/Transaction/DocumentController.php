@@ -81,10 +81,10 @@ class DocumentController extends Controller
         
         if($documents->doctype == 'Corporate Procedure'){
             $approvalDoc = DB::table('approval_attachments')
-                        ->where('dcn_number', $documents->dcn_number)
+                        ->where('dcn_number',  $documents->dcn_number)
                         ->where('doc_version', $latestVersion)
-                        // ->where('isactive', 'Y')
                         ->get();
+                        // return $approvalDoc;
 
             return view('transaction.document.documentdetail', [
                 'documents'     => $documents,
@@ -223,8 +223,8 @@ class DocumentController extends Controller
         $data['approvalDoc'] = DB::table('approval_attachments')
                         ->where('dcn_number', $document->dcn_number)
                         ->where('doc_version', $version)
-                        ->where('isactive', 'Y')
-                        ->first();
+                        // ->where('isactive', 'Y')
+                        ->get();
 
         $data['docVersionData'] = DB::table('document_versions')->where('dcn_number',  $document->dcn_number)->where('doc_version', $version)->first();      
         

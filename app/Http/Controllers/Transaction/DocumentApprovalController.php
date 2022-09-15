@@ -346,7 +346,7 @@ class DocumentApprovalController extends Controller
                 'dcn_number'        => $req['dcnNumber'],
                 'doc_version'       => $req['version'],
                 'efile'             => $approvalfilepath,
-                // 'isactive'          => 'Y',
+                'filename'          => $filename ?? null,
                 'createdby'         => Auth::user()->email ?? Auth::user()->username,
                 'createdon'         => getLocalDatabaseDateTime()
             );

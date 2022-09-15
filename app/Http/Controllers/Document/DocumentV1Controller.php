@@ -809,7 +809,7 @@ class DocumentV1Controller extends Controller
                 'dcn_number'        => $req['dcnNumber'],
                 'doc_version'       => $req['docVersion'],
                 'efile'             => $approvalfilepath,
-                // 'isactive'          => 'Y',
+                'filename'          => $filename ?? null,
                 'createdby'         => Auth::user()->email ?? Auth::user()->username,
                 'createdon'         => getLocalDatabaseDateTime()
             );
