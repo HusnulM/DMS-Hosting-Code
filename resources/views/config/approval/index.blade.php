@@ -120,7 +120,7 @@
                                         <th>Approval Group</th>
                                         <th>Approval Level</th>
                                         <th>Approval Categories</th>
-                                        <!-- <th>Creator</th> -->
+                                        <th>Creator</th>
                                         <th>Approver</th>
                                         <th></th>
                                     </thead>
@@ -131,7 +131,7 @@
                                             <td>{{ $row->wf_groupname }}</td>
                                             <td>{{ $row->approval_level }}</td>
                                             <td>{{ $row->wf_categoryname }}</td>
-                                            <!-- <td>{{ $row->creator }}</td> -->
+                                            <td>{{ $row->creator }}</td>
                                             <td>{{ $row->approver }}</td>
                                             <td style="text-align:center;">
                                                 <a href="{{ url('config/workflow/deleteassignment/') }}/{{$row->workflow_group}}/{{$row->approval_level}}/{{$row->workflow_categories}}/{{$row->creatorid}}/{{$row->approverid}}" class='btn btn-danger btn-sm button-delete'> 
@@ -294,7 +294,7 @@
                                 <th>Workflow Group</th>
                                 <th>Approval Level</th>
                                 <th>Workflow Categories</th>
-                                <!-- <th>Creator</th> -->
+                                <th>Creator</th>
                                 <th>Approver</th>
                                 <th style="width:50px; text-align:center;">
                                     <button type="button" class="btn btn-success btn-sm btn-add-new-assignment">
@@ -417,6 +417,14 @@
                         <select name="wfctegrs[]" class="form-control wfctegrs">
                             @foreach($ctgrs as $key => $row)
                                 <option value="{{ $row->id }}">{{ $row->workflow_category }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+
+                    <td>
+                        <select name="wfcreator[]" class="form-control wfcreator">
+                            @foreach($users as $key => $row)
+                                <option value="{{ $row->id }}">{{ $row->name }}</option>
                             @endforeach
                         </select>
                     </td>

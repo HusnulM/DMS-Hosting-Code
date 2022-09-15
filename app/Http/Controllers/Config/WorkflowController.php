@@ -97,7 +97,7 @@ class WorkflowController extends Controller
             $wfgroups   = $req['wfgroups'];
             $wflevels   = $req['wflevels'];
             $wfctegrs   = $req['wfctegrs'];
-            // $wfcreator  = $req['wfcreator'];
+            $wfcreator  = $req['wfcreator'];
             $wfapprov   = $req['wfapprov'];
 
             $insertData = array();
@@ -106,7 +106,7 @@ class WorkflowController extends Controller
                     'workflow_group'      => $wfgroups[$i],
                     'approval_level'      => $wflevels[$i],
                     'workflow_categories' => $wfctegrs[$i],
-                    // 'creator'             => $wfcreator[$i],
+                    'creator'             => $wfcreator[$i],
                     'approver'            => $wfapprov[$i],
                     'createdon'           => date('Y-m-d H:m:s'),
                     'createdby'           => Auth::user()->email ?? Auth::user()->username

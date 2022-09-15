@@ -86,47 +86,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-12">
-                            <div class="row">
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    <label for="doctitle">Document Title</label>
-                                    <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" value="{{ $documents->document_title }}" required>
-                                </div>   
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    <label for="doctype">Document Type</label>
-                                    <select name="doctype" id="doctype" class="form-control">
-                                        <option value="{{ $cdoctype->id }}"> {{ $cdoctype->doctype }} </option>
-                                        <!-- @foreach($doctypes as $key => $row)
-                                            <option value="{{ $row->id }}">{{ $row->doctype }}</option>
-                                        @endforeach -->
-                                    </select>
-                                </div>    
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    <label for="doclevel">Document Level</label>
-                                    <select name="doclevel" id="doclevel" class="form-control">
-                                        <option value="{{ $cdoclevel->id }}"> {{ $cdoclevel->doclevel }} </option>
-                                        @foreach($doclevels as $key => $row)
-                                            <option value="{{ $row->id }}">{{ $row->doclevel }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-lg-3 col-sm-12 form-group">
-                                    <label for="effectivedate">Effectivity Date</label>
-                                    <input type="date" name="effectivedate" class="form-control" value="{{ $documents->effectivity_date }}" required>
-                                </div>
-                                <div class="col-lg-3 col-sm-12 form-group">
-                                    <label for="docnumber">Document Number</label>
-                                    <input type="text" name="docnumber" class="form-control" value="{{ $documents->document_number }}">
-                                </div>
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
-                                    <button class="btn btn-primary btn-sm">
-                                        <i class="fa fa-edit"></i> Update Document Info
-                                    </button>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
                     <div class="row">
                         <div class="col-lg-12">
@@ -158,6 +118,47 @@
                                     <form action="{{ url('transaction/document/updateinfo') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row"> 
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-sm-12 form-group">
+                                                        <label for="doctitle">Document Title</label>
+                                                        <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" value="{{ $documents->document_title }}" required>
+                                                    </div>   
+                                                    <div class="col-lg-6 col-sm-12 form-group">
+                                                        <label for="doctype">Document Type</label>
+                                                        <select name="doctype" id="doctype" class="form-control">
+                                                            <option value="{{ $cdoctype->id }}"> {{ $cdoctype->doctype }} </option>
+                                                            <!-- @foreach($doctypes as $key => $row)
+                                                                <option value="{{ $row->id }}">{{ $row->doctype }}</option>
+                                                            @endforeach -->
+                                                        </select>
+                                                    </div>    
+                                                    <div class="col-lg-6 col-sm-12 form-group">
+                                                        <label for="doclevel">Document Level</label>
+                                                        <select name="doclevel" id="doclevel" class="form-control">
+                                                            <option value="{{ $cdoclevel->id }}"> {{ $cdoclevel->doclevel }} </option>
+                                                            @foreach($doclevels as $key => $row)
+                                                                <option value="{{ $row->id }}">{{ $row->doclevel }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-3 col-sm-12 form-group">
+                                                        <label for="effectivedate">Effectivity Date</label>
+                                                        <input type="date" name="effectivedate" class="form-control" value="{{ $documents->effectivity_date }}" required>
+                                                    </div>
+                                                    <div class="col-lg-3 col-sm-12 form-group">
+                                                        <label for="docnumber">Document Number</label>
+                                                        <input type="text" name="docnumber" class="form-control" value="{{ $documents->document_number }}">
+                                                    </div>
+                                                    <!-- <div class="col-lg-6 col-sm-12 form-group">
+                                                        @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
+                                                        <button class="btn btn-primary btn-sm">
+                                                            <i class="fa fa-edit"></i> Update Document Info
+                                                        </button>
+                                                        @endif
+                                                    </div> -->
+                                                </div>
+                                            </div>
                                             <div class="col-lg-12">
                                                 <div class="form-group">
                                                     <label for="docremark">Document Remark</label>
@@ -205,7 +206,7 @@
                                                         @endforeach
                                                     </tbody>
                                                     <tfoot>
-                                                        <tr>
+                                                        <!-- <tr>
                                                             <td></td>
                                                             <td style="width: 150px; text-align:center;">
                                                                 @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
@@ -214,7 +215,7 @@
                                                                 </button>
                                                                 @endif
                                                             </td>
-                                                        </tr>
+                                                        </tr> -->
                                                     </tfoot>
                                                 </table>
                                             </form>
