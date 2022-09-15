@@ -30,7 +30,7 @@ class DocareaController extends Controller
 
             $docID = DB::table('docareas')->insertGetId([
                 'docarea'   => $req['docarea'],
-                'doctypeid' => $req['doctype'],
+                // 'doctypeid' => $req['doctype'],
                 'createdon' => getLocalDatabaseDateTime(),
                 'createdby' => Auth::user()->email ?? Auth::user()->username
             ]);
