@@ -196,11 +196,11 @@
                                                                 </select>
                                                             </td>
                                                             <td style="text-align:center;">
-                                                                @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
+                                                                <!-- @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
                                                                 <button type="button" class="btn btn-danger btn-sm btnRemoveArea" data-docareaid="{{ $row->docarea }}">
                                                                     <i class="fa fa-trash"></i>
                                                                 </button>
-                                                                @endif
+                                                                @endif -->
                                                             </td>
                                                         </tr>
                                                         @endforeach
