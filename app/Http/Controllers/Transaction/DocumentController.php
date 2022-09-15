@@ -152,6 +152,7 @@ class DocumentController extends Controller
 
     public function printOutDocument($docid)
     {
+        // set_time_limit(300);
     	$doc  = DB::table('v_documents')->where('id', $docid)->first();
         $logo = DB::table('general_setting')->where('setting_name', 'COMPANY_LOGO')->first();
         $docversions = DB::table('document_versions')->where('dcn_number', $doc->dcn_number)->orderBy('doc_version', 'desc')->get();
@@ -163,10 +164,12 @@ class DocumentController extends Controller
         $approval    = DB::table('v_document_approvals_v2')
                         ->where('dcn_number', $doc->dcn_number)
                         ->where('approval_version', $latestVersion->doc_version)->get();
+
+        $creatorSignature = DB::table('users')->where('username', $doc->createdby)->first();
         
         // $esignature = DB::table('document_approvals')
-        // return view('transaction.document.printout', ['document'=>$doc]);
-    	$pdf = PDF::loadview('transaction.document.printout',['document'=>$doc, 'logo' => $logo, 'versions' => $docversions, 'approval' => $approval]);
+        // return view('transaction.document.printout', ['document'=>$doc, 'logo' => $logo, 'versions' => $docversions, 'approval' => $approval]);
+    	$pdf = PDF::loadview('transaction.document.printout',['document'=>$doc, 'logo' => $logo, 'versions' => $docversions, 'approval' => $approval, 'creatorSignature' => $creatorSignature]);
     	// return $pdf->download('laporan-pegawai-pdf');
         return $pdf->stream();
     }
