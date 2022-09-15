@@ -257,24 +257,20 @@
                                     </div>
                                     <hr>
                                     @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
-                                    <form action="{{ url('transaction/document/updatefiles') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
+                                    <!-- <form action="{{ url('transaction/document/updatefiles') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row">
                                             <div class="col-lg-12 col-sm-12 form-group">
                                                 <label for="docfiles">Add New Attachment</label>
                                                 <input type="file" name="docfiles[]" class="form-control" multiple="multiple" required>
                                             </div>
-                                            <!-- <div class="col-lg-12">
-                                                <label for="">Attachment Notes</label>
-                                                <textarea name="attachmentNote" id="attachmentNote" cols="30" rows="3" class="form-control"></textarea>
-                                            </div> -->
                                             <div class="col-lg-12">
                                                 <button type="submit" class="btn btn-primary btn-sm">
                                                     <i class="fa fa-upload"></i> Upload New Files
                                                 </button>
                                             </div>
                                         </div>
-                                    </form>
+                                    </form> -->
                                     @endif
                                 </div>
 
@@ -382,6 +378,33 @@
                                                 @endforeach
                                             </tbody>
                                         </table>     
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <form action="{{ url('/document/v1/uploadapprovaldoc') }}" method="post" enctype="multipart/form-data">
+                                            @csrf
+                                            <div class="row">
+                                                <div class="input-group mb-3">
+                                                    <input type="hidden" name="dcnNumber" value="{{ $documents->dcn_number }}">
+                                                    <input type="hidden" name="docVersion" id="docVersion" value="{{ $docversions[0]->doc_version }}">
+                                                    <!-- selData.docversion -->
+                                                    <input type="file" class="form-control" name="approveddoc" required>
+
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-success btn-sm btn-approve" type="submit">
+                                                            <i class="fa fa-upload"></i> UPLOAD ORIGINAL DOCUMENT
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-lg-12 approval-document">
+                                        @if($approvalDoc)
+                                        <a href="{{ url('') }}/{{$approvalDoc->efile ?? ''}}" target="_blank" class='btn btn-success btn-sm pull-right'> 
+                                            <i class='fa fa-download'></i> Download Approval Document
+                                        </a>
+                                        @endif
+                                    <!-- $data['approvalDoc'] -->
                                     </div>
                                 </div>
                             </div>
@@ -577,8 +600,9 @@
             var selData = $(this).data();
             console.log(selData);
             let _token   = $('meta[name="csrf-token"]').attr('content');
-            $('#tbl-doc-area-body, #timeline-version-history, #hdr-version').html('');
+            $('#tbl-doc-area-body, #timeline-version-history, #hdr-version, .approval-document').html('');
             $('#tbl-attachment-body, #tbl-approval-body').html('');
+            $('#docVersion').val('');
             $.ajax({
                 url: base_url+'/transaction/doclist/detailversion/'+selData.docversion+'/'+selData.docid,
                 beforeSend: function(){
@@ -590,10 +614,19 @@
                         $('#docareaContent').val(response.docversions.remark);
 
                         $('#hdr-version').html('Version '+ selData.docversion);
+                        $('#docVersion').val(selData.docversion);
 
                         var _areas         = response.affected_area;
                         var _historyGroup  = response.docHistorydateGroup;
                         var _historyDetail = response.docHistory;
+
+                        if(response.approvalDoc){
+                            $('.approval-document').append(`
+                                <a href="{{ url('') }}/`+ response.approvalDoc.efile +`" target="_blank" class='btn btn-success btn-sm pull-right'> 
+                                    <i class='fa fa-download'></i> Download Approval Document
+                                </a>
+                            `);
+                        }
 
                         // Append Selected Version Affected Document Area
                         for(var i = 0; i < _areas.length; i++){

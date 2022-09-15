@@ -10,6 +10,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updateinfo/{p1}',         'Document\DocumentV1Controller@updatedocinfo')->middleware('checkAuth:document/v1');
         Route::post('/updatearea/{p1}',         'Document\DocumentV1Controller@updatearea')->middleware('checkAuth:document/v1');
         Route::post('/updatefiles/{p1}',        'Document\DocumentV1Controller@updatefiles')->middleware('checkAuth:document/v1');
+
+        Route::post('/uploadapprovaldoc',       'Document\DocumentV1Controller@uploadapprovaldoc')->middleware('checkAuth:document/v1');
     });
 
     Route::group(['prefix' => '/document/v2'], function () {

@@ -80,6 +80,12 @@ class DocumentController extends Controller
         $docVersionData = DB::table('document_versions')->where('dcn_number',  $documents->dcn_number)->where('doc_version', $latestVersion)->first();
         
         if($documents->doctype == 'Corporate Procedure'){
+            $approvalDoc = DB::table('approval_attachments')
+                        ->where('dcn_number', $documents->dcn_number)
+                        ->where('doc_version', $latestVersion)
+                        ->where('isactive', 'Y')
+                        ->first();
+
             return view('transaction.document.documentdetail', [
                 'documents'     => $documents,
                 'docversions'   => $docversions,
@@ -94,7 +100,8 @@ class DocumentController extends Controller
                 'cdoctype'       => $cdoctype,
                 'cdoclevel'      => $cdoclevel,
                 'latestVersion'  => $latestVersion,
-                'docapproval'    => $docapproval
+                'docapproval'    => $docapproval,
+                'approvalDoc'    => $approvalDoc
             ]);
         }elseif($documents->doctype == 'Work Instruction'){
 
@@ -212,6 +219,13 @@ class DocumentController extends Controller
                         ->where('approval_version', $version)
                         ->get();      
         
+
+        $data['approvalDoc'] = DB::table('approval_attachments')
+                        ->where('dcn_number', $document->dcn_number)
+                        ->where('doc_version', $version)
+                        ->where('isactive', 'Y')
+                        ->first();
+
         $data['docVersionData'] = DB::table('document_versions')->where('dcn_number',  $document->dcn_number)->where('doc_version', $version)->first();      
         
         $htmlApproval = '';
