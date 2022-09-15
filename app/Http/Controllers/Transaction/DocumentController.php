@@ -83,8 +83,8 @@ class DocumentController extends Controller
             $approvalDoc = DB::table('approval_attachments')
                         ->where('dcn_number', $documents->dcn_number)
                         ->where('doc_version', $latestVersion)
-                        ->where('isactive', 'Y')
-                        ->first();
+                        // ->where('isactive', 'Y')
+                        ->get();
 
             return view('transaction.document.documentdetail', [
                 'documents'     => $documents,

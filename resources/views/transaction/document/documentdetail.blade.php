@@ -402,14 +402,13 @@
                                             </div>
                                         </form>
                                     </div>
-                                    <div class="col-lg-12 approval-document">
+                                    <!-- <div class="col-lg-12 approval-document">
                                         @if($approvalDoc)
                                         <a href="{{ url('') }}/{{$approvalDoc->efile ?? ''}}" target="_blank" class='btn btn-success btn-sm pull-right'> 
                                             <i class='fa fa-download'></i> Download Approval Document
                                         </a>
                                         @endif
-                                    <!-- $data['approvalDoc'] -->
-                                    </div>
+                                    </div> -->
                                 </div>
 
                                 <div class="tab-pane fade" id="custom-content-above-controldoc" role="tabpanel" aria-labelledby="custom-content-above-controldoc-tab">
@@ -420,7 +419,18 @@
                                                 <th></th>
                                             </thead>
                                             <tbody id="tbl-approvaldoc-body">
-                                                
+                                                @foreach($approvalDoc as $key => $doc)
+                                                <tr>
+                                                    <td>
+                                                        {{ $doc->filename }}
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ url('') }}/{{$doc->efile ?? ''}}" target="_blank" class='btn btn-success btn-sm pull-right'> 
+                                                            <i class='fa fa-download'></i> Download Approval Document
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
                                             </tbody>
                                         </table>     
                                     </div>
