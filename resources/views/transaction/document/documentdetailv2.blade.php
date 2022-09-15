@@ -135,6 +135,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-content-above-approval-tab" data-toggle="pill" href="#custom-content-above-approval" role="tab" aria-controls="custom-content-above-approval" aria-selected="false">Approval Status</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="custom-content-above-controldoc-tab" data-toggle="pill" href="#custom-content-above-controldoc" role="tab" aria-controls="custom-content-above-controldoc" aria-selected="false">Controlled Document</a>
+                                </li>
                             </ul>
                         </div>
                         <div class="col-lg-12">
@@ -483,13 +486,51 @@
                                         </table>     
                                     </div>
                                     <div class="col-lg-12">
-                                        @if($approvalDoc)
-                                        <a href="{{ url('') }}/{{$approvalDoc->efile ?? ''}}" target="_blank" class='btn btn-success btn-sm pull-right'> 
-                                            <i class='fa fa-download'></i> Download Approval Document
-                                        </a>
-                                        @endif
+                                        <form action="{{ url('/document/v2/uploadapprovaldoc') }}" method="post" enctype="multipart/form-data">
+                                            @csrf
+                                            <div class="row">
+                                                <div class="input-group mb-3">
+                                                    <input type="hidden" name="dcnNumber" value="{{ $documents->dcn_number }}">
+                                                    <input type="hidden" name="docVersion" id="docVersion" value="{{ $docversions[0]->doc_version }}">
+                                                    <!-- selData.docversion -->
+                                                    <input type="file" class="form-control" name="approveddoc" required>
+
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-success btn-sm btn-approve" type="submit">
+                                                            <i class="fa fa-upload"></i> UPLOAD ORIGINAL DOCUMENT
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
+
+                                <div class="tab-pane fade" id="custom-content-above-controldoc" role="tabpanel" aria-labelledby="custom-content-above-controldoc-tab">
+                                    <div class="col-lg-12">
+                                        <table id="tbl-approvaldoc" class="table table-bordered table-hover table-striped table-sm" style="width:100%;">
+                                            <thead>
+                                                <th>Document Name</th>
+                                                <th></th>
+                                            </thead>
+                                            <tbody id="tbl-approvaldoc-body">
+                                                @foreach($approvalDoc as $key => $doc)
+                                                <tr>
+                                                    <td>
+                                                        {{ $doc->filename }}
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ url('') }}/{{$doc->efile ?? ''}}" target="_blank" class='btn btn-success btn-sm pull-right'> 
+                                                            <i class='fa fa-download'></i> Download Approval Document
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>     
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -783,7 +824,7 @@
             console.log(selData);
             let _token   = $('meta[name="csrf-token"]').attr('content');
             $('#tbl-doc-area-body, #timeline-version-history, #hdr-version').html('');
-            $('#tbl-attachment-body, #tbl-approval-body').html('');
+            $('#tbl-attachment-body, #tbl-approval-body, #tbl-approvaldoc-body').html('');
             $.ajax({
                 url: base_url+'/transaction/doclist/detailversion/'+selData.docversion+'/'+selData.docid,
                 beforeSend: function(){
@@ -801,6 +842,23 @@
                         var _historyDetail = response.docHistory;                        
 
                         $('#tbl-attachment-body').append(response.htmlAttachment);
+
+                        var _approvalDoc   = response.approvalDoc;
+                        
+                        for(var i = 0; i < _approvalDoc.length; i++){
+                            $('#tbl-approvaldoc-body').append(`
+                                <tr>
+                                    <td>
+                                        `+ _approvalDoc[i].filename +`
+                                    </td>
+                                    <td>
+                                        <a href="{{ url('') }}/`+_approvalDoc[i].efile+`" target="_blank" class='btn btn-success btn-sm pull-right'> 
+                                            <i class='fa fa-download'></i> Download Approval Document
+                                        </a>
+                                    </td>
+                                </tr>
+                            `);
+                        }
 
                         $('.btn-preview').on('click', function(){
                             var _dataFile = $(this).data();

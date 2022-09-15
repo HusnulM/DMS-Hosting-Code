@@ -95,13 +95,13 @@
                                     <a class="nav-link active" id="custom-content-above-home-tab" data-toggle="pill" href="#custom-content-above-home" role="tab" aria-controls="custom-content-above-home" aria-selected="true">Document Info</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="custom-content-above-profile-tab" data-toggle="pill" href="#custom-content-above-profile" role="tab" aria-controls="custom-content-above-profile" aria-selected="false">Document Affected Area</a>
+                                    <a class="nav-link" id="custom-content-above-profile-tab" data-toggle="pill" href="#custom-content-above-profile" role="tab" aria-controls="custom-content-above-profile" aria-selected="false">Document Area</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-content-above-attachment-tab" data-toggle="pill" href="#custom-content-above-attachment" role="tab" aria-controls="custom-content-above-attachment" aria-selected="false">Files</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="custom-content-above-history-tab" data-toggle="pill" href="#custom-content-above-history" role="tab" aria-controls="custom-content-above-history" aria-selected="false">Document Version History</a>
+                                    <a class="nav-link" id="custom-content-above-history-tab" data-toggle="pill" href="#custom-content-above-history" role="tab" aria-controls="custom-content-above-history" aria-selected="false">Document History</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-content-above-history-all-tab" data-toggle="pill" href="#custom-content-above-history-all" role="tab" aria-controls="custom-content-above-history-all" aria-selected="false">Document All History</a>
@@ -153,13 +153,7 @@
                                                         <label for="docnumber">Document Number</label>
                                                         <input type="text" name="docnumber" class="form-control" value="{{ $documents->document_number }}">
                                                     </div>
-                                                    <!-- <div class="col-lg-6 col-sm-12 form-group">
-                                                        @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
-                                                        <button class="btn btn-primary btn-sm">
-                                                            <i class="fa fa-edit"></i> Update Document Info
-                                                        </button>
-                                                        @endif
-                                                    </div> -->
+                                                    
                                                 </div>
                                             </div>
                                             <div class="col-lg-12">
@@ -625,7 +619,7 @@
             console.log(selData);
             let _token   = $('meta[name="csrf-token"]').attr('content');
             $('#tbl-doc-area-body, #timeline-version-history, #hdr-version, .approval-document').html('');
-            $('#tbl-attachment-body, #tbl-approval-body').html('');
+            $('#tbl-attachment-body, #tbl-approval-body, #tbl-approvaldoc-body').html('');
             $('#docVersion').val('');
             $.ajax({
                 url: base_url+'/transaction/doclist/detailversion/'+selData.docversion+'/'+selData.docid,
@@ -643,12 +637,20 @@
                         var _areas         = response.affected_area;
                         var _historyGroup  = response.docHistorydateGroup;
                         var _historyDetail = response.docHistory;
-
-                        if(response.approvalDoc){
-                            $('.approval-document').append(`
-                                <a href="{{ url('') }}/`+ response.approvalDoc.efile +`" target="_blank" class='btn btn-success btn-sm pull-right'> 
-                                    <i class='fa fa-download'></i> Download Approval Document
-                                </a>
+                        var _approvalDoc   = response.approvalDoc;
+                        
+                        for(var i = 0; i < _approvalDoc.length; i++){
+                            $('#tbl-approvaldoc-body').append(`
+                                <tr>
+                                    <td>
+                                        `+ _approvalDoc[i].filename +`
+                                    </td>
+                                    <td>
+                                        <a href="{{ url('') }}/`+_approvalDoc[i].efile+`" target="_blank" class='btn btn-success btn-sm pull-right'> 
+                                            <i class='fa fa-download'></i> Download Approval Document
+                                        </a>
+                                    </td>
+                                </tr>
                             `);
                         }
 

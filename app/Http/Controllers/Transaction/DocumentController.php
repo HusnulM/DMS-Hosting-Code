@@ -79,11 +79,12 @@ class DocumentController extends Controller
                         // return $docHistorydateGroup;
         $docVersionData = DB::table('document_versions')->where('dcn_number',  $documents->dcn_number)->where('doc_version', $latestVersion)->first();
         
-        if($documents->doctype == 'Corporate Procedure'){
-            $approvalDoc = DB::table('approval_attachments')
+        $approvalDoc = DB::table('approval_attachments')
                         ->where('dcn_number',  $documents->dcn_number)
                         ->where('doc_version', $latestVersion)
                         ->get();
+
+        if($documents->doctype == 'Corporate Procedure'){            
                         // return $approvalDoc;
 
             return view('transaction.document.documentdetail', [
@@ -105,10 +106,6 @@ class DocumentController extends Controller
             ]);
         }elseif($documents->doctype == 'Work Instruction'){
 
-            $approvalDoc = DB::table('approval_attachments')
-                            ->where('dcn_number',  $documents->dcn_number)
-                            ->where('doc_version', $latestVersion)
-                            ->first();
             return view('transaction.document.documentdetailv2', [
                 'documents'     => $documents,
                 'docversions'   => $docversions,
@@ -130,11 +127,6 @@ class DocumentController extends Controller
             ]);
         }
         elseif($documents->doctype == 'Work Standard'){
-
-            $approvalDoc = DB::table('approval_attachments')
-                            ->where('dcn_number',  $documents->dcn_number)
-                            ->where('doc_version', $latestVersion)
-                            ->first();
             return view('transaction.document.documentdetailv3', [
                 'documents'     => $documents,
                 'docversions'   => $docversions,

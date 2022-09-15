@@ -21,6 +21,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updateinfo/{p1}',         'Document\DocumentV2Controller@updatedocinfo')->middleware('checkAuth:document/v2');
         Route::post('/updatearea/{p1}',         'Document\DocumentV2Controller@updatearea')->middleware('checkAuth:document/v2');
         Route::post('/updatefiles/{p1}',        'Document\DocumentV2Controller@updatefiles')->middleware('checkAuth:document/v2');
+        Route::post('/uploadapprovaldoc',       'Document\DocumentV3Controller@uploadapprovaldoc')->middleware('checkAuth:document/v2');
     });
 
     Route::group(['prefix' => '/document/v3'], function () {
@@ -30,6 +31,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updateinfo/{p1}',         'Document\DocumentV3Controller@updatedocinfo')->middleware('checkAuth:document/v3');
         Route::post('/updatearea/{p1}',         'Document\DocumentV3Controller@updatearea')->middleware('checkAuth:document/v3');
         Route::post('/updatefiles/{p1}',        'Document\DocumentV3Controller@updatefiles')->middleware('checkAuth:document/v3');
+        Route::post('/uploadapprovaldoc',       'Document\DocumentV3Controller@uploadapprovaldoc')->middleware('checkAuth:document/v3');
     });
 
     Route::group(['prefix' => '/document/v4'], function () {

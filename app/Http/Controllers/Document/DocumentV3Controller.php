@@ -202,4 +202,44 @@ class DocumentV3Controller extends Controller
             return Redirect::to("/document/v3")->withError($e->getMessage());
         }
     }
+
+    public function uploadapprovaldoc(Request $req){
+        $document = DB::table('documents')->where('dcn_number', $req['dcnNumber'])->first();
+        DB::beginTransaction();
+        try{
+            
+            $approvalfile     = $req->file('approveddoc');
+            $filename         = $approvalfile->getClientOriginalName();
+            $approvalfilepath = 'storage/files/approvaldocs/'. $filename;  
+
+            if($approvalfile){
+                $approvalfile->move('storage/files/approvaldocs/', $filename);  
+            }
+
+            $AppDocData = array();
+            $insertAppDoc = array(
+                'dcn_number'        => $req['dcnNumber'],
+                'doc_version'       => $req['docVersion'],
+                'efile'             => $approvalfilepath,
+                'filename'          => $filename ?? null,
+                'createdby'         => Auth::user()->email ?? Auth::user()->username,
+                'createdon'         => getLocalDatabaseDateTime()
+            );
+            array_push($AppDocData, $insertAppDoc);
+            insertOrUpdate($AppDocData,'approval_attachments');
+
+            // DB::table('approval_attachments')
+            //     ->where('dcn_number', $req['dcnNumber'])
+            //     ->where('doc_version', '!=', $req['docVersion'])
+            //     ->update([
+            //         'isactive'          => 'N'
+            //     ]);
+
+            DB::commit();
+            return Redirect::to("/transaction/doclist/detail/".$document->id)->withSuccess('Upload Original Document Success');
+        }catch(\Exception $e){
+            DB::rollBack();
+            return Redirect::to("/transaction/doclist/detail/".$document->id)->withError($e->getMessage());
+        }        
+    }
 }
