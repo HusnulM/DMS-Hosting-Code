@@ -96,7 +96,9 @@
             </tr>
             <tr style="text-align:center;font-weight:bold;">
                 <td>&nbsp;</td>
-                <td>&nbsp;</td>
+                <td>
+                    {{ $creatorSignature->name }}
+                </td>
                 <td>
                     @if($firstApproval == true)
                         {{ $firstApprvalName }}
