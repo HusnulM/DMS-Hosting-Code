@@ -211,3 +211,35 @@ function getbaseurl(){
     $baseurl = env('APP_BASEURL');
     return $baseurl;
 }
+
+function allowUplodOrginalDoc(){
+    $checkData = DB::table('user_object_auth')
+    ->where('userid', Auth::user()->id)
+    ->where('object_name', 'ALLOW_UPLOAD_ORIGINAL_DOC')
+    ->first();
+    if($checkData){
+        if($checkData->object_val === "Y"){
+            return 1;
+        }else{
+            return 0;
+        }
+    }else{
+        return 0;
+    }
+}
+
+function allowDownloadOrginalDoc(){
+    $checkData = DB::table('user_object_auth')
+    ->where('userid', Auth::user()->id)
+    ->where('object_name', 'ALLOW_DOWNLOAD_ORIGINAL_DOC')
+    ->first();
+    if($checkData){
+        if($checkData->object_val === "Y"){
+            return 1;
+        }else{
+            return 0;
+        }
+    }else{
+        return 0;
+    }
+}
