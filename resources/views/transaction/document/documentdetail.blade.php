@@ -603,7 +603,8 @@
             var fileUri = pathfile;
             fileUri = fileUri.replace("#toolbar=0", "?force=true");
             @if(userAllowDownloadDocument() == 1)
-                document.getElementById("btnDownloadFile").href=base_url+fileUri; 
+                // document.getElementById("btnDownloadFile").href=base_url+fileUri; 
+                document.getElementById("btnDownloadFile").href=fileUri; 
             @endif
             $('#modalPreviewFile').modal('show');
         } else{
@@ -626,7 +627,8 @@
             var fileUri = pathfile;
             fileUri = fileUri.replace("#toolbar=0", "?force=true");
             @if(allowDownloadOrginalDoc() == 1)
-                document.getElementById("btnDownloadOriginalFile").href=base_url+fileUri; 
+                document.getElementById("btnDownloadOriginalFile").href=fileUri; 
+                // document.getElementById("btnDownloadOriginalFile").href=base_url+fileUri; 
             @endif
         } else{
             swal("File Not Found", "", "warning");
