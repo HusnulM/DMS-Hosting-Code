@@ -485,7 +485,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal"> Close</button>
                 @if(userAllowDownloadDocument() == 1)
-                <a href="#" id="btnDownloadFile" class="btn btn-default btnDownloadFile" download="">
+                <a href="#" id="btnDownloadFile" class="btn btn-default btnDownloadFile" target="blank" download="">
                     <i class="fa fa-download"></i> Download Document
                 </a>
                 <!-- <a href="http://localhost:8181/digidocu/admin/_files/original/2XSkOTza1MJ5H0TewEFQbjeeKXgCkyGcvM16Og0U.pdf?force=true" download="">Download
