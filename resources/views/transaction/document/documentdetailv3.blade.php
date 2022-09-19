@@ -135,11 +135,11 @@
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-content-above-approval-tab" data-toggle="pill" href="#custom-content-above-approval" role="tab" aria-controls="custom-content-above-approval" aria-selected="false">Approval Status</a>
                                 </li>
-                                @if(allowDownloadOrginalDoc() == 1)
+                                
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-content-above-controldoc-tab" data-toggle="pill" href="#custom-content-above-controldoc" role="tab" aria-controls="custom-content-above-controldoc" aria-selected="false">Controlled Document</a>
                                 </li>
-                                @endif
+                                
                             </ul>
                         </div>
                         <div class="col-lg-12">
@@ -429,7 +429,7 @@
                                     </div>
                                     @endif
                                 </div>
-                                @if(allowDownloadOrginalDoc() == 1)
+                                
                                 <div class="tab-pane fade" id="custom-content-above-controldoc" role="tabpanel" aria-labelledby="custom-content-above-controldoc-tab">
                                     <div class="col-lg-12">
                                         <table id="tbl-approvaldoc" class="table table-bordered table-hover table-striped table-sm" style="width:100%;">
@@ -444,9 +444,7 @@
                                                         {{ $doc->filename }}
                                                     </td>
                                                     <td>
-                                                        <a href="{{ url('') }}/{{$doc->efile ?? ''}}" target="_blank" class='btn btn-success btn-sm pull-right'> 
-                                                            <i class='fa fa-download'></i> Download Approval Document
-                                                        </a>
+                                                        <button type="button" onclick="previewOriginalFile('{{$doc->efile}}#toolbar=0')">Preview</button>
                                                     </td>
                                                 </tr>
                                                 @endforeach
@@ -454,7 +452,7 @@
                                         </table>     
                                     </div>
                                 </div>
-                                @endif
+                                
                             </div>
                         </div>
                     </div>
@@ -583,6 +581,37 @@
         </form>
     </div>
 </div>   
+
+<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalPreviewApprovalFile">
+    <div class="modal-dialog modal-xl">
+        <form class="form-horizontal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPreviewApprovalFileTitle">Preview Original Document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="position-relative row form-group">
+                    <div class="col-lg-12" id="originalFileViewer">
+                        <!-- <div id="example1"></div> -->
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal"> Close</button>
+                @if(allowDownloadOrginalDoc() == 1)
+                <a href="#" id="btnDownloadOriginalFile" class="btn btn-default btnDownloadFile" download="">
+                    <i class="fa fa-download"></i> Download Document
+                </a>
+                @endif
+            </div>
+        </div>
+        </form>
+    </div>
+</div>   
 @endsection
 
 @section('additional-js')
@@ -619,6 +648,29 @@
             swal("File Not Found", "", "warning");
         }
     }
+
+    function previewOriginalFile(files){        
+        var pathfile = base_url+'/'+files;
+
+        // alert(pathfile)
+
+        if(files !== ""){
+            $('#originalFileViewer').html('');
+            $('#originalFileViewer').append(`
+                <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
+            
+            `);
+            var fileUri = files;
+            fileUri = fileUri.replace("#toolbar=0", "?force=true");
+            @if(userAllowDownloadDocument() == 1)
+                document.getElementById("btnDownloadOriginalFile").href=base_url+fileUri; 
+            @endif
+            $('#modalPreviewApprovalFile').modal('show');
+        } else{
+            swal("File Not Found", "", "warning");
+        }
+    }
+
     $(document).ready(function () {        
         var count = 0;
         
@@ -647,42 +699,59 @@
 
                         var _approvalDoc   = response.approvalDoc;
                         
-                        for(var i = 0; i < _approvalDoc.length; i++){
-                            $('#tbl-approvaldoc-body').append(`
-                                <tr>
-                                    <td>
-                                        `+ _approvalDoc[i].filename +`
-                                    </td>
-                                    <td>
-                                        <a href="{{ url('') }}/`+_approvalDoc[i].efile+`" target="_blank" class='btn btn-success btn-sm pull-right'> 
-                                            <i class='fa fa-download'></i> Download Approval Document
-                                        </a>
-                                    </td>
-                                </tr>
-                            `);
-                        }
+                        // for(var i = 0; i < _approvalDoc.length; i++){
+                        //     $('#tbl-approvaldoc-body').append(`
+                        //         <tr>
+                        //             <td>
+                        //                 `+ _approvalDoc[i].filename +`
+                        //             </td>
+                        //             <td>
+                        //                 <a href="{{ url('') }}/`+_approvalDoc[i].efile+`" target="_blank" class='btn btn-success btn-sm pull-right'> 
+                        //                     <i class='fa fa-download'></i> Download Approval Document
+                        //                 </a>
+                        //             </td>
+                        //         </tr>
+                        //     `);
+                        // }
 
                         $('#tbl-attachment-body').append(response.htmlAttachment);
+                        $('#tbl-approvaldoc-body').append(response.htmlApprovalAttachment);
 
                         $('.btn-preview').on('click', function(){
                             var _dataFile = $(this).data();
-                            console.log(_dataFile)
+                            
+                            var pathfile = base_url+'/'+_dataFile.filepath;
+
+                            console.log(pathfile)
+
                             if(_dataFile.filepath !== ""){
                                 $('#fileViewer').html('');
-                                @if(checkIsLocalhost() == 1)
-                                    $('#fileViewer').append(`
-                                        <embed src="`+ _dataFile.filepath +`" frameborder="0" width="100%" height="500px">
-                                    `);
-                                @else
-                                    $('#fileViewer').append(`
-                                        <embed src="/main/public`+ _dataFile.filepath +`" frameborder="0" width="100%" height="500px">
-                                    `);
-                                @endif
+                                $('#fileViewer').append(`
+                                    <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
+                                `);
                                 $('#modalPreviewFile').modal('show');
                             } else{
                                 swal("File Not Found", "", "warning");
                             }
-                        })
+                        });
+
+                        $('.btn-preview-originaldoc').on('click', function(){
+                            var _dataFile = $(this).data();
+                            
+                            var pathfile = base_url+'/'+_dataFile.filepath;
+
+                            console.log(pathfile)                            
+
+                            if(_dataFile.filepath !== ""){
+                                $('#originalFileViewer').html('');
+                                $('#originalFileViewer').append(`
+                                    <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
+                                `);
+                                $('#modalPreviewApprovalFile').modal('show');
+                            } else{
+                                swal("File Not Found", "", "warning");
+                            }
+                        });
                         // Append Selected Version Document History
                         $('#timeline-version-history').append(response.timeline);
                         $('#tbl-approval-body').append(response.htmlApproval);

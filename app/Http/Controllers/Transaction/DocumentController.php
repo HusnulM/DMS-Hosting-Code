@@ -278,6 +278,21 @@ class DocumentController extends Controller
         // return $htmlAttachment;
         $data['htmlAttachment'] = $htmlAttachment;
 
+        $approvalAttachment = '';
+        foreach($data['approvalDoc'] as $key => $row){
+            $approvalAttachment .= "
+                <tr>
+                    <td>
+                        $row->filename
+                    </td>
+                    <td>
+                        <button type='button' class='btn-preview-originaldoc' data-filepath='$row->efile#toolbar=0'>Preview</button>
+                    </td>
+                </tr>";
+        }
+
+        $data['htmlApprovalAttachment'] = $approvalAttachment;
+
         $html = '';
         foreach($data['docHistorydateGroup'] as $hdr => $vlhdr){
             $html .= "<div class='time-label'>
