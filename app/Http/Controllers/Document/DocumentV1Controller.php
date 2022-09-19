@@ -573,20 +573,40 @@ class DocumentV1Controller extends Controller
             }
 
             // Document Affected Areas | document_affected_areas
-            $docareas = $req['docareas'];
             $insertAreas = array();
-            for($i = 0; $i < sizeof($docareas); $i++){
-                $areas = array(
-                    'dcn_number'        => $dcnNumber,
-                    'docarea'           => $docareas[$i],
-                    'doc_version'       => $docVersion,
-                    'createdon'         => getLocalDatabaseDateTime(),
-                    'createdby'         => Auth::user()->username ?? Auth::user()->email
-                );
-                array_push($insertAreas, $areas);
-            }
-            if(sizeof($insertAreas) > 0){
-                insertOrUpdate($insertAreas,'document_affected_areas');
+            if(isset($req['docareas'])){
+                $docareas = $req['docareas'];
+                for($i = 0; $i < sizeof($docareas); $i++){
+                    $areas = array(
+                        'dcn_number'        => $dcnNumber,
+                        'docarea'           => $docareas[$i],
+                        'doc_version'       => $docVersion,
+                        'createdon'         => getLocalDatabaseDateTime(),
+                        'createdby'         => Auth::user()->username ?? Auth::user()->email
+                    );
+                    array_push($insertAreas, $areas);
+                }
+                if(sizeof($insertAreas) > 0){
+                    insertOrUpdate($insertAreas,'document_affected_areas');
+                }
+            }else{
+                $AffectedDocarea = DB::table('document_affected_areas')
+                                   ->where('dcn_number',  $dcnNumber)
+                                   ->where('doc_version', 1)
+                                   ->get();
+                foreach($AffectedDocarea as $data => $row){
+                    $areas = array(
+                        'dcn_number'        => $dcnNumber,
+                        'docarea'           => $row->docarea,
+                        'doc_version'       => $docVersion,
+                        'createdon'         => getLocalDatabaseDateTime(),
+                        'createdby'         => Auth::user()->username ?? Auth::user()->email
+                    );
+                    array_push($insertAreas, $areas);
+                }
+                if(sizeof($insertAreas) > 0){
+                    insertOrUpdate($insertAreas,'document_affected_areas');
+                }
             }
 
             // Generate Document Approval Workflow
