@@ -614,23 +614,24 @@
     function previewOriginalFile(files){        
         var pathfile = base_url+'/'+files;
 
-        // alert(pathfile)
+        // alert(base_url)
 
-        if(files !== ""){
+        if(pathfile !== ""){
             $('#originalFileViewer').html('');
             $('#originalFileViewer').append(`
                 <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
             
             `);
+            $('#modalPreviewApprovalFile').modal('show');
             var fileUri = files;
             fileUri = fileUri.replace("#toolbar=0", "?force=true");
-            @if(userAllowDownloadDocument() == 1)
+            @if(allowDownloadOrginalDoc() == 1)
                 document.getElementById("btnDownloadOriginalFile").href=base_url+fileUri; 
             @endif
-            $('#modalPreviewApprovalFile').modal('show');
         } else{
             swal("File Not Found", "", "warning");
         }
+        // $('#modalPreviewApprovalFile').modal('show');
     }
     
 

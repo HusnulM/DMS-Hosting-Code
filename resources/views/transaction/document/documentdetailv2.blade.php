@@ -827,7 +827,7 @@
             `);
             var fileUri = files;
             fileUri = fileUri.replace("#toolbar=0", "?force=true");
-            @if(userAllowDownloadDocument() == 1)
+            @if(allowDownloadOrginalDoc() == 1)
                 document.getElementById("btnDownloadOriginalFile").href=base_url+fileUri; 
             @endif
             $('#modalPreviewApprovalFile').modal('show');
