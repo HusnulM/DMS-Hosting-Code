@@ -638,7 +638,7 @@
             // $('#viewBookmark').hide();
             // $('#openFile').hide();
             // $('#exd-logo').hide();
-            var fileUri = files;
+            var fileUri = pathfile;
             fileUri = fileUri.replace("#toolbar=0", "?force=true");
             @if(userAllowDownloadDocument() == 1)
                 document.getElementById("btnDownloadFile").href=base_url+fileUri; 
@@ -660,7 +660,7 @@
                 <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
             
             `);
-            var fileUri = files;
+            var fileUri = pathfile;
             fileUri = fileUri.replace("#toolbar=0", "?force=true");
             @if(allowDownloadOrginalDoc() == 1)
                 document.getElementById("btnDownloadOriginalFile").href=base_url+fileUri; 
