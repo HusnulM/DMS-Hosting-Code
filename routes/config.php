@@ -79,4 +79,10 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/deleteassignment/{p1}/{p2}/{p3}/{p4}/{p5}',   'Config\WorkflowController@deleteAssignment')->middleware('checkAuth:config/workflow');
     });
+
+    Route::group(['prefix' => '/config/objectauth'], function () {
+        Route::get('/',             'Master\ObjectAuthController@index')->middleware('checkAuth:config/objectauth');  
+        Route::post('/save',        'Master\ObjectAuthController@save')->middleware('checkAuth:config/objectauth');
+        Route::get('/delete/{p1}',  'Master\ObjectAuthController@delete')->middleware('checkAuth:config/objectauth');
+    });
 });

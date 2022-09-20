@@ -287,7 +287,8 @@
             $('#modal-add-menu').modal('show');
         });
 
-        $('.btn-edit-menu').on('click', function(e){
+        // tbl-menu-group
+        $('#tbl-menu tbody').on( 'click', '.btn-edit-menu', function () {  
             var _mndata = $(this).data();
             console.log(_mndata)
             $('#menuname').val(_mndata.menuname);
@@ -295,6 +296,10 @@
             $('#menuroute').val(_mndata.menuroute);
             $('#modal-edit-menu').modal('show');
         });
+
+        // $('.btn-edit-menu').on('click', function(e){
+            
+        // });
 
         $('.btn-edit-group').on('click', function(e){
             var _grpdata = $(this).data();
