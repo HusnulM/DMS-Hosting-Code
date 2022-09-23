@@ -273,7 +273,7 @@
                                 </div>
 
                                 <div class="tab-pane fade" id="custom-content-above-history" role="tabpanel" aria-labelledby="custom-content-above-history-tab">
-                                    <div class="col-lg-12">
+                                    <div class="col-lg-12" style="overflow-y: auto; height:500px;">
                                         <div class="timeline" id="timeline-version-history">
                                             @foreach($dochistorydate as $hstrdate => $hstrgrp)
                                                 @if($latestVersion == $hstrgrp->doc_version)
@@ -305,7 +305,7 @@
                                 </div>
 
                                 <div class="tab-pane fade" id="custom-content-above-history-all" role="tabpanel" aria-labelledby="custom-content-above-history-all-tab">
-                                    <div class="col-lg-12">
+                                    <div class="col-lg-12" style="overflow-y: auto; height:500px;">
                                         <div class="timeline">
                                             @foreach($alldochistorydate as $hstrdate => $hstrgrp)
                                                 <div class="time-label">

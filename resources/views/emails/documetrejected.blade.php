@@ -34,22 +34,22 @@
 <body>
     <b>Good day!,</b><br>
 
-    <p>A New document has been created for your review and approval.</p>
+    <p>Your document has been rejected. Please check below remarks for your reference.</p>
     <table id="customers">
         <thead>
             <th>DCN Number</th>
             <th>Document Title</th>
-            <th>Date Created</th>
-            <th>Originator</th>
+            <th>Remark</th>
+            <th>Rejected by</th>
         </thead>
         <tbody>
             <tr>
                 <td>
-                    <a href="{{ url('/transaction/docapproval/approve/detail') }}/{{ $data['docID'] }}/{{ $data['version'] }}" target="_blank">{{ $data['dcnNumb'] }}</a> 
+                    <a href="{{ url('/transaction/doclist/detail') }}/{{ $data['docID'] }}" target="_blank">{{ $data['dcnNumb'] }}</a> 
                 </td>
                 <td>{{ $data['docTitle'] }}</td>
-                <td>{{ $data['docCrdt'] }}</td>
-                <td>{{ $data['docCrby'] }}</td>
+                <td>{{ $data['remark'] }}</td>
+                <td>{{ $data['rejectedby'] }}</td>
             </tr>
         </tbody>
     </table>

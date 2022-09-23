@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class MailNotif extends Mailable implements ShouldQueue
+class MailRejected extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
     public $data;
@@ -28,9 +28,8 @@ class MailNotif extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        // return $this->subject($this->data['subject'])
-        //             ->view('emails.documetcreated');
-        return $this->subject('Approval Request '. $this->data['dcnNumb'])
-                    ->view('emails.documetcreated');
+        // return $this->view('view.name');
+        return $this->subject($this->data['subject'])
+                    ->view('emails.documetrejected');
     }
 }

@@ -85,38 +85,6 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <!-- <div class="row">
-                        <div class="col-lg-12">
-                            <div class="row">
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    <label for="doctitle">Document Title</label>
-                                    <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" value="{{ $documents->document_title }}" required>
-                                </div>   
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    <label for="doctype">Document Type</label>
-                                    <select name="doctype" id="doctype" class="form-control">
-                                        <option value="{{ $cdoctype->id }}"> {{ $cdoctype->doctype }} </option>
-                                    </select>
-                                </div>    
-                                
-                                <div class="col-lg-3 col-sm-12 form-group">
-                                    <label for="effectivedate">Effectivity Date</label>
-                                    <input type="date" name="effectivedate" class="form-control" value="{{ $documents->effectivity_date }}" required>
-                                </div>
-                                <div class="col-lg-3 col-sm-12 form-group">
-                                    <label for="docnumber">Document Number</label>
-                                    <input type="text" name="docnumber" class="form-control" value="{{ $documents->document_number }}">
-                                </div>
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
-                                    <button class="btn btn-primary btn-sm">
-                                        <i class="fa fa-edit"></i> Update Document Info
-                                    </button>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="row">
                         <div class="col-lg-12">
                             <ul class="nav nav-tabs" id="custom-content-above-tab" role="tablist">
@@ -188,6 +156,12 @@
                                                             <label for="ValidityDate">Effectivity Date</label>
                                                             <p>{{ formatDate($docVersionData->effectivity_date) }}</p>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-lg-6" id="version-remark">
+                                                        <label for="">Version Remark :</label>
+                                                        <p>
+                                                            {!! $docVersionData->remark !!}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -303,7 +277,7 @@
                                 </div>
 
                                 <div class="tab-pane fade" id="custom-content-above-history" role="tabpanel" aria-labelledby="custom-content-above-history-tab">
-                                    <div class="col-lg-12">
+                                    <div class="col-lg-12" style="overflow-y: auto; height:500px;">
                                         <div class="timeline" id="timeline-version-history">
                                             @foreach($dochistorydate as $hstrdate => $hstrgrp)
                                                 @if($latestVersion == $hstrgrp->doc_version)
@@ -335,7 +309,7 @@
                                 </div>
 
                                 <div class="tab-pane fade" id="custom-content-above-history-all" role="tabpanel" aria-labelledby="custom-content-above-history-all-tab">
-                                    <div class="col-lg-12">
+                                    <div class="col-lg-12" style="overflow-y: auto; height:500px;">
                                         <div class="timeline">
                                             @foreach($alldochistorydate as $hstrdate => $hstrgrp)
                                                 <div class="time-label">
@@ -497,13 +471,13 @@
     </div>
 </div>   
 
-<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalAddVersion">
+<div class="modal fade bd-example-modal-xl" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalAddVersion">
     <div class="modal-dialog modal-xl">
-        <form action="{{ url('/transaction/document/savenewversion') }}/{{ $documents->id }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+        <form action="{{ url('/document/v3/savenewversion') }}/{{ $documents->id }}" method="post" class="form-horizontal" enctype="multipart/form-data">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalAddVersionTitle">Create New Document Revision</h5>
+                    <h5 class="modal-title" id="modalAddVersionTitle">Create New Document Version</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -512,23 +486,24 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-6 col-sm-12 form-group">
                             <label for="doctitle">Document Title</label>
-                            <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" required>
+                            <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" value="{{ $documents->document_title }}" required readonly>
                         </div>   
                         <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                             <label for="processname">Process Name</label>
-                            <input type="text" class="form-control" name="processname" id="processname" placeholder="Process Name" required>
+                            <input type="text" class="form-control" name="processname" id="processname" placeholder="Process Name" value="{{ $wiDocData->process_name }}" required readonly>
                         </div>   
                         <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                             <label for="product">Product Name</label>
-                            <input type="text" class="form-control" name="product" id="product" placeholder="Product Name" required>
+                            <input type="text" class="form-control" name="product" id="product" placeholder="Product Name" value="{{ $wiDocData->product_name }}" required readonly>
                         </div>   
-                        <div class="col-lg-12 col-md-6 col-sm-12 form-group">
+                        <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                             <label for="customer">Customer</label>
-                            <select name="customer" id="find-customer" class="form-control"></select>
+                            <input type="text" class="form-control" name="customer" placeholder="Customer Name" value="{{ $wiDocData->customer }}" required readonly>
+                            <!-- <select name="customer" id="find-customer" class="form-control"></select> -->
                         </div>   
                         <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                             <label for="doctype">Document Type</label>
-                            <select name="doctype" id="doctype" class="form-control">
+                            <select name="doctype" id="doctype" class="form-control" readonly>
                                 @foreach($doctypes as $key => $row)
                                     <option value="{{ $row->id }}">{{ $row->doctype }}</option>
                                 @endforeach
@@ -536,23 +511,28 @@
                         </div>    
                         <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                             <label for="model">Model</label>
-                            <select name="model" id="find-model" class="form-control"></select>
+                            <input type="text" class="form-control" name="model" placeholder="Model Name" value="{{ $wiDocData->model_name }}" required readonly>
+                            <!-- <select name="model" id="find-model" class="form-control"></select> -->
                         </div>
                         <div class="col-lg-6 col-sm-12 form-group">
                             <label for="assycode">Assy Code</label>
-                            <input type="text" name="assycode" id="assycode" class="form-control" required>
+                            <input type="text" name="assycode" id="assycode" class="form-control" value="{{ $wiDocData->assy_code }}" required readonly>
                         </div>
                         <div class="col-lg-6 col-sm-12 form-group">
                             <label for="section">Section</label>
-                            <input type="text" name="section" class="form-control" required>
+                            <input type="text" name="section" class="form-control" value="{{ $wiDocData->section }}" required readonly>
                         </div>
                         <div class="col-lg-6 col-sm-12 form-group">
                             <label for="estabdate">Established Date</label>
-                            <input type="date" name="estabdate" class="form-control" required>
-                        </div>
+                            <input type="date" name="estabdate" class="form-control" value="{{ $docVersionData->established_date }}" required>
+                        </div> 
                         <div class="col-lg-6 col-sm-12 form-group">
                             <label for="effectdate">Effectivity Date</label>
-                            <input type="date" name="effectdate" class="form-control" required>
+                            <input type="date" name="effectdate" class="form-control" value="{{ $docVersionData->effectivity_date }}" required>
+                        </div>
+                        <div class="col-lg-6 col-sm-12 form-group">
+                            <label for="remark">Revision Remark</label>
+                            <textarea name="remark" id="remark" cols="30" rows="2" class="form-control"></textarea>
                         </div>
                         <div class="col-lg-12 col-sm-12 form-group">
                             <label for="docfiles">Document Attachment</label>
@@ -571,7 +551,7 @@
 
 
 <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalLoader">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-sm">
         <form class="form-horizontal">
             <div class="modal-content">
                 <div class="preloader flex-column justify-content-center align-items-center LoadingData">
@@ -628,16 +608,7 @@
                 <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
             
             `);
-            // var options = {
-            //     height: "500px",
-            //     pdfOpenParams: {view: 'FitV'},
-            //     fallbackLink: 'Your browser does not support pdf'
-            // }
-            // PDFObject.embed(files, "#example1", options);
-            // $('#print').hide();
-            // $('#viewBookmark').hide();
-            // $('#openFile').hide();
-            // $('#exd-logo').hide();
+            
             var fileUri = pathfile;
             fileUri = fileUri.replace("#toolbar=0", "?force=true");
             @if(userAllowDownloadDocument() == 1)
@@ -673,14 +644,14 @@
 
     $(document).ready(function () {        
         var count = 0;
-        
+        let _token   = $('meta[name="csrf-token"]').attr('content');
 
         $('.docVersion').on('click', function(e){
             var selData = $(this).data();
             console.log(selData);
             let _token   = $('meta[name="csrf-token"]').attr('content');
             $('#tbl-doc-area-body, #timeline-version-history, #hdr-version').html('');
-            $('#tbl-attachment-body, #tbl-approval-body, #tbl-approvaldoc-body').html('');
+            $('#tbl-attachment-body, #tbl-approval-body, #tbl-approvaldoc-body, #version-remark').html('');
             $.ajax({
                 url: base_url+'/transaction/doclist/detailversion/'+selData.docversion+'/'+selData.docid,
                 beforeSend: function(){
@@ -689,7 +660,7 @@
                 success:function(response){
                     console.log(response);
                     if(response){
-                        $('#docareaContent').val(response.docversions.remark);
+                        // $('#docareaContent').val(response.docversions.remark);
 
                         $('#hdr-version').html('Version '+ selData.docversion);
 
@@ -698,6 +669,15 @@
                         var _historyDetail = response.docHistory;                        
 
                         var _approvalDoc   = response.approvalDoc;
+
+                        if(response.docversions.remark != null && response.docversions.remark !== 'null'){
+                            $('#version-remark').append(`
+                                <label for="">Version Remark :</label>
+                                <p>
+                                    `+ response.docversions.remark +`
+                                </p>                        
+                            `);
+                        }
                         
                         // for(var i = 0; i < _approvalDoc.length; i++){
                         //     $('#tbl-approvaldoc-body').append(`
@@ -774,36 +754,97 @@
 
         $('.btnAddVersion').on('click', function(){
             $('#modalAddVersion').modal('show');
-        });
-
-        $('.btn-add-new-docarea').on('click', function(){
-            $('#tbl-doc-area-new-body').append(`
-                <tr>
-                    <td>
-                        <select name="docareas[]" class="form-control docareas">
-                            <option value="">Select Document Area</option>
-                            @foreach($docareas as $key => $row)
-                                <option value="{{ $row->id }}">{{ $row->docarea }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td style="text-align:center;">
-                        <button type="button" class="btn btn-danger btn-sm btnRemoveNewArea">
-                            <i class="fa fa-trash"></i>
-                        </button>
-                    </td>
-                <tr>
-            `);
-
-            $('.btnRemoveNewArea').on('click', function(e){
-                e.preventDefault();
-                $(this).closest("tr").remove();
+            $(document).on('select2:open', (event) => {
+                const searchField = document.querySelector(
+                    `.select2-search__field`,
+                );
+                if (searchField) {
+                    searchField.focus();
+                }
             });
-
-            $(".docareas").select2();
+    
+            $('#find-customer').select2({ 
+                placeholder: 'Type Customer Name',
+                width: '100%',
+                minimumInputLength: 0,
+                ajax: {
+                    url: base_url + '/master/customer/findcustomer',
+                    dataType: 'json',
+                    delay: 250,
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': _token
+                    },
+                    data: function (params) {
+                        var query = {
+                            search: params.term,
+                            // custname: $('#find-customer').val()
+                        }
+                        return query;
+                    },
+                    processResults: function (data) {
+                        // return {
+                        //     results: response
+                        // };
+                        console.log(data)
+                        return {
+                            results: $.map(data.data, function (item) {
+                                return {
+                                    text: item.customer_name,
+                                    slug: item.customer_name,
+                                    id: item.customer_name,
+                                    ...item
+                                }
+                            })
+                        };
+                    },
+                    cache: true
+                }
+            });
+    
+            $('#find-model').select2({ 
+                placeholder: 'Type Model Name',
+                width: '100%',
+                minimumInputLength: 3,
+                ajax: {
+                    url: '{{ apiIpdApp() ?? '' }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(data){
+                        return{
+                            searchName: data.term
+                        }
+                    },
+                    processResults: function (data) {
+                        console.log(data)
+                        return {
+                            results: $.map(data.data, function (item) {                            
+                                return {
+                                    text: item.matdesc,
+                                    slug: item.material,
+                                    id: item.matdesc,
+                                    ...item
+                                }
+                            })
+                        };
+                    },
+                }
+            });
+    
+            $('#find-model').on('change', function(){
+                // alert(this.value)
+                
+                var data = $('#find-model').select2('data')
+                console.log(data);
+    
+                // alert(data[0].material);
+                $('#assycode').val(data[0].material);
+            });
         });
 
-        $('.docremark').ckeditor();
+        
+       
+
     });
 </script>
 @endsection

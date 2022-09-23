@@ -475,12 +475,13 @@ class DocumentV1Controller extends Controller
             $mailData = [
                 'email'    => 'husnulmub@gmail.com',
                 'docID'    => $docID,
+                'subject'  => 'Approval Request ' . $dcnNumber,
                 'version'  => 1,
                 'dcnNumb'  => $dcnNumber,
                 'docTitle' => $req['doctitle'],
                 'docCrdt'  => date('d-m-Y'),
                 'docCrby'  => Auth::user()->name,
-                'body'     => 'This is for testing email using smtp',
+                'body'     => 'A New document has been created for your review and approval',
                 'mailto'   => [
                     $mailTo
                 ]
@@ -535,6 +536,7 @@ class DocumentV1Controller extends Controller
                 'createdon'   => getLocalDatabaseDateTime(),
                 'createdby'       => Auth::user()->username ?? Auth::user()->email
             ]);
+           
             // document_historys
             
             $insertHistory = array(
@@ -637,6 +639,13 @@ class DocumentV1Controller extends Controller
                     array_push($insertApproval, $approvals);
                 }
                 insertOrUpdate($insertApproval,'document_approvals');   
+
+                // DB::table('document_approvals')
+                // ->where('dcn_number', $dcnNumber)
+                // ->where('approval_version', '!=', $docVersion)
+                // ->update([
+                //     'is_active' => 'N'
+                // ]);
             }else{
                 DB::rollBack();
                 $doctype = DB::table('doctypes')->where('id', $document->document_type)->first();
@@ -677,12 +686,13 @@ class DocumentV1Controller extends Controller
             $mailData = [
                 'email'    => 'husnulmub@gmail.com',
                 'docID'    => $id,
+                'subject'  => 'Approval Request ' . $dcnNumber,
                 'version'  => $docVersion,
                 'dcnNumb'  => $dcnNumber,
                 'docTitle' => $document->document_title,
                 'docCrdt'  => date('d-m-Y'),
                 'docCrby'  => Auth::user()->name,
-                'body'     => 'This is for testing email using smtp'
+                'body'     => 'A New document has been created for your review and approval'
             ];
             
             // dispatch(new SendEmailJob($mailData));

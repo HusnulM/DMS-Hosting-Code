@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 use App\Jobs\SendEmailJob;
 use App\Mail\MailNotif;
+use App\Mail\MailRejected;
+use App\Mail\MailFullApproved;
 
 use DataTables, Auth, DB;
 use Validator,Redirect,Response;
@@ -218,31 +220,21 @@ class DocumentApprovalController extends Controller
 
             DB::commit();
 
-            $checkIsFullApprove = DB::table('document_approvals')
-                                  ->where('dcn_number', $req['dcnNumber'])
-                                  ->where('approval_version', $req['version'])
-                                  ->where('approval_status', '!=', 'A')
-                                  ->get();
+            if($req['action'] === "A"){
+                $checkIsFullApprove = DB::table('document_approvals')
+                                      ->where('dcn_number', $req['dcnNumber'])
+                                      ->where('approval_version', $req['version'])
+                                      ->where('approval_status', '!=', 'A')
+                                      ->get();
+    
+                if(sizeof($checkIsFullApprove) > 0){
+                    $mailTo = DB::table('v_doc_area_emails')
+                    ->where('dcn_number',  $document->dcn_number)
+                    ->where('doc_version', $req['version'])
+                    ->pluck('email');
 
-            if(sizeof($checkIsFullApprove) > 0){
-
-            }else{
-                DB::table('document_versions')
-                ->where('dcn_number',  $req['dcnNumber'])
-                ->where('doc_version', $req['version'])
-                ->update([
-                    'status'         => 'Approved',
-                ]);
-
-                DB::commit();
-            }
-            if($nextApprover  != null){
-                $mailTo = DB::table('v_workflow_assignments')
-                          ->where('workflow_group', $document->workflow_group)
-                          ->where('approval_level', $nextApprover)
-                          ->pluck('approver_email');
-                
-                $mailData = [
+                    if(sizeof($mailTo) > 0){
+                        $mailData = [
                             'email'    => 'husnulmub@gmail.com',
                             'docID'    => $document->id,
                             'version'  => $req['version'],
@@ -250,12 +242,65 @@ class DocumentApprovalController extends Controller
                             'docTitle' => $document->document_title,
                             'docCrdt'  => formatDate($document->created_at),
                             'docCrby'  => $document->createdby,
+                            'subject'  => 'Document Approved '. $document->dcn_number,
                             'body'     => 'This is for testing email using smtp'
-                ];
+                        ];
                         
                         // dispatch(new SendEmailJob($mailData));
-                Mail::to($mailTo)->queue(new MailNotif($mailData));
+                        Mail::to($mailTo)->queue(new MailFullApproved($mailData));
+                    }
+                }else{
+                    DB::table('document_versions')
+                    ->where('dcn_number',  $req['dcnNumber'])
+                    ->where('doc_version', $req['version'])
+                    ->update([
+                        'status'         => 'Approved',
+                    ]);
+    
+                    DB::commit();
+                }
+                if($nextApprover  != null){
+                    $mailTo = DB::table('v_workflow_assignments')
+                              ->where('workflow_group', $document->workflow_group)
+                              ->where('approval_level', $nextApprover)
+                              ->pluck('approver_email');
+                    
+                    $mailData = [
+                                'email'    => 'husnulmub@gmail.com',
+                                'docID'    => $document->id,
+                                'version'  => $req['version'],
+                                'dcnNumb'  => $document->dcn_number,
+                                'docTitle' => $document->document_title,
+                                'docCrdt'  => formatDate($document->created_at),
+                                'docCrby'  => $document->createdby,
+                                'subject'  => 'Approval Request '.$document->dcn_number,
+                                'body'     => 'This is for testing email using smtp'
+                    ];
+                            
+                            // dispatch(new SendEmailJob($mailData));
+                    Mail::to($mailTo)->queue(new MailNotif($mailData));
+                }
+            }elseif($req['action'] === "R"){
+
+                $mailTo = DB::table('users')->where('username', $document->createdby)->first();
+                $mailData = [
+                    'email'    => 'husnulmub@gmail.com',
+                    'docID'    => $document->id,
+                    'version'  => $req['version'],
+                    'dcnNumb'  => $document->dcn_number,
+                    'docTitle' => $document->document_title,
+                    'docCrdt'  => formatDate($document->created_at),
+                    'docCrby'  => $document->createdby,
+                    'subject'  => 'Document Rejected '.$document->dcn_number,
+                    'remark'   => $req['approvernote'],
+                    'rejectedby' => Auth::user()->name,
+                    'body'     => 'Your document has been rejected. Please check below remarks for your reference'
+                ];
+                
+                // dispatch(new SendEmailJob($mailData));
+                Mail::to($mailTo->email)->queue(new MailRejected($mailData));
             }
+
 
             $result = array(
                 'msgtype' => '200',
@@ -365,13 +410,33 @@ class DocumentApprovalController extends Controller
             DB::commit();
 
             $checkIsFullApprove = DB::table('document_approvals')
-                                  ->where('dcn_number', $req['dcnNumber'])
+                                  ->where('dcn_number', $document->dcn_number)
                                   ->where('approval_version', $req['version'])
                                   ->where('approval_status', '!=', 'A')
                                   ->get();
 
             if(sizeof($checkIsFullApprove) > 0){
 
+                $mailTo = DB::table('v_doc_area_emails')
+                          ->where('dcn_number',  $document->dcn_number)
+                          ->where('doc_version', $req['version'])
+                          ->pluck('email');
+                if(sizeof($mailTo) > 0){
+                    $mailData = [
+                        'email'    => 'husnulmub@gmail.com',
+                        'docID'    => $document->id,
+                        'version'  => $req['version'],
+                        'dcnNumb'  => $document->dcn_number,
+                        'docTitle' => $document->document_title,
+                        'docCrdt'  => formatDate($document->created_at),
+                        'docCrby'  => $document->createdby,
+                        'subject'  => 'Document Approved '. $document->dcn_number,
+                        'body'     => 'This is for testing email using smtp'
+                    ];
+                    
+                    // dispatch(new SendEmailJob($mailData));
+                    Mail::to($mailTo)->queue(new MailFullApproved($mailData));
+                }
             }else{
                 DB::table('document_versions')
                 ->where('dcn_number',  $req['dcnNumber'])
@@ -389,17 +454,18 @@ class DocumentApprovalController extends Controller
                           ->pluck('approver_email');
                 
                 $mailData = [
-                            'email'    => 'husnulmub@gmail.com',
-                            'docID'    => $document->id,
-                            'version'  => $req['version'],
-                            'dcnNumb'  => $document->dcn_number,
-                            'docTitle' => $document->document_title,
-                            'docCrdt'  => formatDate($document->created_at),
-                            'docCrby'  => $document->createdby,
-                            'body'     => 'This is for testing email using smtp'
+                        'email'    => 'husnulmub@gmail.com',
+                        'docID'    => $document->id,
+                        'version'  => $req['version'],
+                        'dcnNumb'  => $document->dcn_number,
+                        'docTitle' => $document->document_title,
+                        'docCrdt'  => formatDate($document->created_at),
+                        'docCrby'  => $document->createdby,
+                        'subject'  => 'Request Approval '. $document->dcn_number,
+                        'body'     => 'This is for testing email using smtp'
                 ];
                         
-                        // dispatch(new SendEmailJob($mailData));
+                // dispatch(new SendEmailJob($mailData));
                 Mail::to($mailTo)->queue(new MailNotif($mailData));
             }
 

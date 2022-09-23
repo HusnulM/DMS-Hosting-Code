@@ -34,7 +34,7 @@
 <body>
     <b>Good day!,</b><br>
 
-    <p>A New document has been created for your review and approval.</p>
+    <p>Below controlled document already approved for your reference.</p>
     <table id="customers">
         <thead>
             <th>DCN Number</th>

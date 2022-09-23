@@ -23,7 +23,7 @@ class DocumentController extends Controller
     }
 
     public function documentDetail($id){
-        $doctypes  = DB::table('doctypes')->get();
+        
         $doclevels = DB::table('doclevels')->get();
         $docareas  = DB::table('docareas')->get();
 
@@ -31,6 +31,7 @@ class DocumentController extends Controller
                       ->where('id', $id)
                       ->first();
         
+        $doctypes  = DB::table('doctypes')->where('id', $documents->document_type)->get();
         $docversions = DB::table('document_versions')->where('dcn_number', $documents->dcn_number)->orderBy('doc_version', 'DESC')->get();
 
         $latestVersion = $docversions[0]->doc_version;

@@ -243,3 +243,8 @@ function allowDownloadOrginalDoc(){
         return 0;
     }
 }
+
+function apiIpdApp(){
+    $ipdapi    = DB::table('general_setting')->where('setting_name', 'IPD_MODEL_API')->first();
+    return $ipdapi->setting_value;
+}
