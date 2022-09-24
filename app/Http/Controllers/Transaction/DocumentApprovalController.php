@@ -228,6 +228,17 @@ class DocumentApprovalController extends Controller
                                       ->get();
     
                 if(sizeof($checkIsFullApprove) > 0){
+                    
+                }else{
+                    DB::table('document_versions')
+                    ->where('dcn_number',  $req['dcnNumber'])
+                    ->where('doc_version', $req['version'])
+                    ->update([
+                        'status'         => 'Approved',
+                    ]);
+    
+                    DB::commit();
+
                     $mailTo = DB::table('v_doc_area_emails')
                     ->where('dcn_number',  $document->dcn_number)
                     ->where('doc_version', $req['version'])
@@ -249,15 +260,6 @@ class DocumentApprovalController extends Controller
                         // dispatch(new SendEmailJob($mailData));
                         Mail::to($mailTo)->queue(new MailFullApproved($mailData));
                     }
-                }else{
-                    DB::table('document_versions')
-                    ->where('dcn_number',  $req['dcnNumber'])
-                    ->where('doc_version', $req['version'])
-                    ->update([
-                        'status'         => 'Approved',
-                    ]);
-    
-                    DB::commit();
                 }
                 if($nextApprover  != null){
                     $mailTo = DB::table('v_workflow_assignments')
@@ -417,6 +419,17 @@ class DocumentApprovalController extends Controller
 
             if(sizeof($checkIsFullApprove) > 0){
 
+                
+            }else{
+                DB::table('document_versions')
+                ->where('dcn_number',  $req['dcnNumber'])
+                ->where('doc_version', $req['version'])
+                ->update([
+                    'status'         => 'Approved',
+                ]);
+
+                DB::commit();
+
                 $mailTo = DB::table('v_doc_area_emails')
                           ->where('dcn_number',  $document->dcn_number)
                           ->where('doc_version', $req['version'])
@@ -437,15 +450,6 @@ class DocumentApprovalController extends Controller
                     // dispatch(new SendEmailJob($mailData));
                     Mail::to($mailTo)->queue(new MailFullApproved($mailData));
                 }
-            }else{
-                DB::table('document_versions')
-                ->where('dcn_number',  $req['dcnNumber'])
-                ->where('doc_version', $req['version'])
-                ->update([
-                    'status'         => 'Approved',
-                ]);
-
-                DB::commit();
             }
             if($nextApprover  != null){
                 $mailTo = DB::table('v_workflow_assignments')

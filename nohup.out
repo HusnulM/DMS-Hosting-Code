@@ -104,7 +104,8 @@
 [32m[2022-09-23 10:06:36][88] Processed: [39m App\Mail\MailNotif
 [33m[2022-09-23 10:07:27][92] Processing:[39m App\Mail\MailNotif
 [32m[2022-09-23 10:07:30][92] Processed: [39m App\Mail\MailNotif
-ilNotif[33m[2022-09-23 10:07:27][91] Processing:[39m App\Mail\MailFullApproved
-[32m[2022-09-23 10:07:29][91] Processed: [39m App\Mail\MailFullApproved
+[33m[2022-09-23 10:26:31][93] Processing:[39m App\Mail\MailNotif
+[32m[2022-09-23 10:26:34][93] Processed: [39m App\Mail\MailNotif
+ail\MailFullApproved
 proved
 [32m[2022-09-23 10:07:16][89] Processed: [39m App\Mail\MailFullApproved
