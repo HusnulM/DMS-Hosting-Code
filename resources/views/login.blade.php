@@ -17,7 +17,7 @@
   <style>
     .loginbody 
     {
-      background-image: url("assets/img/login-bg.JPEG");
+      background-image: url({{ asset('/assets/img/login-bg.JPEG') }});
       -webkit-background-size: cover;
       -moz-background-size: cover;
       -o-background-size: cover;
