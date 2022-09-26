@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Reports;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
+use App\Exports\ReportExport;
 use DataTables, Auth, DB;
 use Validator,Redirect,Response;
 use Mail;
@@ -17,6 +19,11 @@ class DocumentReportController extends Controller
         $doclevels = DB::table('doclevels')->get();
         $docareas  = DB::table('docareas')->get();
         return view('reports.documentlist', ['doctypes' => $doctypes, 'doclevels' => $doclevels, 'docareas' => $docareas]);
+    }
+
+    public function exportdata(Request $req){
+        return Excel::download(new ReportExport($req), 'Document-Reports.xlsx');
+        // ->only('dcn_number','doctype','document_number','document_title','doc_version','effectivity_date','established_date','validity_date','createdby','created_at','crtdate')
     }
 
     public function loadReportDocList(Request $req){

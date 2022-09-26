@@ -26,42 +26,48 @@
                     <h3 class="card-title">Report Document List</h3>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-2">
-                            <label for="">From Date</label>
-                            <input type="date" class="form-control" name="datefrom" id="datefrom" value="{{ $_GET['datefrom'] ?? '' }}">
+                    <form action="{{ url('reports/documentlist/export') }}" method="post">
+                        @csrf
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <label for="">From Date</label>
+                                <input type="date" class="form-control" name="datefrom" id="datefrom" value="{{ $_GET['datefrom'] ?? '' }}">
+                            </div>
+                            <div class="col-lg-2">
+                                <label for="">To Date</label>
+                                <input type="date" class="form-control" name="dateto" id="dateto" value="{{ $_GET['dateto'] ?? '' }}">
+                            </div>
+                            <div class="col-lg-3">
+                                <label for="">Document Type</label>
+                                <select name="doctype" id="doctype" class="form-control">
+                                    <option value="All">All</option>
+                                    @foreach($doctypes as $key => $row)
+                                    <option value="{{ $row->id }}">{{ $row->doctype }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-lg-2">
+                                <label for="">Approval Status</label>
+                                <select name="approvalStatus" id="approvalStatus" class="form-control">
+                                    <option value="All">All</option>
+                                    <option value="O">Open</option>
+                                    <option value="C">Obsolete</option>
+                                    <option value="R">Rejected</option>
+                                    <option value="A">Approved</option>
+                                    <!-- <option value="">Obsolete</option> -->
+                                </select>
+                            </div>
+                            <div class="col-lg-3" style="text-align:center;">
+                                <br>
+                                <button type="button" class="btn btn-default mt-2 btn-search"> 
+                                    <i class="fa fa-search"></i> Filter
+                                </button>
+                                <button type="submit" class="btn btn-success mt-2 btn-export"> 
+                                    <i class="fa fa-download"></i> Export Data
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-lg-2">
-                            <label for="">To Date</label>
-                            <input type="date" class="form-control" name="dateto" id="dateto" value="{{ $_GET['dateto'] ?? '' }}">
-                        </div>
-                        <div class="col-lg-3">
-                            <label for="">Document Type</label>
-                            <select name="doctype" id="doctype" class="form-control">
-                                <option value="All">All</option>
-                                @foreach($doctypes as $key => $row)
-                                <option value="{{ $row->id }}">{{ $row->doctype }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-3">
-                            <label for="">Approval Status</label>
-                            <select name="approvalStatus" id="approvalStatus" class="form-control">
-                                <option value="All">All</option>
-                                <option value="O">Open</option>
-                                <option value="C">Obsolete</option>
-                                <option value="R">Rejected</option>
-                                <option value="A">Approved</option>
-                                <!-- <option value="">Obsolete</option> -->
-                            </select>
-                        </div>
-                        <div class="col-lg-2">
-                            <br>
-                            <button type="button" class="btn btn-default mt-2 btn-search"> 
-                                <i class="fa fa-search"></i> Filter
-                            </button>
-                        </div>
-                    </div>
+                    </form>
                     <!-- <form action="" method="GET">
                     </form> -->
                     <hr>
