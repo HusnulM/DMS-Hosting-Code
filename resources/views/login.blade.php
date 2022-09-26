@@ -23,10 +23,34 @@
       -o-background-size: cover;
       background-size: cover;
     }
+
+    @media only screen and (max-width: 600px) {
+      .login-box {margin-right:0px; margin-bottom: 0rem;}
+    }
+
+    /* Small devices (portrait tablets and large phones, 600px and up) */
+    @media only screen and (min-width: 600px) {
+      .login-box {margin-right:0px; margin-bottom: 0rem;}
+    }
+
+    /* Medium devices (landscape tablets, 768px and up) */
+    @media only screen and (min-width: 768px) {
+      .login-box {margin-right:0px; margin-bottom: 0rem;}
+    } 
+
+    /* Large devices (laptops/desktops, 992px and up) */
+    @media only screen and (min-width: 992px) {
+      .login-box {margin-right:0px; margin-bottom: 0rem;}
+    } 
+
+    /* Extra large devices (large laptops and desktops, 1200px and up) */
+    @media only screen and (min-width: 1200px) {
+      .login-box {margin-right:1000px; margin-bottom: 10rem;}
+    }
   </style>
 </head>
 <body class="hold-transition login-page loginbody">
-<div class="login-box" style="margin-right:1000px; margin-bottom: 10rem;">
+<div class="login-box">
   <div class="card card-outline card-primary">
     <div class="card-header text-center">
       <a href="#" class="h5"><b>Document Management System</b></a>
