@@ -201,6 +201,13 @@ class DocumentApprovalController extends Controller
                 }
             }elseif($req['action'] === "R"){
                 $docStat = 'Document Rejected';
+
+                DB::table('document_versions')
+                    ->where('dcn_number',  $req['dcnNumber'])
+                    ->where('doc_version', $req['version'])
+                    ->update([
+                        'status'         => 'Rejected',
+                    ]);
             }
 
             $insertHistory = array(
@@ -363,6 +370,13 @@ class DocumentApprovalController extends Controller
                 }
             }elseif($req['action'] === "R"){
                 $docStat = 'Document Rejected';
+
+                DB::table('document_versions')
+                    ->where('dcn_number',  $req['dcnNumber'])
+                    ->where('doc_version', $req['version'])
+                    ->update([
+                        'status'         => 'Rejected',
+                    ]);
             }
 
             $insertHistory = array(
