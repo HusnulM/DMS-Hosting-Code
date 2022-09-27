@@ -22,11 +22,19 @@ class HomeController extends Controller
         // $month      = date('m');
         // $coin       = DB::table('stock_coins')->sum('quantity');
         // // return $coin;
-        // $totaldepo  = DB::table('deposits')->whereMonth('tgl_deposit', '=', $month)->count();
+        $totalOpen     = DB::table('v_document_latest_version_status')->where('version_status', 'Open')->count();
+        $totalRejected = DB::table('v_document_latest_version_status')->where('version_status', 'Rejected')->count();
+        $totalApproved = DB::table('v_document_latest_version_status')->where('version_status', 'Approved')->count();
+        $totalObsolete = DB::table('document_versions')->where('status', 'Obsolete')->count();
         // $totaltopup = DB::table('topups')->whereMonth('topupdate', '=', $month)->count();
         // $totalwd    = DB::table('withdraws')->whereMonth('wdpdate', '=', $month)->count();
         // return $totaldepo;
-        return view('dashboard');
+        return view('dashboard', [
+            'totalOpen' => $totalOpen, 
+            'totalRejected' => $totalRejected, 
+            'totalApproved' => $totalApproved, 
+            'totalObsolete' => $totalObsolete
+        ]);
     }
 
     public function login(Request $request){
