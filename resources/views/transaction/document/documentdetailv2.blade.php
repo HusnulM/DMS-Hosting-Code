@@ -26,7 +26,7 @@
         <div class="col-lg-3">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Document Version</h3>
+                    <h3 class="card-title">Document Revision</h3>
                     <div class="card-tools">
                         @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
                         <button type="button" class="btn btn-success btn-sm btnAddVersion">
@@ -74,7 +74,7 @@
         <div class="col-lg-9">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Document Detail <b id="hdr-version">Version {{ $docversions[0]->doc_version }}</b></h3>
+                    <h3 class="card-title">Document Detail <b id="hdr-version">Revision {{ $docversions[0]->doc_version }}</b></h3>
                     <div class="card-tools">
                         <!-- <a href="{{ url('/transaction/doclist/print') }}/{{$documents->id}}" target="_blank" class='btn btn-success btn-sm button-print'> 
                             <i class='fa fa-print'></i> Print
@@ -891,7 +891,7 @@
                     if(response){
                         $('#docareaContent').val(response.docversions.remark);
 
-                        $('#hdr-version').html('Version '+ selData.docversion);
+                        $('#hdr-version').html('Revision '+ selData.docversion);
 
                         var _areas         = response.affected_area;
                         var _historyGroup  = response.docHistorydateGroup;

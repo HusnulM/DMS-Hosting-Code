@@ -43,6 +43,8 @@ class DocumentV3Controller extends Controller
             $docHistory = array();
             $insertFiles = array();
 
+            $docversion = 0;
+
             $docID = DB::table('documents')->insertGetId([
                 'dcn_number'      => $dcnNumber,
                 'document_type'   => $req['doctype'],
@@ -58,7 +60,7 @@ class DocumentV3Controller extends Controller
 
             DB::table('document_versions')->insert([
                 'dcn_number'  => $dcnNumber,
-                'doc_version' => 1,
+                'doc_version' => $docversion,
                 'remark'      => null,
                 'established_date' => $req['estabdate'],
                 'effectivity_date' => $req['effectdate'],
@@ -69,7 +71,7 @@ class DocumentV3Controller extends Controller
             
             $insertHistory = array(
                 'dcn_number'        => $dcnNumber,
-                'doc_version'       => 1,
+                'doc_version'       => $docversion,
                 'activity'          => 'Document Created : ' . $req['doctitle'],
                 'createdby'         => Auth::user()->username ?? Auth::user()->email,
                 'createdon'         => getLocalDatabaseDateTime(),
@@ -81,7 +83,7 @@ class DocumentV3Controller extends Controller
                 $filename = $dcnNumber.'-'.$efile->getClientOriginalName();
                 $upfiles = array(
                     'dcn_number' => $dcnNumber,
-                    'doc_version'=> 1,
+                    'doc_version'=> $docversion,
                     'efile'      => $filename,
                     'pathfile'   => 'storage/files/'. $filename,
                     'created_at' => getLocalDatabaseDateTime(),
@@ -93,7 +95,7 @@ class DocumentV3Controller extends Controller
 
                 $insertHistory = array(
                     'dcn_number'        => $dcnNumber,
-                    'doc_version'       => 1,
+                    'doc_version'       => $docversion,
                     'activity'          => 'Document Attachment Created : ' . $filename,
                     'createdby'         => Auth::user()->username ?? Auth::user()->email,
                     'createdon'         => getLocalDatabaseDateTime(),
@@ -118,7 +120,7 @@ class DocumentV3Controller extends Controller
                     }
                     $approvals = array(
                         'dcn_number'        => $dcnNumber,
-                        'approval_version'  => 1,
+                        'approval_version'  => $docversion,
                         'workflow_group'    => $wfgroup,
                         'approver_level'    => $row->approval_level,
                         'approver_id'       => $row->approverid,
@@ -151,7 +153,7 @@ class DocumentV3Controller extends Controller
             $insertWiDoc = array();
             $wiDocData = array(
                 'dcn_number'        => $dcnNumber,
-                'doc_version'       => 1,
+                'doc_version'       => $docversion,
                 'assy_code'         => $req['assycode'],
                 'model_name'        => $req['model'],
                 'section'           => $req['section'],
@@ -181,7 +183,7 @@ class DocumentV3Controller extends Controller
                 'email'    => 'husnulmub@gmail.com',
                 'docID'    => $docID,
                 'subject'  => 'Approval Request ' . $dcnNumber,
-                'version'  => 1,
+                'version'  => $docversion,
                 'dcnNumb'  => $dcnNumber,
                 'docTitle' => $req['doctitle'],
                 'docCrdt'  => date('d-m-Y'),

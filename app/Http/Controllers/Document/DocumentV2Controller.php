@@ -56,9 +56,11 @@ class DocumentV2Controller extends Controller
                 'createdby'       => Auth::user()->username ?? Auth::user()->email
             ]);
 
+            $docversion = 0;
+
             DB::table('document_versions')->insert([
                 'dcn_number'  => $dcnNumber,
-                'doc_version' => 1,
+                'doc_version' => $docversion,
                 'remark'      => null,
                 'established_date' => $req['estabdate'],
                 'validity_date'    => $req['validitydate'],
@@ -69,7 +71,7 @@ class DocumentV2Controller extends Controller
             
             $insertHistory = array(
                 'dcn_number'        => $dcnNumber,
-                'doc_version'       => 1,
+                'doc_version'       => $docversion,
                 'activity'          => 'Document Created : ' . $req['doctitle'],
                 'createdby'         => Auth::user()->username ?? Auth::user()->email,
                 'createdon'         => getLocalDatabaseDateTime(),
@@ -81,7 +83,7 @@ class DocumentV2Controller extends Controller
                 $filename = $dcnNumber.'-'.$efile->getClientOriginalName();
                 $upfiles = array(
                     'dcn_number' => $dcnNumber,
-                    'doc_version'=> 1,
+                    'doc_version'=> $docversion,
                     'efile'      => $filename,
                     'pathfile'   => 'storage/files/'. $filename,
                     'created_at' => getLocalDatabaseDateTime(),
@@ -93,7 +95,7 @@ class DocumentV2Controller extends Controller
 
                 $insertHistory = array(
                     'dcn_number'        => $dcnNumber,
-                    'doc_version'       => 1,
+                    'doc_version'       => $docversion,
                     'activity'          => 'Document Attachment Created : ' . $filename,
                     'createdby'         => Auth::user()->username ?? Auth::user()->email,
                     'createdon'         => getLocalDatabaseDateTime(),
@@ -118,7 +120,7 @@ class DocumentV2Controller extends Controller
                     }
                     $approvals = array(
                         'dcn_number'        => $dcnNumber,
-                        'approval_version'  => 1,
+                        'approval_version'  => $docversion,
                         'workflow_group'    => $wfgroup,
                         'approver_level'    => $row->approval_level,
                         'approver_id'       => $row->approverid,
@@ -191,7 +193,7 @@ class DocumentV2Controller extends Controller
             $insertWiDoc = array();
             $wiDocData = array(
                 'dcn_number'        => $dcnNumber,
-                'doc_version'       => 1,
+                'doc_version'       => $docversion,
                 'assy_code'         => $req['assycode'],
                 'model_name'        => $req['model'],
                 'scope'             => $req['scope'],
@@ -220,7 +222,7 @@ class DocumentV2Controller extends Controller
                 'email'    => 'husnulmub@gmail.com',
                 'docID'    => $docID,
                 'subject'  => 'Approval Request ' . $dcnNumber,
-                'version'  => 1,
+                'version'  => $docversion,
                 'dcnNumb'  => $dcnNumber,
                 'docTitle' => $req['doctitle'],
                 'docCrdt'  => date('d-m-Y'),
