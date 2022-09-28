@@ -45,7 +45,7 @@
                                     <!-- #265a91 #0fa522-->
                                         <div class="box-header">
                                             <span style="margin-left: 0px; color:white;" data-toggle="tooltip" title="{{ $row->doc_version }}">
-                                                Version : {{ $row->doc_version }} <br>
+                                                Revision : {{ $row->doc_version }} <br>
                                                 {{ $documents->document_title }} <br>
                                                 {{ $row->dcn_number }}
                                             </span>
