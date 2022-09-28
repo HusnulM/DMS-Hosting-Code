@@ -174,6 +174,7 @@ class DocumentV3Controller extends Controller
             // v_workflow_assignments
             $mailTo = DB::table('v_workflow_assignments')
                       ->where('workflow_group', $wfgroup)
+                      ->where('creatorid', Auth::user()->id)
                       ->where('approval_level', 1)
                       ->pluck('approver_email');
 
