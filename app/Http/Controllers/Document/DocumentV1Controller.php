@@ -863,4 +863,205 @@ class DocumentV1Controller extends Controller
             return Redirect::to("/transaction/doclist/detail/".$document->id)->withError($e->getMessage());
         }        
     }
+
+    public function updatedocversion($docversion, Request $req){
+        DB::beginTransaction();
+        try{
+            $this->validate($req, [
+
+                'docfiles'   => 'required',
+                // 'filename.*' => 'mimes:doc,pdf,docx,zip'
+
+            ]);
+
+            
+            $files     = $req['docfiles'];            
+            $dcnNumber = $req['dcnNumber'];
+            $wfgroup   = getWfGroup($req['doctype']);
+            
+            $docGenOldData = DB::table('documents')->where('dcn_number', $dcnNumber)->first();
+            $docVerOldData = DB::table('document_versions')
+                            ->where('dcn_number', $dcnNumber)
+                            ->where('doc_version', $docversion)
+                            ->first();
+            $docHistory  = array();
+            $insertFiles = array();
+            $docID = $docGenOldData->id;
+
+            DB::table('documents')->where('dcn_number', $dcnNumber)->update([
+                'dcn_number'      => $dcnNumber,
+                'document_type'   => $req['doctype'],
+                'document_level'  => $req['doclevel'],
+                'document_number' => $req['docnumber'],
+                'document_title'  => $req['doctitle'],
+                'description'     => $req['docremark'],
+                'workflow_group'  => $wfgroup,
+                'effectivity_date'=> $req['effectivedate'],
+                'updated_at'      => getLocalDatabaseDateTime(),
+                'updatedby'       => Auth::user()->username ?? Auth::user()->email
+            ]);
+
+            // $docversion = 0;
+
+            DB::table('document_versions')
+                ->where('dcn_number', $dcnNumber)
+                ->where('doc_version', $docversion)->update([
+                // 'dcn_number'       => $dcnNumber,
+                // 'doc_version'      => $docversion,
+                'remark'           => $req['docremark'],
+                'effectivity_date' => $req['effectivedate'],
+                'status'           => 'Open',
+                // 'createdon'        => $docVerOldData->createdon,
+                'changeon'         => getLocalDatabaseDateTime()
+            ]);
+            // document_historys
+            
+            $insertHistory = array(
+                'dcn_number'        => $dcnNumber,
+                'doc_version'       => $docversion,
+                'activity'          => 'Document Updated : ' . $req['doctitle'],
+                'createdby'         => Auth::user()->username ?? Auth::user()->email,
+                'createdon'         => getLocalDatabaseDateTime(),
+                'updatedon'         => getLocalDatabaseDateTime()
+            );
+            array_push($docHistory, $insertHistory);
+
+            foreach ($files as $efile) {
+                $filename = $dcnNumber.'-'.$efile->getClientOriginalName();
+                $upfiles = array(
+                    'dcn_number' => $dcnNumber,
+                    'doc_version'=> $docversion,
+                    'efile'      => $filename,
+                    'pathfile'   => 'storage/files/'. $filename,
+                    'created_at' => getLocalDatabaseDateTime(),
+                    'createdby'  => Auth::user()->username ?? Auth::user()->email
+                );
+                array_push($insertFiles, $upfiles);
+
+                $efile->move('storage/files/', $filename);  
+
+                $insertHistory = array(
+                    'dcn_number'        => $dcnNumber,
+                    'doc_version'       => $docversion,
+                    'activity'          => 'Document Attachment Created : ' . $filename,
+                    'createdby'         => Auth::user()->username ?? Auth::user()->email,
+                    'createdon'         => getLocalDatabaseDateTime(),
+                    'updatedon'         => getLocalDatabaseDateTime()
+                );
+                array_push($docHistory, $insertHistory);
+            }
+
+            // Document Affected Areas | document_affected_areas
+            if(isset($req['docareas'])){
+
+                DB::table('document_affected_areas')
+                    ->where('dcn_number', $dcnNumber)
+                    ->where('doc_version', $docversion)
+                    ->delete();
+
+                $docareas = $req['docareas'];
+                $insertAreas = array();
+                for($i = 0; $i < sizeof($docareas); $i++){
+                    $areas = array(
+                        'dcn_number'        => $dcnNumber,
+                        'docarea'           => $docareas[$i],
+                        'doc_version'       => $docversion,
+                        'createdon'         => getLocalDatabaseDateTime(),
+                        'createdby'         => Auth::user()->username ?? Auth::user()->email
+                    );
+                    array_push($insertAreas, $areas);
+                }
+                if(sizeof($insertAreas) > 0){
+                    insertOrUpdate($insertAreas,'document_affected_areas');
+                }
+            }
+
+            // Generate Document Approval Workflow
+            $wfapproval = DB::table('v_workflow_assignments')
+                ->where('workflow_group', $wfgroup)
+                ->where('creatorid', Auth::user()->id)
+                ->orderBy('approval_level', 'asc')
+                ->get();
+
+            if(sizeof($wfapproval) > 0){
+
+                DB::table('document_approvals')
+                    ->where('dcn_number', $dcnNumber)
+                    ->where('approval_version', $docversion)
+                    ->delete();
+
+                $insertApproval = array();
+                foreach($wfapproval as $key => $row){
+                    $is_active = 'N';
+                    if($row->approval_level == $wfapproval[0]->approval_level){
+                        $is_active = 'Y';
+                    }
+                    $approvals = array(
+                        'dcn_number'        => $dcnNumber,
+                        'approval_version'  => $docversion,
+                        'workflow_group'    => $wfgroup,
+                        'approver_level'    => $row->approval_level,
+                        'approver_id'       => $row->approverid,
+                        'creator_id'        => Auth::user()->id,
+                        'is_active'         => $is_active,
+                        // 'approval_status'   => 'N',
+                        // 'approval_remark'   => null,
+                        // 'approved_by'       => null,
+                        // 'approval_date'     => null,
+                        'createdon'         => getLocalDatabaseDateTime(),
+                        // 'createdby'         => Auth::user()->username ?? Auth::user()->email
+                    );
+                    array_push($insertApproval, $approvals);
+                }
+                insertOrUpdate($insertApproval,'document_approvals');
+            }else{
+                DB::rollBack();
+                $doctype = DB::table('doctypes')->where('id', $req['doctype'])->first();
+                // return Redirect::to("/transaction/document")
+                return Redirect::to("/document/v1")
+                ->withError('Approval Workflow Not Maintained Yet for user '. Auth::user()->username . ' in document type ' . $doctype->doctype);
+            }
+
+            // Insert Attchment Documents
+            insertOrUpdate($insertFiles,'document_attachments');
+
+            insertOrUpdate($docHistory,'document_historys');
+            
+
+            DB::commit();
+
+            // v_workflow_assignments
+            $mailTo = DB::table('v_workflow_assignments')
+                      ->where('workflow_group', $wfgroup)
+                      ->where('creatorid', Auth::user()->id)
+                      ->where('approval_level', 1)
+                      ->pluck('approver_email');
+
+            // return $mailTo;
+
+            $mailData = [
+                'email'    => 'husnulmub@gmail.com',
+                'docID'    => $docID,
+                'subject'  => 'Approval Request ' . $dcnNumber,
+                'version'  => $docversion,
+                'dcnNumb'  => $dcnNumber,
+                'docTitle' => $req['doctitle'],
+                'docCrdt'  => date('d-m-Y'),
+                'docCrby'  => Auth::user()->name,
+                'body'     => 'A New document has been created for your review and approval',
+                'mailto'   => [
+                    $mailTo
+                ]
+            ];
+
+            // return $mailData;
+            // $email = new MailNotif($this->data);
+            Mail::to($mailTo)->queue(new MailNotif($mailData));
+
+            return Redirect::to("/document/rejectedlist")->withSuccess('Document '. $dcnNumber .' Version '. $docversion . ' updated!');
+        } catch(\Exception $e){
+            DB::rollBack();
+            return Redirect::to("/document/rejectedlist")->withError($e->getMessage());
+        }
+    }
 }

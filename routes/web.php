@@ -73,6 +73,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updateinfo/{p1}',         'Transaction\DocumentController@updatedocinfo')->middleware('checkAuth:transaction/document');
         Route::post('/updatearea/{p1}',         'Transaction\DocumentController@updatearea')->middleware('checkAuth:transaction/document');
         Route::post('/updatefiles/{p1}',        'Transaction\DocumentController@updatefiles')->middleware('checkAuth:transaction/document');
+
+        
+        
     });
 
     Route::group(['prefix' => '/transaction/docrevision'], function () {

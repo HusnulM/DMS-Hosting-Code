@@ -1,6 +1,6 @@
 @extends('layouts/App')
 
-@section('title', 'Document Detail')
+@section('title', 'Rejected Document Detail')
 
 @section('additional-css')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -23,63 +23,13 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-3">
+        <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Document Revision</h3>
+                    <h3 class="card-title">Rejected Document <b>{{ $documents->dcn_number }}</b> [Revision <b id="hdr-version"> {{ $docversions[0]->doc_version }}</b>]</h3>
                     <div class="card-tools">
-                        @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
-                        <button type="button" class="btn btn-success btn-sm btnAddVersion">
-                            <i class="fa fa-plus"></i> Add new revision
-                        </button>
-                        @endif
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-12" style="overflow-y: auto; height:600px;">
-                            @foreach($docversions as $key => $row)
-                            <div class="col-lg-12 col-md-12 col-sm-12 m-t-10 docVersion" style="cursor:pointer;" data-docid="{{ $documents->id }}" data-docversion="{{ $row->doc_version }}">
-                                <div class="doc-box box box-widget widget-user-2">
-                                    <div class="widget-user-header bg-gray bg-folder-shaper no-padding" style="border-top-left-radius: 20px !important; background-color:#265a91 !important;">
-                                    <!-- #265a91 #0fa522-->
-                                        <div class="box-header">
-                                            <span style="margin-left: 0px; color:white;" data-toggle="tooltip" title="{{ $row->doc_version }}">
-                                                Revision : {{ $row->doc_version }} <br>
-                                                {{ $documents->document_title }} <br>
-                                                {{ $row->dcn_number }}
-                                            </span>
-                                            <span class="pull-right" style="margin-right: 15px; color:white;" data-toggle="tooltip" title="{{ $documents->document_number }}">
-                                            {{ $documents->document_number }}
-                                            </span>
-                                        </div>
-                                        <hr style="background-color:white; margin-top: 0px; margin-bottom: 2px;">
-                                        <h5 class="widget-user-desc" style="font-size: 12px; margin-left: 10px; margin-top: 0px; margin-bottom: 0px;">
-                                            <span class="time" data-toggle="tooltip" title="{{ $row->createdby }}">
-                                                {{ $row->createdby }}
-                                            </span>
-                                            <span class="pull-right" style="margin-right: 15px;" data-toggle="tooltip" title="{{ $row->createdon }}">
-                                                <i class="fa fa-clock"></i> {{\Carbon\Carbon::parse($row->createdon)->diffForHumans()}}
-                                            </span>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-9">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Document Detail <b id="hdr-version">Revision {{ $docversions[0]->doc_version }}</b></h3>
-                    <div class="card-tools">
-                        <a href="{{ url('/transaction/doclist/print') }}/{{$documents->id}}" target="_blank" class='btn btn-success btn-sm button-print'> 
-                            <i class='fa fa-print'></i> Print
-                        </a>
-                        <a href="{{ url('/transaction/doclist') }}" class="btn btn-default btn-sm">
+                        
+                        <a href="{{ url('/document/rejectedlist') }}" class="btn btn-default btn-sm">
                             <i class="fa fa-arrow-left"></i> Back
                         </a>
                     </div>
@@ -94,9 +44,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link active" id="custom-content-above-home-tab" data-toggle="pill" href="#custom-content-above-home" role="tab" aria-controls="custom-content-above-home" aria-selected="true">Document Info</a>
                                 </li>
-                                <li class="nav-item">
+                                <!-- <li class="nav-item">
                                     <a class="nav-link" id="custom-content-above-profile-tab" data-toggle="pill" href="#custom-content-above-profile" role="tab" aria-controls="custom-content-above-profile" aria-selected="false">Document Area</a>
-                                </li>
+                                </li> -->
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-content-above-attachment-tab" data-toggle="pill" href="#custom-content-above-attachment" role="tab" aria-controls="custom-content-above-attachment" aria-selected="false">Files</a>
                                 </li>
@@ -118,16 +68,17 @@
                             <br>
                             <div class="tab-content" id="custom-content-above-tabContent">
                                 <div class="tab-pane fade show active" id="custom-content-above-home" role="tabpanel" aria-labelledby="custom-content-above-home-tab">
-                                    <form action="{{ url('transaction/document/updateinfo') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
+                                    <form action="{{ url('/document/v1/updatedocversion') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row"> 
-                                            <div class="col-lg-12">
+                                            <div class="col-lg-6 col-sm-12">
                                                 <div class="row">
-                                                    <div class="col-lg-6 col-sm-12 form-group">
+                                                    <div class="col-lg-12 col-sm-12 form-group">
                                                         <label for="doctitle">Document Title</label>
                                                         <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" value="{{ $documents->document_title }}" required>
+                                                        <input type="hidden" name="dcnNumber" value="{{ $documents->dcn_number }}">
                                                     </div>   
-                                                    <div class="col-lg-6 col-sm-12 form-group">
+                                                    <div class="col-lg-12 col-sm-12 form-group">
                                                         <label for="doctype">Document Type</label>
                                                         <select name="doctype" id="doctype" class="form-control">
                                                             <option value="{{ $cdoctype->id }}"> {{ $cdoctype->doctype }} </option>
@@ -136,7 +87,7 @@
                                                             @endforeach -->
                                                         </select>
                                                     </div>    
-                                                    <div class="col-lg-6 col-sm-12 form-group">
+                                                    <div class="col-lg-12 col-sm-12 form-group">
                                                         <label for="doclevel">Document Level</label>
                                                         <select name="doclevel" id="doclevel" class="form-control">
                                                             <option value="{{ $cdoclevel->id }}"> {{ $cdoclevel->doclevel }} </option>
@@ -145,79 +96,72 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    <div class="col-lg-3 col-sm-12 form-group">
+                                                    <div class="col-lg-6 col-sm-12 form-group">
                                                         <label for="effectivedate">Effectivity Date</label>
                                                         <input type="date" name="effectivedate" class="form-control" value="{{ $documents->effectivity_date }}" required>
                                                     </div>
-                                                    <div class="col-lg-3 col-sm-12 form-group">
+                                                    <div class="col-lg-6 col-sm-12 form-group">
                                                         <label for="docnumber">Document Number</label>
                                                         <input type="text" name="docnumber" class="form-control" value="{{ $documents->document_number }}">
+                                                    </div>                                                    
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <h5>Document Area</h5>
+                                                        <table id="tbl-doc-area" class="table table-bordered table-stripped table-sm">
+                                                            <thead>
+                                                                <th>Document Area</th>
+                                                                <th style="width: 150px; text-align:center;">
+                                                                    <button type="button" class="btn btn-success btn-sm btn-select-docarea">
+                                                                        <i class="fa fa-plus"></i>
+                                                                    </button>
+                                                                </th>
+                                                            </thead>
+                                                            <tbody class="mainbodynpo" id="tbl-doc-area-body">
+                                                                @foreach($affected_area as $key => $row)
+                                                                <tr>
+                                                                    <td>
+                                                                        <select name="docareas[]" class="form-control docareas">
+                                                                            <option value="{{ $row->docarea }}">{{ $row->docareaname }}</option>
+                                                                        </select>
+                                                                    </td>
+                                                                    <td style="text-align:center;">
+                                                                        <button type="button" class="btn btn-danger btn-sm btnRemoveArea" data-docareaid="{{ $row->docarea }}">
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
                                                     </div>
-                                                    
                                                 </div>
                                             </div>
-                                            <div class="col-lg-12">
-                                                <div class="form-group">
-                                                    <label for="docremark">Document Remark</label>
-                                                    <textarea class="docremark form-control" name="docremark" id="docareaContent">
-                                                        {!! $docversions[0]->remark; !!}
-                                                    </textarea>
-                                                </div>   
+                                            <div class="col-lg-6 col-sm-12">
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-sm-12 form-group">
+                                                        <label for="docremark">Document Remark</label>
+                                                        <textarea class="docremark form-control" name="docremark" id="docareaContent">
+                                                            {!! $docversions[0]->remark; !!}
+                                                        </textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-sm-12 form-group">
+                                                        <label for="docfiles">Document Attachment</label>
+                                                        <input type="file" name="docfiles[]" class="form-control" multiple="multiple" required>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-sm-12 form-group">
+                                                        <button type="submit" class="btn btn-primary pull-right">
+                                                            <i class="fa fa-save"></i> SAVE UPDATE
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
-                                </div>
-                                <div class="tab-pane fade" id="custom-content-above-profile" role="tabpanel" aria-labelledby="custom-content-above-profile-tab">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <h5>Document Area</h5>
-                                            <form action="{{ url('transaction/document/updatearea') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
-                                                @csrf
-                                                <table id="tbl-doc-area" class="table table-bordered table-stripped table-sm">
-                                                    <thead>
-                                                        <th>Document Area</th>
-                                                        <th style="width: 150px; text-align:center;">
-                                                            @if(userAllowChangeDocument() == 1)
-                                                            <button type="button" class="btn btn-success btn-sm btn-select-docarea">
-                                                                <i class="fa fa-plus"></i>
-                                                            </button>
-                                                            @endif
-                                                        </th>
-                                                    </thead>
-                                                    <tbody class="mainbodynpo" id="tbl-doc-area-body">
-                                                        @foreach($affected_area as $key => $row)
-                                                        <tr>
-                                                            <td>
-                                                                <select name="docareas[]" class="form-control docareas">
-                                                                    <option value="{{ $row->docarea }}">{{ $row->docareaname }}</option>
-                                                                </select>
-                                                            </td>
-                                                            <td style="text-align:center;">
-                                                                <!-- @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
-                                                                <button type="button" class="btn btn-danger btn-sm btnRemoveArea" data-docareaid="{{ $row->docarea }}">
-                                                                    <i class="fa fa-trash"></i>
-                                                                </button>
-                                                                @endif -->
-                                                            </td>
-                                                        </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                    <tfoot>
-                                                        <!-- <tr>
-                                                            <td></td>
-                                                            <td style="width: 150px; text-align:center;">
-                                                                @if($documents->createdby == Auth::user()->username || userAllowChangeDocument() == 1)
-                                                                <button type="submit" class="btn btn-primary btn-sm">
-                                                                    <i class="fa fa-edit"></i> Update Area
-                                                                </button>
-                                                                @endif
-                                                            </td>
-                                                        </tr> -->
-                                                    </tfoot>
-                                                </table>
-                                            </form>
-                                        </div>
-                                    </div>
                                 </div>
                                 <div class="tab-pane fade" id="custom-content-above-attachment" role="tabpanel" aria-labelledby="custom-content-above-attachment-tab">
                                     <div class="row">
@@ -651,11 +595,9 @@
                         </select>
                     </td>
                     <td style="text-align:center;">
-                        @if(userAllowChangeDocument() == 1)
                         <button type="button" class="btn btn-danger btn-sm btnRemove">
                             <i class="fa fa-trash"></i>
                         </button>
-                        @endif
                     </td>
                 <tr>
             `);
@@ -672,138 +614,6 @@
         $('.btnRemoveArea').on('click', function(e){
             e.preventDefault();
             $(this).closest("tr").remove();
-        });
-
-        
-
-        $('.docVersion').on('click', function(e){
-            var selData = $(this).data();
-            console.log(selData);
-            let _token   = $('meta[name="csrf-token"]').attr('content');
-            $('#tbl-doc-area-body, #timeline-version-history, #hdr-version, .approval-document').html('');
-            $('#tbl-attachment-body, #tbl-approval-body, #tbl-approvaldoc-body').html('');
-            $('#docVersion').val('');
-            $.ajax({
-                url: base_url+'/transaction/doclist/detailversion/'+selData.docversion+'/'+selData.docid,
-                beforeSend: function(){
-                    $('#modalLoader').modal('show');
-                },
-                success:function(response){
-                    console.log(response);
-                    if(response){
-                        $('#docareaContent').val(response.docversions.remark);
-
-                        $('#hdr-version').html('Revision '+ selData.docversion);
-                        $('#docVersion').val(selData.docversion);
-
-                        var _areas         = response.affected_area;
-                        var _historyGroup  = response.docHistorydateGroup;
-                        var _historyDetail = response.docHistory;
-                        var _approvalDoc   = response.approvalDoc;
-                        
-                        // for(var i = 0; i < _approvalDoc.length; i++){
-                        //     $('#tbl-approvaldoc-body').append(`
-                        //         <tr>
-                        //             <td>
-                        //                 `+ _approvalDoc[i].filename +`
-                        //             </td>
-                        //             <td>
-                        //                 <a href="{{ url('') }}/`+_approvalDoc[i].efile+`" target="_blank" class='btn btn-success btn-sm pull-right'> 
-                        //                     <i class='fa fa-download'></i> Download Approval Document
-                        //                 </a>
-                        //             </td>
-                        //         </tr>
-                        //     `);
-                        // }
-
-                        // Append Selected Version Affected Document Area
-                        for(var i = 0; i < _areas.length; i++){
-                            $('#tbl-doc-area-body').append(`
-                                <tr>
-                                    <td>
-                                        <select name="docareas[]" class="form-control docareas">
-                                            <option value="`+ _areas[i].docarea +`">`+ _areas[i].docareaname +`</option>
-                                            @foreach($docareas as $key => $row)
-                                                <option value="{{ $row->id }}">{{ $row->docarea }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td style="text-align:center;">
-                                        @if(userAllowChangeDocument() == 1)
-                                        <button type="button" class="btn btn-danger btn-sm btnRemove">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                        @endif
-                                    </td>
-                                <tr>
-                            `);
-    
-                            $('.btnRemove').on('click', function(e){
-                                e.preventDefault();
-                                $(this).closest("tr").remove();
-                            });
-    
-                            $(".docareas").select2();
-                        }
-
-                        
-
-                        $('#tbl-attachment-body').append(response.htmlAttachment);
-                        $('#tbl-approvaldoc-body').append(response.htmlApprovalAttachment);
-
-                        $('.btn-preview').on('click', function(){
-                            var _dataFile = $(this).data();
-                            
-                            var pathfile = base_url+'/'+_dataFile.filepath;
-
-                            console.log(pathfile)
-
-                            if(_dataFile.filepath !== ""){
-                                $('#fileViewer').html('');
-                                $('#fileViewer').append(`
-                                    <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
-                                `);
-                                $('#modalPreviewFile').modal('show');
-                            } else{
-                                swal("File Not Found", "", "warning");
-                            }
-                        });
-
-                        $('.btn-preview-originaldoc').on('click', function(){
-                            var _dataFile = $(this).data();
-                            
-                            var pathfile = base_url+'/'+_dataFile.filepath;
-
-                            console.log(pathfile)                            
-
-                            if(_dataFile.filepath !== ""){
-                                $('#originalFileViewer').html('');
-                                $('#originalFileViewer').append(`
-                                    <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
-                                `);
-                                $('#modalPreviewApprovalFile').modal('show');
-                            } else{
-                                swal("File Not Found", "", "warning");
-                            }
-                        });
-                        // Append Selected Version Document History
-                        $('#timeline-version-history').append(response.timeline);
-                        $('#tbl-approval-body').append(response.htmlApproval);
-                    }
-                },
-                complete: function(){
-                    // $('#modalLoader').modal('hide');
-                },
-                error: function(error) {
-                    console.log(error);
-                    toastr.error(error)
-                }
-            }).done(function(result){
-                setTimeout(function () { 
-                    $('#modalLoader').modal('hide'); 
-                }, 1000);
-                // $('#loading01').hide();
-            });
         });
 
         $('.btnAddVersion').on('click', function(){

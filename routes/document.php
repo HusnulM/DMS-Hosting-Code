@@ -12,6 +12,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updatefiles/{p1}',        'Document\DocumentV1Controller@updatefiles')->middleware('checkAuth:document/v1');
 
         Route::post('/uploadapprovaldoc',       'Document\DocumentV1Controller@uploadapprovaldoc')->middleware('checkAuth:document/v1');
+
+        Route::post('/updatedocversion/{p1}',   'Document\DocumentV1Controller@updatedocversion')->middleware('checkAuth:document/v1');
     });
 
     Route::group(['prefix' => '/document/v2'], function () {
@@ -41,5 +43,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updateinfo/{p1}',         'Document\DocumentV4Controller@updatedocinfo')->middleware('checkAuth:document/v4');
         Route::post('/updatearea/{p1}',         'Document\DocumentV4Controller@updatearea')->middleware('checkAuth:document/v4');
         Route::post('/updatefiles/{p1}',        'Document\DocumentV4Controller@updatefiles')->middleware('checkAuth:document/v4');
+    });
+
+    Route::group(['prefix' => '/document/rejectedlist'], function () {
+        Route::get('/',                         'Transaction\DocumentController@rejectedList')->middleware('checkAuth:document/rejectedlist');
+        Route::get('/rejecteddoclist',          'Transaction\DocumentController@rejectedDocList')->middleware('checkAuth:document/rejectedlist');
+        Route::get('/rejectdetail/{p1}/{p2}',   'Transaction\DocumentController@rejectedDocumentDetail')->middleware('checkAuth:document/rejectedlist');
+        
     });
 });

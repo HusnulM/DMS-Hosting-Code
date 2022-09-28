@@ -324,7 +324,8 @@
                     console.log(response);
                     if(response) {
                         loadRoleUsers();
-                        $('#modal-add-user').modal('hide');
+                        loadListUser();
+                        // $('#modal-add-user').modal('hide');
                     }
                 },
                 error: function(error) {
@@ -354,7 +355,8 @@
                     console.log(response);
                     if(response) {
                         loadRoleMenus();
-                        $('#modal-add-menu').modal('hide');
+                        loadListMenu();
+                        // $('#modal-add-menu').modal('hide');
                     }
                 },
                 error: function(error) {

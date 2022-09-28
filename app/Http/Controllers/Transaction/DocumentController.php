@@ -22,6 +22,54 @@ class DocumentController extends Controller
         return view('transaction.document.index', ['doctypes' => $doctypes, 'doclevels' => $doclevels, 'docareas' => $docareas]);
     }
 
+    public function rejectedList(){
+        $doctypes  = DB::table('doctypes')->get();
+        return view('transaction.document.rejected', ['doctypes' => $doctypes]);
+    }
+
+    public function rejectedDocList(Request $req){
+        $params = $req->params;
+        $whereClause = $params['sac'];
+
+        $query   = DB::table('v_document_latest_version_status');
+        if(count($req->all()) > 0){    
+            if(isset($req->datefrom) && isset($req->dateto)){
+                $query->whereBetween('crtdate', [$req->datefrom, $req->dateto]);
+            }elseif(isset($req->datefrom)){
+                $query->where('crtdate', $req->datefrom);
+            }elseif(isset($req->dateto)){
+                $query->where('crtdate', $req->dateto);
+            }
+
+            if(isset($req->doctype)){
+                if($req->doctype == 'All'){
+
+                }else{
+                    $query->where('document_type', $req->doctype);
+                }
+            }
+        }
+
+        $query->where('createdby', Auth::user()->username);
+        $query->where('version_status', 'Rejected');
+        $query->orderBy('created_at', 'DESC');
+
+        return DataTables::queryBuilder($query)
+                    ->editColumn('created_at', function ($query){
+                        return [
+                            'date1' => \Carbon\Carbon::parse($query->created_at)->diffForHumans(),
+                            'originaldate1' => \Carbon\Carbon::parse($query->created_at)->format('d-m-Y H:m:s')
+                            // $query->created_at->format('d-m-Y H:m:s')
+                         ];
+                    })->editColumn('updated_at', function ($query){
+                        return [
+                            'date2' => \Carbon\Carbon::parse($query->updated_at)->diffForHumans(),
+                            'originaldate2' => \Carbon\Carbon::parse($query->updated_at)->format('d-m-Y H:m:s')
+                         ];
+                    })
+                    ->toJson();
+    }
+
     public function documentDetail($id){
         
         $doclevels = DB::table('doclevels')->get();
@@ -30,6 +78,11 @@ class DocumentController extends Controller
         $documents  = DB::table('v_documents')
                       ->where('id', $id)
                       ->first();
+        
+        if(!$documents){
+            // transaction/doclist
+            return Redirect::to("/transaction/doclist")->withError('Document Not Found');
+        }
         
         $doctypes  = DB::table('doctypes')->where('id', $documents->document_type)->get();
         $docversions = DB::table('document_versions')->where('dcn_number', $documents->dcn_number)->orderBy('doc_version', 'DESC')->get();
@@ -103,7 +156,8 @@ class DocumentController extends Controller
                 'cdoclevel'      => $cdoclevel,
                 'latestVersion'  => $latestVersion,
                 'docapproval'    => $docapproval,
-                'approvalDoc'    => $approvalDoc
+                'approvalDoc'    => $approvalDoc,
+                'docVersionData' => $docVersionData
             ]);
         }elseif($documents->doctype == 'Work Instruction'){
 
@@ -129,6 +183,140 @@ class DocumentController extends Controller
         }
         elseif($documents->doctype == 'Work Standard'){
             return view('transaction.document.documentdetailv3', [
+                'documents'     => $documents,
+                'docversions'   => $docversions,
+                'doctypes'      => $doctypes, 
+                'doclevels'     => $doclevels, 
+                'docareas'      => $docareas, 
+                'attachments'   => $attachments,
+                'affected_area' => $docareasAffected,
+                'dochistory'     => $docHistory,
+                'dochistorydate' => $docHistorydateGroup,
+                'alldochistorydate' => $docAllHistorydateGroup,
+                'cdoctype'       => $cdoctype,
+                'cdoclevel'      => $cdoclevel,
+                'latestVersion'  => $latestVersion,
+                'docapproval'    => $docapproval,
+                'wiDocData'      => $wiDocData,
+                'docVersionData'   => $docVersionData,
+                'approvalDoc'      => $approvalDoc
+            ]);
+        }
+    }
+
+    public function rejectedDocumentDetail($id, $version){
+        
+        $doclevels = DB::table('doclevels')->get();
+        $docareas  = DB::table('docareas')->get();
+
+        $documents  = DB::table('v_documents')
+                      ->where('id', $id)
+                      ->first();
+        
+        if(!$documents){
+            // transaction/doclist
+            return Redirect::to("/transaction/doclist")->withError('Document Not Found');
+        }
+        
+        $doctypes  = DB::table('doctypes')->where('id', $documents->document_type)->get();
+        $docversions = DB::table('document_versions')->where('dcn_number', $documents->dcn_number)->orderBy('doc_version', 'DESC')->get();
+
+        $latestVersion = $version;
+
+        $cdoctype  = DB::table('doctypes')->where('id', $documents->document_type)->first();
+        $cdoclevel = DB::table('doclevels')->where('id', $documents->document_level)->first();
+
+        // return $cdoctype;
+
+        $attachments = DB::table('document_attachments')
+                        ->where('dcn_number', $documents->dcn_number)
+                        ->where('doc_version', $latestVersion)
+                        ->get();
+
+        $docareasAffected = DB::table('v_docarea_affected')
+                        ->where('dcn_number', $documents->dcn_number)
+                        ->where('doc_version', $latestVersion)
+                        ->get();
+
+        $docHistory = DB::table('v_document_historys')
+                        ->where('dcn_number', $documents->dcn_number)->orderBy('id', 'desc')->get();
+
+        
+        $wiDocData = DB::table('document_wi')
+                        ->where('dcn_number', $documents->dcn_number)
+                        ->where('doc_version', $latestVersion)
+                        ->first();
+                        if(!$wiDocData){
+                            $wiDocData = null;
+                        }
+
+        $docHistorydateGroup = DB::table('v_document_historys')
+                ->select('dcn_number', 'created_date','doc_version')->distinct()    
+                ->orderBy('created_date', 'desc')
+                ->where('dcn_number', $documents->dcn_number)->get();
+
+        $docAllHistorydateGroup = DB::table('v_document_historys')
+                ->select('dcn_number', 'created_date')->distinct()    
+                ->orderBy('created_date', 'desc')
+                ->where('dcn_number', $documents->dcn_number)->get();
+
+        $docapproval = DB::table('v_document_approvals_v2')
+                        ->where('dcn_number', $documents->dcn_number)
+                        ->where('approval_version', $latestVersion)
+                        ->get();
+                        // return $docHistorydateGroup;
+        $docVersionData = DB::table('document_versions')->where('dcn_number',  $documents->dcn_number)->where('doc_version', $latestVersion)->first();
+        
+        $approvalDoc = DB::table('approval_attachments')
+                        ->where('dcn_number',  $documents->dcn_number)
+                        ->where('doc_version', $latestVersion)
+                        ->get();
+
+        if($documents->doctype == 'Corporate Procedure'){            
+                        // return $approvalDoc;
+
+            return view('transaction.document.v1.edit', [
+                'documents'     => $documents,
+                'docversions'   => $docversions,
+                'doctypes'      => $doctypes, 
+                'doclevels'     => $doclevels, 
+                'docareas'      => $docareas, 
+                'attachments'   => $attachments,
+                'affected_area' => $docareasAffected,
+                'dochistory'     => $docHistory,
+                'dochistorydate' => $docHistorydateGroup,
+                'alldochistorydate' => $docAllHistorydateGroup,
+                'cdoctype'       => $cdoctype,
+                'cdoclevel'      => $cdoclevel,
+                'latestVersion'  => $latestVersion,
+                'docapproval'    => $docapproval,
+                'approvalDoc'    => $approvalDoc,
+                'docVersionData' => $docVersionData
+            ]);
+        }elseif($documents->doctype == 'Work Instruction'){
+
+            return view('transaction.document.v2.edit', [
+                'documents'     => $documents,
+                'docversions'   => $docversions,
+                'doctypes'      => $doctypes, 
+                'doclevels'     => $doclevels, 
+                'docareas'      => $docareas, 
+                'attachments'   => $attachments,
+                'affected_area' => $docareasAffected,
+                'dochistory'     => $docHistory,
+                'dochistorydate' => $docHistorydateGroup,
+                'alldochistorydate' => $docAllHistorydateGroup,
+                'cdoctype'       => $cdoctype,
+                'cdoclevel'      => $cdoclevel,
+                'latestVersion'  => $latestVersion,
+                'docapproval'    => $docapproval,
+                'wiDocData'      => $wiDocData,
+                'docVersionData'   => $docVersionData,
+                'approvalDoc'      => $approvalDoc
+            ]);
+        }
+        elseif($documents->doctype == 'Work Standard'){
+            return view('transaction.document.v3.edit', [
                 'documents'     => $documents,
                 'docversions'   => $docversions,
                 'doctypes'      => $doctypes, 
@@ -884,4 +1072,6 @@ class DocumentController extends Controller
             return Redirect::to("/transaction/doclist")->withError($e->getMessage());
         }
     }
+
+    
 }

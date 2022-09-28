@@ -45,7 +45,7 @@
 
     /* Extra large devices (large laptops and desktops, 1200px and up) */
     @media only screen and (min-width: 1200px) {
-      .login-box {margin-right:1000px; margin-bottom: 10rem;}
+      .login-box {margin-right:40%; margin-bottom: 10rem;}
     }
   </style>
 </head>
