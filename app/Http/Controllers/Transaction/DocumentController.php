@@ -231,6 +231,9 @@ class DocumentController extends Controller
             }elseif($row->approval_status == "R"){
                 $appStatus = 'Rejected';
                 $appStyle  = 'text-align:center; background-color:red; color:white;';
+            }elseif($row->approval_status == "C"){
+                $appStatus = 'Obsolete';
+                $appStyle  = 'text-align:center; background-color:orange; color:white;';
             }else{
                 $appStatus = 'Open';
                 $appStyle  = 'text-align:center; background-color:yellow; color:black;';

@@ -381,7 +381,7 @@
                                             </tbody>
                                         </table>     
                                     </div>
-                                    @if(allowUplodOrginalDoc() == 1)
+                                    @if(allowUplodOrginalDoc() == 1 && ($docVersionData->status == 'Open' || $docVersionData->status == 'Approved'))
                                     <div class="col-lg-12">
                                         <form action="{{ url('/document/v3/uploadapprovaldoc') }}" method="post" enctype="multipart/form-data">
                                             @csrf
