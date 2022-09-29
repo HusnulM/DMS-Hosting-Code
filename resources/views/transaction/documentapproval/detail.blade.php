@@ -303,6 +303,11 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal"> Close</button>
+                @if(userAllowDownloadDocument() == 1)
+                <a href="#" id="btnDownloadFile" class="btn btn-default btnDownloadFile" download="">
+                    <i class="fa fa-download"></i> Download Document
+                </a>
+                @endif
             </div>
         </div>
         </form>
@@ -326,6 +331,14 @@
                 <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
             
             `);
+
+            var fileUri = pathfile;
+            fileUri = fileUri.replace("#toolbar=0", "?force=true");
+            
+            @if(userAllowDownloadDocument() == 1)
+                // document.getElementById("btnDownloadFile").href=base_url+fileUri; 
+                document.getElementById("btnDownloadFile").href=fileUri; 
+            @endif
             $('#modalPreviewFile').modal('show');
         } else{
             swal("File Not Found", "", "warning");
