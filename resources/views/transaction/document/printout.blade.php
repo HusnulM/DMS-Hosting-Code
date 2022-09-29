@@ -12,15 +12,15 @@
     foreach($approval as $key => $row ){
         if($row->approver_level == 1 && $row->approval_status === 'A'){
             $firstApproval     = true;
-            $firstApprvalName  = $row->approved_by;
+            $firstApprvalName  = $row->approver_name;
             $firstApprovalSign = $row->esign;
         }elseif($row->approver_level == 2 && $row->approval_status === 'A'){
             $secondApprocal     = true;
-            $secondApprvalName  = $row->approved_by;
+            $secondApprvalName  = $row->approver_name;
             $secondApprovalSign = $row->esign;
         }elseif($row->approver_level == 3 && $row->approval_status === 'A'){
             $thirdApproval     = true;
-            $thirdApprovalName = $row->approved_by;
+            $thirdApprovalName = $row->approver_name;
             $thirdApprovalSign = $row->esign;
         }
     }

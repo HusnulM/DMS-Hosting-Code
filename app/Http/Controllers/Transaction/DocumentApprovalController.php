@@ -76,7 +76,7 @@ class DocumentApprovalController extends Controller
 
         $docHistorydateGroup = DB::table('v_document_historys')
                     ->select('dcn_number', 'created_date', 'doc_version')->distinct()    
-                    ->orderBy('created_date', 'asc')
+                    // ->orderBy('created_date', 'asc')
                     ->where('dcn_number', $documents->dcn_number)
                     ->where('doc_version', $version)
                     ->orderBy('created_date', 'desc')

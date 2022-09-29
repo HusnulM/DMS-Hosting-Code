@@ -68,7 +68,7 @@
                             <br>
                             <div class="tab-content" id="custom-content-above-tabContent">
                                 <div class="tab-pane fade show active" id="custom-content-above-home" role="tabpanel" aria-labelledby="custom-content-above-home-tab">
-                                    <form action="{{ url('/document/v1/updatedocversion') }}/{{ $documents->id }}" method="post" enctype="multipart/form-data">
+                                    <form action="{{ url('/document/v1/updatedocversion') }}/{{ $docversions[0]->doc_version }}" method="post" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row"> 
                                             <div class="col-lg-6 col-sm-12">
