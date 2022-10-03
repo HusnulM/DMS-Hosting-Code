@@ -514,8 +514,8 @@ class DocumentV2Controller extends Controller
             DB::table('documents')->where('dcn_number', $dcnNumber)->update([
                 // 'dcn_number'      => $dcnNumber,
                 'document_type'   => $req['doctype'],
-                'document_level'  => $req['doclevel'],
-                'document_number' => $req['docnumber'],
+                'document_level'  => $req['doclevel'] ?? null,
+                'document_number' => $req['docnumber'] ?? null,
                 'document_title'  => $req['doctitle'],
                 'description'     => $req['docremark'],
                 'workflow_group'  => $wfgroup,

@@ -1018,7 +1018,7 @@ class DocumentV1Controller extends Controller
                 DB::rollBack();
                 $doctype = DB::table('doctypes')->where('id', $req['doctype'])->first();
                 // return Redirect::to("/transaction/document")
-                return Redirect::to("/document/v1")
+                return Redirect::to("/document/rejectedlist")
                 ->withError('Approval Workflow Not Maintained Yet for user '. Auth::user()->username . ' in document type ' . $doctype->doctype);
             }
 

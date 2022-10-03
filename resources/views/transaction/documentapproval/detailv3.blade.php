@@ -26,7 +26,7 @@
                     <div class="row">
                         <ul class="nav nav-tabs" id="custom-content-above-tab" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" id="custom-content-above-docinfo-tab" data-toggle="pill" href="#custom-content-above-docinfo" role="tab" aria-controls="custom-content-above-docinfo" aria-selected="true">Document Info <b>[ Versoin {{ $version }} ]</b></a>
+                                <a class="nav-link active" id="custom-content-above-docinfo-tab" data-toggle="pill" href="#custom-content-above-docinfo" role="tab" aria-controls="custom-content-above-docinfo" aria-selected="true">Document Info <b>[ Revision {{ $version }} ]</b></a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="custom-content-above-home-tab" data-toggle="pill" href="#custom-content-above-home" role="tab" aria-controls="custom-content-above-home" aria-selected="false">Files</a>

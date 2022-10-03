@@ -94,14 +94,17 @@
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div class="form-group">
-                                                            <label for="doclevel">Assy Code</label>
-                                                            <input type="text" class="form-control" name="assycode" value="{{ $wiDocData->assy_code }}" readonly>
+                                                            <label for="model">Model</label>
+                                                            <select name="model" id="find-model" class="form-control">
+                                                                <option value="{{ $wiDocData->model_name }}">{{ $wiDocData->model_name }}</option>
+                                                            </select>
+                                                            <!-- <input type="text" class="form-control" name="model" value="{{ $wiDocData->model_name }}" readonly> -->
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div class="form-group">
-                                                            <label for="model">Model</label>
-                                                            <input type="text" class="form-control" name="model" value="{{ $wiDocData->model_name }}" readonly>
+                                                            <label for="doclevel">Assy Code</label>
+                                                            <input type="text" class="form-control" name="assycode" id="assycode" value="{{ $wiDocData->assy_code }}" readonly>
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-12">
@@ -514,164 +517,6 @@
     </div>
 </div>   
 
-<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalAddVersion">
-    <div class="modal-dialog modal-xl">
-        <form action="{{ url('/transaction/document/savenewversion') }}/{{ $documents->id }}" method="post" class="form-horizontal" enctype="multipart/form-data">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalAddVersionTitle">Create New Document Revision</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-12 col-md-6 col-sm-12 form-group">
-                                    <label for="doctitle">Document Title</label>
-                                    <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" required>
-                                </div>   
-                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
-                                    <label for="doctype">Document Type</label>
-                                    <select name="doctype" id="doctype" class="form-control">
-                                        @foreach($doctypes as $key => $row)
-                                            <option value="{{ $row->id }}">{{ $row->doctype }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>    
-                                <div class="col-lg-6 col-md-6 col-sm-12 form-group">
-                                    <label for="model">Model</label>
-                                    <select name="model" id="find-model" class="form-control">
-                                    </select>
-                                </div>
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    <label for="assycode">Assy Code</label>
-                                    <input type="text" name="assycode" id="assycode" class="form-control" required>
-                                </div>
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    <label for="scope">Scope</label>
-                                    <input type="text" name="scope" class="form-control" required>
-                                </div>
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    <label for="estabdate">Established Date</label>
-                                    <input type="date" name="estabdate" class="form-control" required>
-                                </div>
-                                <div class="col-lg-6 col-sm-12 form-group">
-                                    <label for="validitydate">Validity Date</label>
-                                    <input type="date" name="validitydate" class="form-control" required>
-                                </div>
-                                <div class="col-lg-12 col-sm-12 form-group">
-                                    <label for="docfiles">Document Attachment</label>
-                                    <input type="file" name="docfiles[]" class="form-control" multiple="multiple" required>
-                                </div>
-                            </div>
-                        </div>      
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="card card-gray">
-                                        <div class="card-header">
-                                            <h3 class="card-title">IMPLEMENTATION</h3>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group clearfix">
-                                                    <div class="icheck-primary d-inline">
-                                                        <input type="checkbox" id="imp1" name="imp1">
-                                                        <label for="imp1"> IMMEDIATE </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group clearfix">
-                                                    <div class="icheck-primary d-inline">
-                                                        <input type="checkbox" id="imp2" name="imp2">
-                                                        <label for="imp2"> RUNNING CHANGE </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group clearfix">
-                                                    <div class="icheck-primary d-inline">
-                                                        <input type="checkbox" id="imp3" name="imp3">
-                                                        <label for="imp3"> TEMPORARY </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="card card-gray">
-                                        <div class="card-header">
-                                            <h3 class="card-title">REASON</h3>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group clearfix">
-                                                    <div class="icheck-primary d-inline">
-                                                        <input type="checkbox" id="reason1" name="reason1">
-                                                        <label for="reason1"> NEW </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group clearfix">
-                                                    <div class="icheck-primary d-inline">
-                                                        <input type="checkbox" id="reason2" name="reason2">
-                                                        <label for="reason2"> ADDITION </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group clearfix">
-                                                    <div class="icheck-primary d-inline">
-                                                        <input type="checkbox" id="reason3" name="reason3">
-                                                        <label for="reason3"> REVISION </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <div class="form-group clearfix">
-                                                    <div class="icheck-primary d-inline">
-                                                        <input type="checkbox" id="reason4" name="reason4">
-                                                        <label for="reason4"> OTHERS </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>                        
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"> Close</button>
-                    <button type="submit" class="btn btn-primary"> Save</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>   
-
-
 <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalLoader">
     <div class="modal-dialog modal-xl">
         <form class="form-horizontal">
@@ -775,172 +620,56 @@
 
     $(document).ready(function () {        
         var count = 0;
-        $('.btn-select-docarea').on('click', function(){
-            $('#tbl-doc-area-body').append(`
-                <tr>
-                    <td>
-                        <select name="docareas[]" class="form-control docareas">
-                            <option value="">Select Document Area</option>
-                            @foreach($docareas as $key => $row)
-                                <option value="{{ $row->id }}">{{ $row->docarea }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td style="text-align:center;">
-                        @if(userAllowChangeDocument() == 1)
-                        <button type="button" class="btn btn-danger btn-sm btnRemove">
-                            <i class="fa fa-trash"></i>
-                        </button>
-                        @endif
-                    </td>
-                <tr>
-            `);
-
-            $('.btnRemove').on('click', function(e){
-                e.preventDefault();
-                $(this).closest("tr").remove();
-            });
-
-            $(".docareas").select2();
-
+        var count = 0;
+       
+        $(document).on('select2:open', (event) => {
+            const searchField = document.querySelector(
+                `.select2-search__field`,
+            );
+            if (searchField) {
+                searchField.focus();
+            }
         });
 
-        $('.btnRemoveArea').on('click', function(e){
-            e.preventDefault();
-            $(this).closest("tr").remove();
-        });
-
-        
-
-        $('.docVersion').on('click', function(e){
-            var selData = $(this).data();
-            console.log(selData);
-            let _token   = $('meta[name="csrf-token"]').attr('content');
-            $('#tbl-doc-area-body, #timeline-version-history, #hdr-version').html('');
-            $('#tbl-attachment-body, #tbl-approval-body, #tbl-approvaldoc-body').html('');
-            $.ajax({
-                url: base_url+'/transaction/doclist/detailversion/'+selData.docversion+'/'+selData.docid,
-                beforeSend: function(){
-                    $('#modalLoader').modal('show');
-                },
-                success:function(response){
-                    console.log(response);
-                    if(response){
-                        $('#docareaContent').val(response.docversions.remark);
-
-                        $('#hdr-version').html('Revision '+ selData.docversion);
-
-                        var _areas         = response.affected_area;
-                        var _historyGroup  = response.docHistorydateGroup;
-                        var _historyDetail = response.docHistory;                        
-
-                        $('#tbl-attachment-body').append(response.htmlAttachment);
-                        $('#tbl-approvaldoc-body').append(response.htmlApprovalAttachment);
-
-                        // var _approvalDoc   = response.approvalDoc;
-                        
-                        // for(var i = 0; i < _approvalDoc.length; i++){
-                        //     $('#tbl-approvaldoc-body').append(`
-                        //         <tr>
-                        //             <td>
-                        //                 `+ _approvalDoc[i].filename +`
-                        //             </td>
-                        //             <td>
-                        //                 <a href="{{ url('') }}/`+_approvalDoc[i].efile+`" target="_blank" class='btn btn-success btn-sm pull-right'> 
-                        //                     <i class='fa fa-download'></i> Download Approval Document
-                        //                 </a>
-                        //             </td>
-                        //         </tr>
-                        //     `);
-                        // }
-
-                        $('.btn-preview').on('click', function(){
-                            var _dataFile = $(this).data();
-                            
-                            var pathfile = base_url+'/'+_dataFile.filepath;
-
-                            console.log(pathfile)
-
-                            if(_dataFile.filepath !== ""){
-                                $('#fileViewer').html('');
-                                $('#fileViewer').append(`
-                                    <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
-                                `);
-                                $('#modalPreviewFile').modal('show');
-                            } else{
-                                swal("File Not Found", "", "warning");
-                            }
-                        });
-
-                        $('.btn-preview-originaldoc').on('click', function(){
-                            var _dataFile = $(this).data();
-                            
-                            var pathfile = base_url+'/'+_dataFile.filepath;
-
-                            console.log(pathfile)                            
-
-                            if(_dataFile.filepath !== ""){
-                                $('#originalFileViewer').html('');
-                                $('#originalFileViewer').append(`
-                                    <embed src="`+ pathfile +`" frameborder="0" width="100%" height="500px">
-                                `);
-                                $('#modalPreviewApprovalFile').modal('show');
-                            } else{
-                                swal("File Not Found", "", "warning");
-                            }
-                        });
-                        // Append Selected Version Document History
-                        $('#timeline-version-history').append(response.timeline);
-                        $('#tbl-approval-body').append(response.htmlApproval);
+        $('#find-model').select2({ 
+            placeholder: 'Type Model Name',
+            width: '100%',
+            minimumInputLength: 3,
+            ajax: {
+                url: '{{ apiIpdApp() ?? '' }}',
+                dataType: 'json',
+                delay: 250,
+                data: function(data){
+                    return{
+                        searchName: data.term
                     }
                 },
-                complete: function(){
-                    // $('#modalLoader').modal('hide');
+                processResults: function (data) {
+                    return {
+                        results: $.map(data.data, function (item) {                            
+                            return {
+                                text: item.matdesc,
+                                slug: item.material,
+                                id: item.matdesc,
+                                ...item
+                            }
+                        })
+                    };
                 },
-                error: function(error) {
-                    console.log(error);
-                    toastr.error(error)
-                }
-            }).done(function(result){
-                setTimeout(function () { 
-                    $('#modalLoader').modal('hide'); 
-                }, 1000);
-                // $('#loading01').hide();
-            });
+            }
         });
 
-        $('.btnAddVersion').on('click', function(){
-            $('#modalAddVersion').modal('show');
-        });
+        $('#find-model').on('change', function(){
+            // alert(this.value)
+            
+            var data = $('#find-model').select2('data')
+            console.log(data);
 
-        $('.btn-add-new-docarea').on('click', function(){
-            $('#tbl-doc-area-new-body').append(`
-                <tr>
-                    <td>
-                        <select name="docareas[]" class="form-control docareas">
-                            <option value="">Select Document Area</option>
-                            @foreach($docareas as $key => $row)
-                                <option value="{{ $row->id }}">{{ $row->docarea }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td style="text-align:center;">
-                        <button type="button" class="btn btn-danger btn-sm btnRemoveNewArea">
-                            <i class="fa fa-trash"></i>
-                        </button>
-                    </td>
-                <tr>
-            `);
+            // alert(data[0].material);
+            $('#assycode').val(data[0].material);
+        })
 
-            $('.btnRemoveNewArea').on('click', function(e){
-                e.preventDefault();
-                $(this).closest("tr").remove();
-            });
-
-            $(".docareas").select2();
-        });
-
-        $('.docremark').ckeditor();
+        // $('.docremark').ckeditor();
     });
 </script>
 @endsection
