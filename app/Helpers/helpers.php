@@ -47,6 +47,12 @@ function formatDateTime($dateTime, $format = "d-m-Y h:i A")
 
 function generateDcnNumber($doctype){
     $dcnNumber = '';
+    $prefix    = '';
+    if($doctype === 'WS' || $doctype === 'WI'){
+        $prefix = 'KEPI-';
+    }else{
+        $prefix = 'DCN-';
+    }
     $getdata = DB::table('dcn_nriv')->where('year', date('Y'))->where('object',$doctype)->first();
     if($getdata){
         DB::beginTransaction();
@@ -67,9 +73,9 @@ function generateDcnNumber($doctype){
             $lastnum = ($getdata->current_number*1) + 1;
 
             if($leadingZero == ''){
-                $dcnNumber = 'DCN-'. $doctype . '-' . substr($getdata->year,2) .'-'. $lastnum; 
+                $dcnNumber = $prefix . $doctype . '-' . substr($getdata->year,2) .'-'. $lastnum; 
             }else{
-                $dcnNumber = 'DCN-'. $doctype . '-' . substr($getdata->year,2) .'-'. $leadingZero . $lastnum; 
+                $dcnNumber = $prefix . $doctype . '-' . substr($getdata->year,2) .'-'. $leadingZero . $lastnum; 
             }
 
             DB::table('dcn_nriv')->where('year',$getdata->year)->where('object',$doctype)->update([
@@ -83,7 +89,7 @@ function generateDcnNumber($doctype){
             return null;
         }
     }else{
-        $dcnNumber = 'DCN-' . $doctype . '-' .substr(date('Y'),2).'-000001';
+        $dcnNumber = $prefix . $doctype . '-' .substr(date('Y'),2).'-000001';
         DB::beginTransaction();
         try{
             DB::table('dcn_nriv')->insert([
