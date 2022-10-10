@@ -235,9 +235,9 @@
                                                                     <div class="form-group clearfix">
                                                                         <div class="icheck-primary d-inline">                                                                        
                                                                             @if(substr($wiDocData->implementation,0,1) === "Y")
-                                                                                <input type="checkbox" id="imp1" name="imp1" checked disabled>
+                                                                                <input type="checkbox" name="imp1" checked disabled>
                                                                             @else
-                                                                                <input type="checkbox" id="imp1" name="imp1" disabled>
+                                                                                <input type="checkbox" name="imp1" disabled>
                                                                             @endif
                                                                             <label for="imp1"> IMMEDIATE </label>
                                                                         </div>
@@ -249,9 +249,9 @@
                                                                     <div class="form-group clearfix">
                                                                         <div class="icheck-primary d-inline">
                                                                             @if(substr($wiDocData->implementation,1,1) === "Y")
-                                                                                <input type="checkbox" id="imp2" name="imp2" checked disabled>
+                                                                                <input type="checkbox" name="imp2" checked disabled>
                                                                             @else
-                                                                                <input type="checkbox" id="imp2" name="imp2" disabled>
+                                                                                <input type="checkbox" name="imp2" disabled>
                                                                             @endif
                                                                             <label for="imp2"> RUNNING CHANGE </label>
                                                                         </div>
@@ -263,9 +263,9 @@
                                                                     <div class="form-group clearfix">
                                                                         <div class="icheck-primary d-inline">
                                                                             @if(substr($wiDocData->implementation,2,1) === "Y")
-                                                                                <input type="checkbox" id="imp3" name="imp3" checked disabled>
+                                                                                <input type="checkbox" name="imp3" checked disabled>
                                                                             @else
-                                                                                <input type="checkbox" id="imp3" name="imp3" disabled>
+                                                                                <input type="checkbox" name="imp3" disabled>
                                                                             @endif
                                                                             <label for="imp3"> TEMPORARY </label>
                                                                         </div>
@@ -286,9 +286,9 @@
                                                                     <div class="form-group clearfix">
                                                                         <div class="icheck-primary d-inline">
                                                                             @if(substr($wiDocData->reason,0,1) === "Y")
-                                                                                <input type="checkbox" id="reason1" name="reason1" checked disabled>  
+                                                                                <input type="checkbox" name="reason1" checked disabled>  
                                                                             @else
-                                                                                <input type="checkbox" id="reason1" name="reason1" disabled>
+                                                                                <input type="checkbox" name="reason1" disabled>
                                                                             @endif
                                                                             <label for="reason1"> NEW </label>
                                                                         </div>
@@ -300,9 +300,9 @@
                                                                     <div class="form-group clearfix">
                                                                         <div class="icheck-primary d-inline">
                                                                             @if(substr($wiDocData->reason,1,1) === "Y")
-                                                                                <input type="checkbox" id="reason2" name="reason2" checked disabled>  
+                                                                                <input type="checkbox" name="reason2" checked disabled>  
                                                                             @else
-                                                                                <input type="checkbox" id="reason2" name="reason2" disabled>
+                                                                                <input type="checkbox" name="reason2" disabled>
                                                                             @endif
                                                                             <label for="reason2"> ADDITION </label>
                                                                         </div>
@@ -314,9 +314,9 @@
                                                                     <div class="form-group clearfix">
                                                                         <div class="icheck-primary d-inline">
                                                                             @if(substr($wiDocData->reason,2,1) === "Y")
-                                                                                <input type="checkbox" id="reason3" name="reason3" checked disabled>  
+                                                                                <input type="checkbox" name="reason3" checked disabled>  
                                                                             @else
-                                                                                <input type="checkbox" id="reason3" name="reason3" disabled>
+                                                                                <input type="checkbox" name="reason3" disabled>
                                                                             @endif
                                                                             <label for="reason3"> REVISION </label>
                                                                         </div>
@@ -328,9 +328,9 @@
                                                                     <div class="form-group clearfix">
                                                                         <div class="icheck-primary d-inline">
                                                                             @if(substr($wiDocData->reason,3,1) === "Y")
-                                                                                <input type="checkbox" id="reason4" name="reason4" checked disabled>  
+                                                                                <input type="checkbox" name="reason4" checked disabled>  
                                                                             @else
-                                                                                <input type="checkbox" id="reason4" name="reason4" disabled>
+                                                                                <input type="checkbox" name="reason4" disabled>
                                                                             @endif
                                                                             <label for="reason4"> OTHERS </label>
                                                                         </div>
@@ -577,9 +577,9 @@
     </div>
 </div>   
 
-<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalAddVersion">
+<div class="modal fade bd-example-modal-xl" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modalAddVersion">
     <div class="modal-dialog modal-xl">
-        <form action="{{ url('/transaction/document/savenewversion') }}/{{ $documents->id }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+        <form action="{{ url('/document/v2/savenewversion') }}/{{ $documents->id }}" method="post" class="form-horizontal" enctype="multipart/form-data">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
@@ -594,7 +594,7 @@
                             <div class="row">
                                 <div class="col-lg-12 col-md-6 col-sm-12 form-group">
                                     <label for="doctitle">Document Title</label>
-                                    <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" required>
+                                    <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" value="{{ $documents->document_title }}" required>
                                 </div>   
                                 <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                                     <label for="doctype">Document Type</label>
@@ -607,23 +607,24 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                                     <label for="model">Model</label>
                                     <select name="model" id="find-model" class="form-control">
+                                        <option value="{{ $wiDocData->model_name }}">{{ $wiDocData->model_name }}</option>
                                     </select>
                                 </div>
                                 <div class="col-lg-6 col-sm-12 form-group">
                                     <label for="assycode">Assy Code</label>
-                                    <input type="text" name="assycode" id="assycode" class="form-control" required>
+                                    <input type="text" name="assycode" id="assycode" class="form-control" value="{{ $wiDocData->assy_code }}" required>
                                 </div>
                                 <div class="col-lg-6 col-sm-12 form-group">
                                     <label for="scope">Scope</label>
-                                    <input type="text" name="scope" class="form-control" required>
+                                    <input type="text" name="scope" class="form-control" value="{{ $wiDocData->scope }}" required>
                                 </div>
                                 <div class="col-lg-6 col-sm-12 form-group">
                                     <label for="estabdate">Established Date</label>
-                                    <input type="date" name="estabdate" class="form-control" required>
+                                    <input type="date" name="estabdate" class="form-control" value="{{ $docVersionData->established_date }}" required>
                                 </div>
                                 <div class="col-lg-6 col-sm-12 form-group">
                                     <label for="validitydate">Validity Date</label>
-                                    <input type="date" name="validitydate" class="form-control" required>
+                                    <input type="date" name="validitydate" class="form-control" value="{{ $docVersionData->validity_date }}" required>
                                 </div>
                                 <div class="col-lg-12 col-sm-12 form-group">
                                     <label for="docfiles">Document Attachment</label>
@@ -817,8 +818,6 @@
     function previewOriginalFile(files){        
         var pathfile = base_url+'/'+files;
 
-        // alert(pathfile)
-
         if(files !== ""){
             $('#originalFileViewer').html('');
             $('#originalFileViewer').append(`
@@ -872,7 +871,6 @@
             e.preventDefault();
             $(this).closest("tr").remove();
         });
-
         
 
         $('.docVersion').on('click', function(e){
@@ -974,6 +972,45 @@
 
         $('.btnAddVersion').on('click', function(){
             $('#modalAddVersion').modal('show');
+
+            $('#find-model').select2({ 
+                placeholder: 'Type Model Name',
+                width: '100%',
+                minimumInputLength: 3,
+                ajax: {
+                    url: '{{ apiIpdApp() ?? '' }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(data){
+                        return{
+                            searchName: data.term
+                        }
+                    },
+                    processResults: function (data) {
+                        console.log(data)
+                        return {
+                            results: $.map(data.data, function (item) {                            
+                                return {
+                                    text: item.matdesc,
+                                    slug: item.material,
+                                    id: item.matdesc,
+                                    ...item
+                                }
+                            })
+                        };
+                    },
+                }
+            });
+    
+            $('#find-model').on('change', function(){
+                // alert(this.value)
+                
+                var data = $('#find-model').select2('data')
+                console.log(data);
+    
+                // alert(data[0].material);
+                $('#assycode').val(data[0].material);
+            });
         });
 
         $('.btn-add-new-docarea').on('click', function(){

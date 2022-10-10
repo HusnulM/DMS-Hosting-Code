@@ -160,7 +160,7 @@ class DocumentController extends Controller
                 'docVersionData' => $docVersionData
             ]);
         }elseif($documents->doctype == 'Work Instruction'){
-
+            // return $wiDocData;
             return view('transaction.document.documentdetailv2', [
                 'documents'     => $documents,
                 'docversions'   => $docversions,

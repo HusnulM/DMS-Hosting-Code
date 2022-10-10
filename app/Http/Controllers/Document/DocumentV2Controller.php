@@ -299,17 +299,18 @@ class DocumentV2Controller extends Controller
 
             $files = $req['docfiles'];
 
-            $document = DB::table('documents')->where('id', $id)->first();
-            $docVersi = DB::table('document_versions')->where('dcn_number', $document->dcn_number)->orderBy('doc_version', 'DESC')->first();
-            $dcnNumber = $document->dcn_number;
+            $document   = DB::table('documents')->where('id', $id)->first();
+            $docVersi   = DB::table('document_versions')->where('dcn_number', $document->dcn_number)->orderBy('doc_version', 'DESC')->first();
+            $dcnNumber  = $document->dcn_number;
             $docVersion = $docVersi->doc_version + 1;
 
             // return $docVersion;
 
-            $docHistory = array();
+            $docHistory  = array();
             $insertFiles = array();
 
             DB::table('documents')->where('id', $id)->update([
+                'document_title'  => $req['doctitle'],
                 'revision_number' => $document->revision_number + 1,
                 'updated_at'      => getLocalDatabaseDateTime(),
                 'updatedby'       => Auth::user()->username ?? Auth::user()->email
@@ -318,17 +319,18 @@ class DocumentV2Controller extends Controller
             DB::table('document_versions')->insert([
                 'dcn_number'  => $dcnNumber,
                 'doc_version' => $docVersion,
-                'remark'      => $req['docremark'],
-                'effectivity_date' => $req['efectivitydate'],
-                'createdon'   => getLocalDatabaseDateTime(),
-                'createdby'       => Auth::user()->username ?? Auth::user()->email
+                'remark'      => null,
+                'established_date' => $req['estabdate'],
+                'validity_date'    => $req['validitydate'],
+                'createdon'        => getLocalDatabaseDateTime(),
+                'createdby'        => Auth::user()->username ?? Auth::user()->email
             ]);
             // document_historys
             
             $insertHistory = array(
                 'dcn_number'        => $dcnNumber,
                 'doc_version'       => $docVersion,
-                'activity'          => 'New Document Version Created : ' . $document->document_title,
+                'activity'          => 'New Document Revision Created : ' . $document->document_title,
                 'createdby'         => Auth::user()->username ?? Auth::user()->email,
                 'createdon'         => getLocalDatabaseDateTime(),
                 'updatedon'         => getLocalDatabaseDateTime()
@@ -358,43 +360,6 @@ class DocumentV2Controller extends Controller
                     'updatedon'         => getLocalDatabaseDateTime()
                 );
                 array_push($docHistory, $insertHistory);
-            }
-
-            // Document Affected Areas | document_affected_areas
-            $insertAreas = array();
-            if(isset($req['docareas'])){
-                $docareas = $req['docareas'];
-                for($i = 0; $i < sizeof($docareas); $i++){
-                    $areas = array(
-                        'dcn_number'        => $dcnNumber,
-                        'docarea'           => $docareas[$i],
-                        'doc_version'       => $docVersion,
-                        'createdon'         => getLocalDatabaseDateTime(),
-                        'createdby'         => Auth::user()->username ?? Auth::user()->email
-                    );
-                    array_push($insertAreas, $areas);
-                }
-                if(sizeof($insertAreas) > 0){
-                    insertOrUpdate($insertAreas,'document_affected_areas');
-                }
-            }else{
-                $AffectedDocarea = DB::table('document_affected_areas')
-                                   ->where('dcn_number',  $dcnNumber)
-                                   ->where('doc_version', 1)
-                                   ->get();
-                foreach($AffectedDocarea as $data => $row){
-                    $areas = array(
-                        'dcn_number'        => $dcnNumber,
-                        'docarea'           => $row->docarea,
-                        'doc_version'       => $docVersion,
-                        'createdon'         => getLocalDatabaseDateTime(),
-                        'createdby'         => Auth::user()->username ?? Auth::user()->email
-                    );
-                    array_push($insertAreas, $areas);
-                }
-                if(sizeof($insertAreas) > 0){
-                    insertOrUpdate($insertAreas,'document_affected_areas');
-                }
             }
 
             // Generate Document Approval Workflow
@@ -454,6 +419,66 @@ class DocumentV2Controller extends Controller
             insertOrUpdate($insertFiles,'document_attachments');
 
             insertOrUpdate($docHistory,'document_historys');
+
+            $impl   = '';
+            $reason = '';
+
+            if(isset($req['imp1'])){
+                $impl = 'Y';
+            }else{
+                $impl = 'N';
+            }
+
+            if(isset($req['imp2'])){
+                $impl = $impl.'Y';
+            }else{
+                $impl = $impl.'N';
+            }
+
+            if(isset($req['imp3'])){
+                $impl = $impl.'Y';
+            }else{
+                $impl = $impl.'N';
+            }
+
+            if(isset($req['reason1'])){
+                $reason = 'Y';
+            }else{
+                $reason = 'N';
+            }
+
+            if(isset($req['reason2'])){
+                $reason = $reason.'Y';
+            }else{
+                $reason = $reason.'N';
+            }
+
+            if(isset($req['reason3'])){
+                $reason = $reason.'Y';
+            }else{
+                $reason = $reason.'N';
+            }
+
+            if(isset($req['reason4'])){
+                $reason = $reason.'Y';
+            }else{
+                $reason = $reason.'N';
+            }
+
+            $insertWiDoc = array();
+            $wiDocData = array(
+                'dcn_number'        => $dcnNumber,
+                'doc_version'       => $docVersion,
+                'assy_code'         => $req['assycode'],
+                'model_name'        => $req['model'],
+                'scope'             => $req['scope'],
+                'implementation'    => $impl,
+                'reason'            => $reason,
+                'createdon'         => getLocalDatabaseDateTime(),
+                'createdby'         => Auth::user()->username ?? Auth::user()->email
+            );
+            array_push($insertWiDoc, $wiDocData);
+            insertOrUpdate($insertWiDoc,'document_wi');
             
             DB::commit();
 

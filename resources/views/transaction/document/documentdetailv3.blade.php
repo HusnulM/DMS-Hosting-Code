@@ -486,20 +486,22 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-6 col-sm-12 form-group">
                             <label for="doctitle">Document Title</label>
-                            <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" value="{{ $documents->document_title }}" required readonly>
+                            <input type="text" class="form-control" name="doctitle" id="doctitle" placeholder="Document Title" value="{{ $documents->document_title }}" required>
                         </div>   
                         <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                             <label for="processname">Process Name</label>
-                            <input type="text" class="form-control" name="processname" id="processname" placeholder="Process Name" value="{{ $wiDocData->process_name }}" required readonly>
+                            <input type="text" class="form-control" name="processname" id="processname" placeholder="Process Name" value="{{ $wiDocData->process_name }}" required>
                         </div>   
                         <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                             <label for="product">Product Name</label>
-                            <input type="text" class="form-control" name="product" id="product" placeholder="Product Name" value="{{ $wiDocData->product_name }}" required readonly>
+                            <input type="text" class="form-control" name="product" id="product" placeholder="Product Name" value="{{ $wiDocData->product_name }}" required>
                         </div>   
                         <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                             <label for="customer">Customer</label>
-                            <input type="text" class="form-control" name="customer" placeholder="Customer Name" value="{{ $wiDocData->customer }}" required readonly>
-                            <!-- <select name="customer" id="find-customer" class="form-control"></select> -->
+                            <!-- <input type="text" class="form-control" name="customer" placeholder="Customer Name" value="{{ $wiDocData->customer }}" required readonly> -->
+                            <select name="customer" id="find-customer" class="form-control">
+                                <option value="{{ $wiDocData->customer }}">{{ $wiDocData->customer }}</option>
+                            </select>
                         </div>   
                         <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                             <label for="doctype">Document Type</label>
@@ -511,8 +513,10 @@
                         </div>    
                         <div class="col-lg-6 col-md-6 col-sm-12 form-group">
                             <label for="model">Model</label>
-                            <input type="text" class="form-control" name="model" placeholder="Model Name" value="{{ $wiDocData->model_name }}" required readonly>
-                            <!-- <select name="model" id="find-model" class="form-control"></select> -->
+                            <!-- <input type="text" class="form-control" name="model" placeholder="Model Name" value="{{ $wiDocData->model_name }}" required readonly> -->
+                            <select name="model" id="find-model" class="form-control">
+                                <option value="{{ $wiDocData->model_name }}">{{ $wiDocData->model_name }}</option>
+                            </select>
                         </div>
                         <div class="col-lg-6 col-sm-12 form-group">
                             <label for="assycode">Assy Code</label>
@@ -520,7 +524,7 @@
                         </div>
                         <div class="col-lg-6 col-sm-12 form-group">
                             <label for="section">Section</label>
-                            <input type="text" name="section" class="form-control" value="{{ $wiDocData->section }}" required readonly>
+                            <input type="text" name="section" class="form-control" value="{{ $wiDocData->section }}" required>
                         </div>
                         <div class="col-lg-6 col-sm-12 form-group">
                             <label for="estabdate">Established Date</label>
