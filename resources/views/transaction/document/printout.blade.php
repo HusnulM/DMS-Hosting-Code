@@ -90,7 +90,7 @@
                 </td>
                 <td>
                     @if($thirdApproval == true && $thirdApprovalSign != null)
-                        <img src="{{ public_path($secondApprovalSign) }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
+                        <img src="{{ public_path($thirdApprovalSign) }}" class="img-thumbnail" alt="E-sign" style="width:100px; height:100px;">
                     @endif
                 </td>
             </tr>
